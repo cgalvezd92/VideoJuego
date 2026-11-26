@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://bdbgp2xkru2d1"]
+
+[ext_resource type="Script" uid="uid://4adenkmaqbn6" path="res://objects/pickable.gd" id="1_5ekgo"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_y2pph"]
+radius = 0.15
+height = 0.2
+radial_segments = 8
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a7hjv"]
+albedo_color = Color(0.5411765, 0.5411765, 0.5411765, 1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_827rv"]
+radius = 0.25
+
+[node name="Stone" type="Area3D" unique_id=881506127]
+script = ExtResource("1_5ekgo")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1824223308]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+mesh = SubResource("SphereMesh_y2pph")
+surface_material_override/0 = SubResource("StandardMaterial3D_a7hjv")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1315443199]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+shape = SubResource("SphereShape3D_827rv")
