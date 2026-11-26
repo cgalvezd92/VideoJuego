@@ -3,6 +3,8 @@
 [ext_resource type="PackedScene" uid="uid://c64jxqer3h8in" path="res://Player/player.tscn" id="1_oj8hd"]
 [ext_resource type="PackedScene" uid="uid://dcrukbdhksnd0" path="res://objects/branch.tscn" id="2_lwy2l"]
 [ext_resource type="PackedScene" uid="uid://bdbgp2xkru2d1" path="res://objects/stone.tscn" id="3_nj2yk"]
+[ext_resource type="PackedScene" path="res://objects/water.tscn" id="4_water"]
+[ext_resource type="PackedScene" path="res://objects/berry_bush.tscn" id="5_bush"]
 
 [sub_resource type="Environment" id="Environment_y2pph"]
 background_mode = 1
@@ -182,3 +184,20 @@ transform = Transform3D(-0.8889915, 0, -0.45792374, 0, 1, 0, 0.45792374, 0, -0.8
 
 [node name="Branch14" parent="Objects" unique_id=1283364967 instance=ExtResource("2_lwy2l")]
 transform = Transform3D(0.11342307, 0, 0.9935468, 0, 1, 0, -0.9935468, 0, 0.11342307, 3.2048626, 0, 8.301281)
+
+[node name="Nature" type="Node3D" parent="." unique_id=721278126]
+
+[node name="Water" parent="Nature" unique_id=773561181 instance=ExtResource("4_water")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.20, 0, -6.52)
+
+[node name="BerryBush1" parent="Nature" unique_id=1257973579 instance=ExtResource("5_bush")]
+transform = Transform3D(0.970851, 0, -0.239685, 0, 1, 0, 0.239685, 0, 0.970851, 6.91, 0, -8.85)
+
+[node name="BerryBush2" parent="Nature" unique_id=1443745360 instance=ExtResource("5_bush")]
+transform = Transform3D(0.712061, 0, -0.702118, 0, 1, 0, 0.702118, 0, 0.712061, -12.95, 0, 9.66)
+
+[node name="BerryBush3" parent="Nature" unique_id=2120730571 instance=ExtResource("5_bush")]
+transform = Transform3D(0.280321, 0, 0.959906, 0, 1, 0, -0.959906, 0, 0.280321, -7.55, 0, -7.40)
+
+[node name="BerryBush4" parent="Nature" unique_id=522794525 instance=ExtResource("5_bush")]
+transform = Transform3D(0.980548, 0, -0.196281, 0, 1, 0, 0.196281, 0, 0.980548, 12.54, 0, 9.68)

@@ -42,6 +42,7 @@ En cada etapa, explicar paso a paso:
 | 1 | Movimiento, cámara, colisiones, escenario básico | ✅ Lista |
 | 2 | Recoger piedras y ramas con la tecla **E** | ✅ Lista |
 | 3 | Inventario en barra de 8 casillas abajo al centro (teclas **1–8** o rueda para elegir) | ✅ Lista |
-| 4 | Hacer una fogata con **F** (gasta 3 ramas y 2 piedras), con luz que parpadea | 🧪 En pruebas |
+| 4 | Hacer una fogata con **F** (gasta 3 ramas y 2 piedras), con luz que parpadea | ✅ Lista |
+| 5 | Vida, hambre y sed: beber en la charca y comer bayas con **E**; la fogata cura | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.
