@@ -1,0 +1,121 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/campfire.gd" id="1_ccjps"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_s8gu2"]
+height = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0glnm"]
+albedo_color = Color(0.36, 0.22, 0.11, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ebp4h"]
+material = SubResource("StandardMaterial3D_0glnm")
+top_radius = 0.06
+bottom_radius = 0.07
+height = 0.8
+radial_segments = 6
+rings = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xg8r2"]
+albedo_color = Color(0.45, 0.45, 0.45, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_a1aru"]
+material = SubResource("StandardMaterial3D_xg8r2")
+radius = 0.1
+height = 0.14
+radial_segments = 6
+rings = 3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_04omx"]
+shading_mode = 0
+albedo_color = Color(1, 0.45, 0.1, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_4yimn"]
+material = SubResource("StandardMaterial3D_04omx")
+top_radius = 0.0
+bottom_radius = 0.2
+height = 0.6
+radial_segments = 6
+rings = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_roo7m"]
+shading_mode = 0
+albedo_color = Color(1, 0.85, 0.3, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_i0tgm"]
+material = SubResource("StandardMaterial3D_roo7m")
+top_radius = 0.0
+bottom_radius = 0.11
+height = 0.4
+radial_segments = 6
+rings = 0
+
+[node name="Campfire" type="StaticBody3D" unique_id=226726843]
+script = ExtResource("1_ccjps")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=155714860]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("CylinderShape3D_s8gu2")
+
+[node name="Logs" type="Node3D" parent="." unique_id=404332442]
+
+[node name="Log1" type="MeshInstance3D" parent="Logs" unique_id=2044902405]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0.07, 0)
+mesh = SubResource("CylinderMesh_ebp4h")
+
+[node name="Log2" type="MeshInstance3D" parent="Logs" unique_id=1569033733]
+transform = Transform3D(-2.1855692e-08, -0.49999997, 0.86602545, 1, -4.371139e-08, 0, 3.7855173e-08, 0.86602545, 0.49999997, 0, 0.1, 0)
+mesh = SubResource("CylinderMesh_ebp4h")
+
+[node name="Log3" type="MeshInstance3D" parent="Logs" unique_id=1332161153]
+transform = Transform3D(2.1855696e-08, 0.50000006, 0.8660254, 1, -4.371139e-08, 0, 3.7855173e-08, 0.8660254, -0.50000006, 0, 0.13, 0)
+mesh = SubResource("CylinderMesh_ebp4h")
+
+[node name="Stones" type="Node3D" parent="." unique_id=2067821710]
+
+[node name="Stone1" type="MeshInstance3D" parent="Stones" unique_id=1993271653]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.48, 0.05, 0)
+mesh = SubResource("SphereMesh_a1aru")
+
+[node name="Stone2" type="MeshInstance3D" parent="Stones" unique_id=2120292186]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2992751, 0.05, 0.3752791)
+mesh = SubResource("SphereMesh_a1aru")
+
+[node name="Stone3" type="MeshInstance3D" parent="Stones" unique_id=1820835106]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.10681005, 0.05, 0.4679654)
+mesh = SubResource("SphereMesh_a1aru")
+
+[node name="Stone4" type="MeshInstance3D" parent="Stones" unique_id=348724244]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.43246505, 0.05, 0.2082642)
+mesh = SubResource("SphereMesh_a1aru")
+
+[node name="Stone5" type="MeshInstance3D" parent="Stones" unique_id=90966642]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.43246505, 0.05, -0.2082642)
+mesh = SubResource("SphereMesh_a1aru")
+
+[node name="Stone6" type="MeshInstance3D" parent="Stones" unique_id=1062032614]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.10681005, 0.05, -0.4679654)
+mesh = SubResource("SphereMesh_a1aru")
+
+[node name="Stone7" type="MeshInstance3D" parent="Stones" unique_id=940538204]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2992751, 0.05, -0.3752791)
+mesh = SubResource("SphereMesh_a1aru")
+
+[node name="Flames" type="Node3D" parent="." unique_id=699151864]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+
+[node name="Outer" type="MeshInstance3D" parent="Flames" unique_id=1606471936]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_4yimn")
+
+[node name="Inner" type="MeshInstance3D" parent="Flames" unique_id=2016315709]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.04, 0.2, 0.03)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_i0tgm")
+
+[node name="Light" type="OmniLight3D" parent="." unique_id=883952241]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+light_color = Color(1, 0.6, 0.25, 1)
+light_energy = 1.5
+omni_range = 7.0
