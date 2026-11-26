@@ -5,6 +5,11 @@ extends Area3D
 @export var thirst_restored: float = 35.0
 
 
+func _ready() -> void:
+	# El grupo "water" sirve para que no crezca hierba dentro de la charca.
+	add_to_group("water")
+
+
 func get_prompt() -> String:
 	return "[E] Beber"
 
