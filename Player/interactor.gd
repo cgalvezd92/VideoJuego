@@ -42,22 +42,27 @@ func _physics_process(_delta: float) -> void:
 		if pressed:
 			hud.show_message(target.interact(owner))
 	elif target != null and target.has_method("hit"):
-		# Gacelas: se cazan con el hacha (clic izquierdo, lo gestiona Tools).
-		if tools.is_holding_axe():
+		# Animales: se golpean con hacha, machete, lanza o bastón (Tools).
+		if tools.can_melee():
 			hud.set_prompt("[Clic] " + target.get_hit_text())
+		elif tools.ranged_prompt() != "":
+			hud.set_prompt(tools.ranged_prompt())
 		else:
-			hud.set_prompt("Necesitas un hacha en la mano")
+			hud.set_prompt("Necesitas algo en la mano para golpear")
 	elif target != null and target.has_method("chop"):
-		# Árboles: se talan con el hacha (clic izquierdo, lo gestiona Tools).
-		if tools.is_holding_axe():
+		# Árboles: se talan con el hacha o el machete (clic izquierdo, Tools).
+		if tools.can_chop():
 			if target.has_method("can_chop") and not target.can_chop():
 				hud.set_prompt(target.get_chop_text())  # Acacia joven: no se tala.
 			else:
 				hud.set_prompt("[Clic] " + target.get_chop_text())
 		else:
-			hud.set_prompt("Necesitas un hacha en la mano para talar")
+			hud.set_prompt("Necesitas un hacha o un machete en la mano para talar")
 	elif tools.is_holding_food():
-		hud.set_prompt("[Clic] Comer " + inventory.get_selected_item().name)
+		var verb: String = "Beber" if tools.is_holding("agua") else "Comer"
+		hud.set_prompt("[Clic] %s %s" % [verb, inventory.get_selected_item().name])
+	elif tools.ranged_prompt() != "":
+		hud.set_prompt(tools.ranged_prompt())
 	else:
 		hud.set_prompt("")
 

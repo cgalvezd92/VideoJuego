@@ -14,6 +14,8 @@ extends StaticBody3D
 func get_prompt() -> String:
 	if kind == "mar":
 		return "Agua salada: no se puede beber"
+	if _holding_pot():
+		return "[E] Llenar la olla de agua"
 	return "[E] Beber agua del " + kind
 
 
@@ -21,5 +23,14 @@ func get_prompt() -> String:
 func interact(player: Node) -> String:
 	if kind == "mar":
 		return "El agua del mar es salada: busca un río o un lago"
+	if _holding_pot():
+		player.get_node("Inventory").add_item("agua", "Agua", 1)
+		return "Llenaste la olla: selecciona el agua y haz clic para beber"
 	player.get_node("Survival").drink(thirst_restored)
 	return "Bebiste agua del " + kind
+
+
+## ¿Lleva la olla en la mano? (Etapa 26: Kenji puede llevarse agua).
+func _holding_pot() -> bool:
+	var player = get_tree().get_first_node_in_group("player")
+	return player != null and player.get_node("Tools").is_holding("olla")
