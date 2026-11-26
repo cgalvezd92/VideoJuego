@@ -49,6 +49,7 @@ En cada etapa, explicar paso a paso:
 | 8 | Gacelas: pastan, pasean y huyen del jugador (3 manadas de 4) | ✅ Lista |
 | 9 | Hacha de piedra: se hace con **C**, se equipa en una casilla y tala acacias con clic izquierdo (da madera) | ✅ Lista |
 | 10 | Guardar y cargar: automático cada minuto y al salir, **F5** guardar, **F9** cargar, **F8** nueva partida | ✅ Lista |
-| 11 | Refugio de madera con **R** (6 madera + 4 ramas); de noche, **E** para dormir hasta las 6:00 | 🧪 En pruebas |
+| 11 | Refugio de madera con **R** (6 madera + 4 ramas); de noche, **E** para dormir hasta las 6:00 | ✅ Lista |
+| 12 | Cazar y cocinar: **Ctrl** para agacharse, cazar gacelas con el hacha, cocinar en la fogata (**E**) y comer con clic | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.

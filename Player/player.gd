@@ -5,6 +5,8 @@ extends CharacterBody3D
 @export_group("Movimiento")
 @export var walk_speed: float = 4.0
 @export var sprint_speed: float = 6.5
+## Velocidad agachado (Ctrl): sirve para acercarse a los animales.
+@export var crouch_speed: float = 1.8
 @export var jump_velocity: float = 4.5
 @export var ground_acceleration: float = 30.0
 @export var air_acceleration: float = 8.0
@@ -19,6 +21,9 @@ extends CharacterBody3D
 @onready var head: Node3D = $Head
 
 var spawn_position: Vector3
+var crouching: bool = false
+const HEAD_HEIGHT: float = 1.6
+const CROUCH_HEAD_HEIGHT: float = 1.0
 
 
 func _ready() -> void:
@@ -59,7 +64,16 @@ func _physics_process(delta: float) -> void:
 	)
 	var direction: Vector3 = transform.basis * Vector3(input_dir.x, 0.0, input_dir.y)
 
-	var speed: float = sprint_speed if Input.is_action_pressed("sprint") else walk_speed
+	crouching = Input.is_action_pressed("crouch")
+	var speed: float = walk_speed
+	if crouching:
+		speed = crouch_speed
+	elif Input.is_action_pressed("sprint"):
+		speed = sprint_speed
+
+	# Al agacharse, la cámara baja suavemente.
+	var head_target: float = CROUCH_HEAD_HEIGHT if crouching else HEAD_HEIGHT
+	head.position.y = move_toward(head.position.y, head_target, 4.0 * delta)
 	var acceleration: float = ground_acceleration if is_on_floor() else air_acceleration
 
 	var horizontal := Vector2(velocity.x, velocity.z)
@@ -74,6 +88,16 @@ func _physics_process(delta: float) -> void:
 	# Si caes del mapa, vuelves al punto de partida.
 	if global_position.y < fall_limit:
 		respawn()
+
+
+## Las gacelas la usan para saber si te estás acercando con sigilo.
+func is_crouching() -> bool:
+	return crouching
+
+
+## ¿Va corriendo? (las gacelas te oyen desde más lejos).
+func is_sprinting() -> bool:
+	return Input.is_action_pressed("sprint") and not crouching
 
 
 ## Vuelve al punto de partida (al caer del mapa o al desmayarse).
