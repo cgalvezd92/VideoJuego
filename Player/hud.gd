@@ -80,8 +80,8 @@ func set_prompt(new_text: String) -> void:
 	prompt_label.text = new_text
 
 
-func set_stats(health: float, hunger: float, thirst: float, max_value: float, near_fire: bool) -> void:
-	health_bar.max_value = max_value
+func set_stats(health: float, max_health: float, hunger: float, thirst: float, max_value: float, near_fire: bool) -> void:
+	health_bar.max_value = max_health
 	hunger_bar.max_value = max_value
 	thirst_bar.max_value = max_value
 	health_bar.value = health

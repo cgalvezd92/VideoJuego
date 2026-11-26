@@ -34,6 +34,13 @@ func _apply_fullscreen_setting() -> void:
 # --- Botones ---
 
 func _on_continue() -> void:
+	# Antes de entrar, se elige el personaje con el que se guardó la partida
+	# (así su vida y velocidad son las suyas desde el principio).
+	var data = JSON.parse_string(FileAccess.get_file_as_string(SAVE_PATH))
+	if typeof(data) == TYPE_DICTIONARY and data.has("personaje"):
+		for i in Personajes.lista.size():
+			if Personajes.lista[i]["id"] == data.personaje:
+				Personajes.elegido = i
 	# El nivel carga solo el guardado al empezar (SaveGame).
 	get_tree().change_scene_to_file(GAME_SCENE)
 
@@ -45,7 +52,8 @@ func _on_new_game() -> void:
 		return
 	if FileAccess.file_exists(SAVE_PATH):
 		DirAccess.remove_absolute(SAVE_PATH)
-	get_tree().change_scene_to_file(GAME_SCENE)
+	# Partida nueva: primero se elige el personaje (Etapa 25).
+	get_tree().change_scene_to_file("res://personajes/seleccion_personaje.tscn")
 
 
 func _on_quit() -> void:
@@ -59,7 +67,11 @@ func _saved_time_text() -> String:
 		return ""
 	var total: float = data.hours
 	var hour: float = fmod(total, 24.0)
-	return "  (Día %d · %02d:%02d)" % [int(total / 24.0) + 1, int(hour), int(fmod(hour, 1.0) * 60.0)]
+	var who: String = ""
+	for p in Personajes.lista:
+		if p["id"] == data.get("personaje", ""):
+			who = p["nombre"] + " · "
+	return "  (%sDía %d · %02d:%02d)" % [who, int(total / 24.0) + 1, int(hour), int(fmod(hour, 1.0) * 60.0)]
 
 
 # --- Menú (por código) ---

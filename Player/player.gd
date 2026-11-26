@@ -33,6 +33,11 @@ const CROUCH_HEAD_HEIGHT: float = 1.0
 
 func _ready() -> void:
 	spawn_position = global_position
+	# Velocidad según el personaje elegido (Etapa 25).
+	var speed_mult: float = Personajes.mod("velocidad_mult")
+	walk_speed *= speed_mult
+	sprint_speed *= speed_mult
+	crouch_speed *= speed_mult
 	last_safe_position = global_position
 	# El grupo "player" permite a los animales encontrar al jugador.
 	add_to_group("player")

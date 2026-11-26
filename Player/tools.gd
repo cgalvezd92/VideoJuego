@@ -68,8 +68,11 @@ func _eat() -> void:
 	var item = inventory.get_selected_item()
 	var food: Dictionary = FOODS[item.id]
 	inventory.remove_item(item.id, 1)
-	survival.eat(food.hunger)
-	survival.health = clampf(survival.health + food.health, 0.0, survival.max_value)
+	var hunger_gain: float = food.hunger
+	if item.id == "carne_cocida":
+		hunger_gain *= Personajes.mod("comida_mult")  # Etapa 25: el cocinero rinde más.
+	survival.eat(hunger_gain)
+	survival.health = clampf(survival.health + food.health, 0.0, survival.max_health)
 	hud.show_message(food.text)
 
 

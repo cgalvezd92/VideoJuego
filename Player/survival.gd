@@ -2,7 +2,10 @@ extends Node
 ## Supervivencia: vida, hambre y sed (Etapa 5).
 ## Va en el nodo "Survival", hijo de Player.
 
+## Máximo del hambre y la sed.
 @export var max_value: float = 100.0
+## Vida máxima: la pone el personaje elegido (Personajes.salud_maxima()).
+var max_health: float = 100.0
 
 @export_group("Cuánto bajan (por segundo)")
 ## 0.2 por segundo = de lleno a vacío en unos 8 minutos.
@@ -32,6 +35,16 @@ var check_time: float = 0.0
 @onready var hud = owner.get_node("HUD")
 
 
+func _ready() -> void:
+	# Ajustes según el personaje elegido (Etapa 25).
+	max_health = Personajes.salud_maxima()
+	health = max_health
+	hunger_per_second *= Personajes.mod("hambre_mult")
+	thirst_per_second *= Personajes.mod("sed_mult")
+	fed_regen *= Personajes.mod("curacion_mult")
+	fire_regen *= Personajes.mod("curacion_mult")
+
+
 func _process(delta: float) -> void:
 	hunger = maxf(hunger - hunger_per_second * delta, 0.0)
 	thirst = maxf(thirst - thirst_per_second * delta, 0.0)
@@ -45,13 +58,13 @@ func _process(delta: float) -> void:
 		change += fed_regen
 	if near_fire:
 		change += fire_regen
-	health = clampf(health + change * delta, 0.0, max_value)
+	health = clampf(health + change * delta, 0.0, max_health)
 
 	check_time -= delta
 	if check_time <= 0.0:
 		check_time = 0.25
 		near_fire = _is_near_fire()
-		hud.set_stats(health, hunger, thirst, max_value, near_fire)
+		hud.set_stats(health, max_health, hunger, thirst, max_value, near_fire)
 
 	if health <= 0.0:
 		_faint()
@@ -78,7 +91,7 @@ func damage(amount: float) -> void:
 func rest(seconds: float) -> void:
 	hunger = maxf(hunger - hunger_per_second * seconds * 0.5, 0.0)
 	thirst = maxf(thirst - thirst_per_second * seconds * 0.5, 0.0)
-	health = minf(health + 30.0, max_value)
+	health = minf(health + 30.0, max_health)
 	check_time = 0.0
 
 
@@ -91,7 +104,7 @@ func _is_near_fire() -> bool:
 
 func _faint() -> void:
 	# Te desmayas: vuelves al inicio con el inventario intacto.
-	health = max_value
+	health = max_health
 	hunger = max_value * 0.6
 	thirst = max_value * 0.6
 	player.respawn()
