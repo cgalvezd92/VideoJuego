@@ -41,6 +41,6 @@ En cada etapa, explicar paso a paso:
 |-------|-----------|--------|
 | 1 | Movimiento, cámara, colisiones, escenario básico | ✅ Lista |
 | 2 | Recoger piedras y ramas con la tecla **E** | ✅ Lista |
-| 3 | Inventario básico: guarda lo recogido y se abre/cierra con **Tab** | 🧪 En pruebas |
+| 3 | Inventario en barra de 8 casillas abajo al centro (teclas **1–8** o rueda para elegir) | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.

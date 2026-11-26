@@ -26,5 +26,8 @@ func _physics_process(_delta: float) -> void:
 
 func _pick_up(target: Object) -> void:
 	var total: int = inventory.add_item(target.item_id, target.display_name, target.amount)
+	if total == -1:
+		hud.show_message("Inventario lleno")
+		return
 	hud.show_message("Recogiste: %s (total: %d)" % [target.display_name, total])
 	target.collect()
