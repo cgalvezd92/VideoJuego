@@ -34,10 +34,8 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
-		# Esc libera el mouse.
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	elif event is InputEventMouseButton and event.pressed:
+	# (Esc abre el menú de pausa: lo gestiona PauseMenu en main.tscn.)
+	if event is InputEventMouseButton and event.pressed:
 		# Un clic vuelve a capturarlo.
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	elif event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:

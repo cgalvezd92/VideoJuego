@@ -7,6 +7,8 @@ var message_label: Label
 ## Avisos encima de la barra: [0] = fogata, [1] = hacha, [2] = refugio.
 var hint_labels: Array[Label] = []
 var clock_label: Label
+## Lista de controles (el menú de pausa puede ocultarla).
+var controls_label: Label
 var health_bar: ProgressBar
 var hunger_bar: ProgressBar
 var thirst_bar: ProgressBar
@@ -23,7 +25,7 @@ C  Hacer hacha
 R  Hacer refugio
 Clic izq.  Usar hacha / Comer
 1-8 / Rueda  Elegir casilla
-Esc  Soltar el mouse
+Esc  Pausa (menú)
 F5 Guardar · F9 Cargar · F8 Nueva partida"""
 
 
@@ -42,15 +44,15 @@ func _ready() -> void:
 		hint_labels.append(hint)
 
 	# Lista de controles, pequeña, arriba a la izquierda.
-	var controls := _create_label(0.0)
-	controls.text = CONTROLS_TEXT
-	controls.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	controls.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	controls.offset_left = 16.0
-	controls.offset_top = 12.0
-	controls.add_theme_font_size_override("font_size", 14)
-	controls.add_theme_constant_override("outline_size", 4)
-	controls.modulate = Color(1, 1, 1, 0.8)
+	controls_label = _create_label(0.0)
+	controls_label.text = CONTROLS_TEXT
+	controls_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	controls_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	controls_label.offset_left = 16.0
+	controls_label.offset_top = 12.0
+	controls_label.add_theme_font_size_override("font_size", 14)
+	controls_label.add_theme_constant_override("outline_size", 4)
+	controls_label.modulate = Color(1, 1, 1, 0.8)
 
 	_build_stats()
 

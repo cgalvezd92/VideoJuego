@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://Levels/grass.gd" id="9_grass"]
 [ext_resource type="PackedScene" path="res://objects/gazelle.tscn" id="10_gazelle"]
 [ext_resource type="Script" path="res://Levels/save_game.gd" id="11_save"]
+[ext_resource type="Script" path="res://Levels/pause_menu.gd" id="12_pause"]
 
 [sub_resource type="Environment" id="Environment_y2pph"]
 background_mode = 1
@@ -577,3 +578,7 @@ script = ExtResource("6_daynight")
 
 [node name="SaveGame" type="Node" parent="." unique_id=1802736154]
 script = ExtResource("11_save")
+
+[node name="PauseMenu" type="CanvasLayer" parent="." unique_id=1543209876]
+process_mode = 3
+script = ExtResource("12_pause")
