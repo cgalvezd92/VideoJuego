@@ -10,6 +10,7 @@ extends Node
 
 ## Capa de colisión del terreno (la 2).
 const GROUND_LAYER: int = 2
+const WorldResources = preload("res://Levels/world_resources.gd")
 
 @onready var map: Node3D = $"../Mapa"
 @onready var animals: Node = $"../Animals"
@@ -29,6 +30,7 @@ func _ready() -> void:
 	await get_tree().physics_frame
 	_snap_all()
 	$"../Nature/Grass".build()
+	$"../World".start()  # Empieza a crear recursos por todo el mapa.
 	animals.process_mode = Node.PROCESS_MODE_INHERIT
 
 
@@ -72,6 +74,8 @@ func _snap_all() -> void:
 			if height == null:
 				continue
 			child.global_position.y = height + (0.05 if child is CharacterBody3D else 0.0)
+			# No dibujar de lejos los objetos pequeños (ahorra mucho).
+			WorldResources.apply_view_distance(child)
 			# Las gacelas recuerdan dónde viven: se actualiza a la nueva altura.
 			if "spawn_point" in child:
 				child.spawn_point = child.global_position

@@ -23,6 +23,7 @@ const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 @onready var day_night = $"../DayNight"
 @onready var objects: Node = $"../Objects"
 @onready var trees: Node = $"../Nature/Trees"
+@onready var world = $"../World"
 
 var autosave_time: float = 0.0
 
@@ -108,6 +109,8 @@ func save_game(show_message: bool) -> void:
 		"objects": _names_left(objects),
 		# Acacias taladas y la hora del juego en que se talaron (para el rebrote).
 		"felled_trees": _felled_trees(),
+		# Lo recogido y talado fuera de la zona inicial (Etapa 22).
+		"world": world.get_save_data(),
 	}
 
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -166,6 +169,8 @@ func load_game() -> void:
 	# Quitar lo que ya se recogió o se taló.
 	_remove_missing(objects, data.get("objects", null))
 	_load_felled_trees(data)
+	if same_map and data.has("world"):
+		world.set_save_data(data.world)
 
 	# Volver a poner las fogatas.
 	for pos in (data.get("campfires", []) if same_map else []):

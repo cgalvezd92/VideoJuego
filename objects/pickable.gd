@@ -6,6 +6,10 @@ extends Area3D
 @export var display_name: String = "Piedra"
 @export var amount: int = 1
 
+## Avisa al recogerlo (lo usa World para recordar qué se recogió, Etapa 22).
+signal collected
+
 
 func collect() -> void:
+	collected.emit()
 	queue_free()

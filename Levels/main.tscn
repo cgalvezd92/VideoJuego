@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" path="res://objects/hyena.tscn" id="13_hyena"]
 [ext_resource type="PackedScene" uid="uid://bouc2h5qytfju" path="res://mapas/africa_3d.glb" id="14_mapa"]
 [ext_resource type="Script" path="res://Levels/map_setup.gd" id="15_mapsetup"]
+[ext_resource type="Script" path="res://Levels/world_resources.gd" id="16_world"]
 
 [sub_resource type="Environment" id="Environment_y2pph"]
 background_mode = 1
@@ -488,6 +489,9 @@ script = ExtResource("11_save")
 [node name="PauseMenu" type="CanvasLayer" parent="." unique_id=1543209876]
 process_mode = 3
 script = ExtResource("12_pause")
+
+[node name="World" type="Node3D" parent="." unique_id=1873402651]
+script = ExtResource("16_world")
 
 [node name="MapSetup" type="Node" parent="." unique_id=1460318722]
 script = ExtResource("15_mapsetup")
