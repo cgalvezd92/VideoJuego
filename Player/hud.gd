@@ -21,7 +21,8 @@ F  Hacer fogata
 C  Hacer hacha
 Clic izq.  Usar hacha
 1-8 / Rueda  Elegir casilla
-Esc  Soltar el mouse"""
+Esc  Soltar el mouse
+F5 Guardar · F9 Cargar · F8 Nueva partida"""
 
 
 func _ready() -> void:
