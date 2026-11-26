@@ -94,6 +94,9 @@ func _swing() -> void:
 		return
 	if target == null or not target.has_method("chop"):
 		return
+	if target.has_method("can_chop") and not target.can_chop():
+		hud.show_message("Esta acacia es muy joven: deja que crezca")
+		return
 	Sounds.play("chop")
 
 	var wood: int = target.chop()

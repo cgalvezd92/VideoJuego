@@ -106,7 +106,8 @@ func save_game(show_message: bool) -> void:
 		"shelters": shelters,
 		# Nombres de lo que sigue en el mapa (lo que falta ya se recogió o taló).
 		"objects": _names_left(objects),
-		"trees": _names_left(trees),
+		# Acacias taladas y la hora del juego en que se talaron (para el rebrote).
+		"felled_trees": _felled_trees(),
 	}
 
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -160,7 +161,7 @@ func load_game() -> void:
 
 	# Quitar lo que ya se recogió o se taló.
 	_remove_missing(objects, data.get("objects", null))
-	_remove_missing(trees, data.get("trees", null))
+	_load_felled_trees(data)
 
 	# Volver a poner las fogatas.
 	for pos in data.get("campfires", []):
@@ -176,6 +177,31 @@ func load_game() -> void:
 		shelter.rotation.y = data_shelter[3]
 
 	hud.show_message("Partida cargada")
+
+
+func _felled_trees() -> Dictionary:
+	var felled: Dictionary = {}
+	for tree in trees.get_children():
+		if tree.felled:
+			felled[str(tree.name)] = tree.felled_at
+		elif tree.hits >= tree.hits_needed:
+			felled[str(tree.name)] = day_night.total_hours  # Está cayendo ahora.
+	return felled
+
+
+func _load_felled_trees(data: Dictionary) -> void:
+	if data.has("felled_trees"):
+		var felled: Dictionary = data.felled_trees
+		for tree in trees.get_children():
+			if felled.has(str(tree.name)):
+				tree.set_felled(felled[str(tree.name)])
+	elif data.has("trees"):
+		# Guardado de antes de la etapa 18: las acacias que faltan pasan a ser
+		# tocones que empiezan a rebrotar ahora.
+		var left: Array = data.trees
+		for tree in trees.get_children():
+			if not left.has(str(tree.name)):
+				tree.set_felled(day_night.total_hours)
 
 
 func _names_left(parent: Node) -> Array:
