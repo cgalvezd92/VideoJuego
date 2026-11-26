@@ -62,6 +62,7 @@ func _try_build_shelter() -> void:
 	shelter.global_position = spot
 	# La entrada del refugio mira hacia el jugador.
 	shelter.rotation.y = player.rotation.y
+	Sounds.play("build")
 	hud.show_message("Hiciste un refugio: de noche, míralo y pulsa E para dormir")
 
 
@@ -94,6 +95,7 @@ func _try_craft_axe() -> void:
 		return
 	inventory.remove_item("rama", axe_branches)
 	inventory.remove_item("piedra", axe_stones)
+	Sounds.play("build")
 	hud.show_message("Hiciste un hacha: selecciona su casilla para usarla")
 
 
@@ -117,6 +119,7 @@ func _try_build_fire() -> void:
 	# La fogata se añade al nivel (el padre del jugador), no al jugador.
 	player.get_parent().add_child(fire)
 	fire.global_position = spot
+	Sounds.play("build")
 	hud.show_message("Hiciste una fogata")
 
 

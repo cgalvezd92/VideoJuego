@@ -24,6 +24,7 @@ func interact(player: Node) -> String:
 	has_berries = false
 	berries.visible = false
 	_regrow()
+	Sounds.play("eat")
 	return "Comiste bayas"
 
 

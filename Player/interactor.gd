@@ -52,4 +52,5 @@ func _pick_up(target: Object) -> void:
 		hud.show_message("Inventario lleno")
 		return
 	hud.show_message("Recogiste: %s (total: %d)" % [target.display_name, total])
+	Sounds.play("pickup", -6.0)
 	target.collect()
