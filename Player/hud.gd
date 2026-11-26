@@ -104,6 +104,18 @@ func set_stats(health: float, hunger: float, thirst: float, max_value: float, ne
 	health_title.text = "Vida (fogata)" if near_fire else "Vida"
 
 
+## Destello rojo al recibir daño.
+func flash_damage() -> void:
+	var red := ColorRect.new()
+	add_child(red)
+	red.color = Color(0.8, 0.0, 0.0, 0.35)
+	red.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	red.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var tween := create_tween()
+	tween.tween_property(red, "color:a", 0.0, 0.5)
+	tween.tween_callback(red.queue_free)
+
+
 ## Pantalla negra un momento (al dormir).
 func fade() -> void:
 	var black := ColorRect.new()

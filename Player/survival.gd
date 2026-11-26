@@ -67,6 +67,12 @@ func drink(amount: float) -> void:
 	check_time = 0.0
 
 
+## Daño recibido (por ejemplo, un mordisco de la hiena).
+func damage(amount: float) -> void:
+	health = maxf(health - amount, 0.0)
+	check_time = 0.0  # Actualiza las barras enseguida.
+
+
 ## Dormir: el hambre y la sed bajan la mitad de lo normal y recuperas vida.
 ## "seconds" son los segundos reales que habrían pasado.
 func rest(seconds: float) -> void:

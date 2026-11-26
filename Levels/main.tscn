@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" path="res://objects/gazelle.tscn" id="10_gazelle"]
 [ext_resource type="Script" path="res://Levels/save_game.gd" id="11_save"]
 [ext_resource type="Script" path="res://Levels/pause_menu.gd" id="12_pause"]
+[ext_resource type="PackedScene" path="res://objects/hyena.tscn" id="13_hyena"]
 
 [sub_resource type="Environment" id="Environment_y2pph"]
 background_mode = 1
@@ -515,6 +516,9 @@ transform = Transform3D(-0.19552, 0, 0.98070, 0, 1, 0, -0.98070, 0, -0.19552, -3
 
 [node name="Gazelle12" parent="Animals" unique_id=456706499 instance=ExtResource("10_gazelle")]
 transform = Transform3D(0.67776, 0, -0.73529, 0, 1, 0, 0.73529, 0, 0.67776, -36.54, 0.05, -14.56)
+
+[node name="Hyena" parent="Animals" unique_id=1376541290 instance=ExtResource("13_hyena")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 50)
 
 [node name="DayNight" type="Node" parent="." unique_id=1935508217]
 script = ExtResource("6_daynight")
