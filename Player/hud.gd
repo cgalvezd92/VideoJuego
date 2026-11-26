@@ -23,6 +23,7 @@ E  Recoger / Beber / Comer
 F  Hacer fogata
 C  Hacer hacha
 R  Hacer refugio
+M  Mapa
 Clic izq.  Usar hacha / Comer
 1-8 / Rueda  Elegir casilla
 Esc  Pausa (menú)
@@ -55,6 +56,9 @@ func _ready() -> void:
 	controls_label.modulate = Color(1, 1, 1, 0.8)
 
 	_build_stats()
+
+	# Brújula arriba en el centro (Etapa 20).
+	add_child(preload("res://Player/compass.gd").new())
 
 	# Reloj arriba a la derecha (lo actualiza DayNight).
 	clock_label = _create_label(0.0)

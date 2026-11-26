@@ -57,6 +57,7 @@ En cada etapa, explicar paso a paso:
 | 16 | Pantalla de inicio (escena principal): Continuar / Nueva partida / Salir; "Volver al inicio" en la pausa | ✅ Lista |
 | 17 | Hiena nocturna: ronda y muerde de noche, teme al fuego, 3 hachazos la ahuyentan hasta la noche siguiente | ✅ Lista |
 | 18 | Árboles que rebrotan: tocón 12 h, brote que crece hasta árbol completo a las 48 h de juego; se guarda | ✅ Lista |
-| 19 | Mapa de África (`mapas/africa_3d.glb`): la zona de juego se lleva al punto de salida y todo se coloca sobre el relieve (`MapSetup`) | 🧪 En pruebas |
+| 19 | Mapa de África (`mapas/africa_3d.glb`): la zona de juego se lleva al punto de salida y todo se coloca sobre el relieve (`MapSetup`) | ✅ Lista |
+| 20 | Brújula arriba en el centro y mapa del continente con **M** (posición, fogatas, refugios y zona de recursos) | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.
