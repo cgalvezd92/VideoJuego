@@ -17,4 +17,5 @@ func get_prompt() -> String:
 ## La llama el Interactor. Devuelve el mensaje que se muestra en pantalla.
 func interact(player: Node) -> String:
 	player.get_node("Survival").drink(thirst_restored)
+	Sounds.play("drink")
 	return "Bebiste agua"

@@ -112,6 +112,7 @@ func _think() -> void:
 		scare = sprint_flee_distance
 	if player_distance < scare and state != State.FLEE:
 		_start_flee()
+		Sounds.play_at("snort", global_position, -4.0)  # Resoplido de alarma.
 		# Avisa a las gacelas cercanas de su manada.
 		for other in get_tree().get_nodes_in_group("gazelle"):
 			if other != self and other.global_position.distance_to(global_position) < 12.0:
