@@ -16,6 +16,8 @@
 [ext_resource type="PackedScene" uid="uid://bouc2h5qytfju" path="res://mapas/africa_3d.glb" id="14_mapa"]
 [ext_resource type="Script" path="res://Levels/map_setup.gd" id="15_mapsetup"]
 [ext_resource type="Script" path="res://Levels/world_resources.gd" id="16_world"]
+[ext_resource type="PackedScene" path="res://objects/zebra.tscn" id="17_zebra"]
+[ext_resource type="PackedScene" path="res://objects/giraffe.tscn" id="18_giraffe"]
 
 [sub_resource type="Environment" id="Environment_y2pph"]
 background_mode = 1
@@ -476,6 +478,27 @@ transform = Transform3D(-0.19552, 0, 0.98070, 0, 1, 0, -0.98070, 0, -0.19552, -3
 
 [node name="Gazelle12" parent="Animals" unique_id=456706499 instance=ExtResource("10_gazelle")]
 transform = Transform3D(0.67776, 0, -0.73529, 0, 1, 0, 0.73529, 0, 0.67776, -36.54, 0.05, -14.56)
+
+[node name="Zebra1" parent="Animals" unique_id=719758287 instance=ExtResource("17_zebra")]
+transform = Transform3D(0.56131, 0, -0.82761, 0, 1, 0, 0.82761, 0, 0.56131, 28.38, 0.05, -31.23)
+
+[node name="Zebra2" parent="Animals" unique_id=140055201 instance=ExtResource("17_zebra")]
+transform = Transform3D(-0.78206, 0, 0.62320, 0, 1, 0, -0.62320, 0, -0.78206, 24.69, 0.05, -26.58)
+
+[node name="Zebra3" parent="Animals" unique_id=582770568 instance=ExtResource("17_zebra")]
+transform = Transform3D(-0.94025, 0, 0.34049, 0, 1, 0, -0.34049, 0, -0.94025, 31.79, 0.05, -33.17)
+
+[node name="Zebra4" parent="Animals" unique_id=2070218018 instance=ExtResource("17_zebra")]
+transform = Transform3D(-0.99991, 0, 0.01326, 0, 1, 0, -0.01326, 0, -0.99991, 30.42, 0.05, -33.32)
+
+[node name="Giraffe1" parent="Animals" unique_id=1060370831 instance=ExtResource("18_giraffe")]
+transform = Transform3D(-0.12251, 0, -0.99247, 0, 1, 0, 0.99247, 0, -0.12251, -37.14, 0.05, 31.36)
+
+[node name="Giraffe2" parent="Animals" unique_id=1547991643 instance=ExtResource("18_giraffe")]
+transform = Transform3D(0.21282, 0, -0.97709, 0, 1, 0, 0.97709, 0, 0.21282, -34.18, 0.05, 29.76)
+
+[node name="Giraffe3" parent="Animals" unique_id=1547071575 instance=ExtResource("18_giraffe")]
+transform = Transform3D(0.33044, 0, 0.94383, 0, 1, 0, -0.94383, 0, 0.33044, -35.66, 0.05, 32.50)
 
 [node name="Hyena" parent="Animals" unique_id=1376541290 instance=ExtResource("13_hyena")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 50)
