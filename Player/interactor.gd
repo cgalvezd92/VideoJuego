@@ -5,6 +5,7 @@ extends RayCast3D
 
 @onready var hud = owner.get_node("HUD")
 @onready var inventory = owner.get_node("Inventory")
+@onready var tools = owner.get_node("Tools")
 
 
 func _ready() -> void:
@@ -27,6 +28,12 @@ func _physics_process(_delta: float) -> void:
 		hud.set_prompt(target.get_prompt())
 		if pressed:
 			hud.show_message(target.interact(owner))
+	elif target != null and target.has_method("chop"):
+		# Árboles: se talan con el hacha (clic izquierdo, lo gestiona Tools).
+		if tools.is_holding_axe():
+			hud.set_prompt("[Clic] " + target.get_chop_text())
+		else:
+			hud.set_prompt("Necesitas un hacha en la mano para talar")
 	else:
 		hud.set_prompt("")
 

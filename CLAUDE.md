@@ -46,6 +46,7 @@ En cada etapa, explicar paso a paso:
 | 5 | Vida, hambre y sed: beber en la charca y comer bayas con **E**; la fogata cura | ✅ Lista |
 | 6 | Ciclo día/noche: el sol se mueve, el cielo cambia de color y hay reloj en pantalla | ✅ Lista |
 | 7 | Escenario de sabana: mapa de 120×120 m, acacias, rocas, hierba (MultiMesh), bruma y más recursos | ✅ Lista |
-| 8 | Gacelas: pastan, pasean y huyen del jugador (3 manadas de 4) | 🧪 En pruebas |
+| 8 | Gacelas: pastan, pasean y huyen del jugador (3 manadas de 4) | ✅ Lista |
+| 9 | Hacha de piedra: se hace con **C**, se equipa en una casilla y tala acacias con clic izquierdo (da madera) | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.

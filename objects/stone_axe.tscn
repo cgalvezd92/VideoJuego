@@ -1,0 +1,42 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ah6a1"]
+albedo_color = Color(0.45, 0.3, 0.17, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_nulb3"]
+material = SubResource("StandardMaterial3D_ah6a1")
+top_radius = 0.022
+bottom_radius = 0.026
+height = 0.55
+radial_segments = 6
+rings = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i1eoi"]
+albedo_color = Color(0.5, 0.5, 0.48, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0a7ec"]
+material = SubResource("StandardMaterial3D_i1eoi")
+size = Vector3(0.05, 0.11, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tv6x0"]
+albedo_color = Color(0.3, 0.22, 0.12, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3qy47"]
+material = SubResource("StandardMaterial3D_tv6x0")
+size = Vector3(0.06, 0.05, 0.06)
+
+[node name="StoneAxe" type="Node3D" unique_id=1785196179]
+
+[node name="Handle" type="MeshInstance3D" parent="." unique_id=952956200]
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_nulb3")
+
+[node name="Head" type="MeshInstance3D" parent="." unique_id=443900912]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.22, -0.07)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_0a7ec")
+
+[node name="Binding" type="MeshInstance3D" parent="." unique_id=1744925210]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.22, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_3qy47")

@@ -1,5 +1,5 @@
 extends Node
-## Construcción: con F gastas ramas y piedras para hacer una fogata (Etapa 4).
+## Construcción: con F haces una fogata (Etapa 4) y con C un hacha (Etapa 9).
 ## Va en el nodo "Crafting", hijo de Player.
 
 const CAMPFIRE_SCENE: PackedScene = preload("res://objects/campfire.tscn")
@@ -9,13 +9,18 @@ const CAMPFIRE_SCENE: PackedScene = preload("res://objects/campfire.tscn")
 ## A cuántos metros delante del jugador aparece la fogata.
 @export var place_distance: float = 2.0
 
+@export_group("Hacha")
+@export var axe_branches: int = 2
+@export var axe_stones: int = 1
+
 @onready var player: CharacterBody3D = owner
 @onready var inventory = owner.get_node("Inventory")
 @onready var hud = owner.get_node("HUD")
 
 
 func _ready() -> void:
-	# El aviso "[F] Hacer fogata" se actualiza solo cuando cambia el inventario.
+	# Los avisos "[F] Hacer fogata" y "[C] Hacer hacha" se actualizan
+	# solo cuando cambia el inventario.
 	inventory.changed.connect(_update_hint)
 	_update_hint()
 
@@ -23,6 +28,28 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("build_fire"):
 		_try_build_fire()
+	elif event.is_action_pressed("craft_axe"):
+		_try_craft_axe()
+
+
+func _try_craft_axe() -> void:
+	if inventory.get_amount("hacha") > 0:
+		hud.show_message("Ya tienes un hacha")
+		return
+
+	var branches: int = inventory.get_amount("rama")
+	var stones: int = inventory.get_amount("piedra")
+	if branches < axe_branches or stones < axe_stones:
+		hud.show_message("Necesitas %d ramas y %d piedra (tienes %d y %d)"
+			% [axe_branches, axe_stones, branches, stones])
+		return
+
+	if inventory.add_item("hacha", "Hacha", 1) == -1:
+		hud.show_message("Inventario lleno")
+		return
+	inventory.remove_item("rama", axe_branches)
+	inventory.remove_item("piedra", axe_stones)
+	hud.show_message("Hiciste un hacha: selecciona su casilla para usarla")
 
 
 func _try_build_fire() -> void:
@@ -52,8 +79,16 @@ func _update_hint() -> void:
 	var branches: int = inventory.get_amount("rama")
 	var stones: int = inventory.get_amount("piedra")
 	var available: bool = branches >= fire_branches and stones >= fire_stones
-	hud.set_hint("[F] Hacer fogata   (ramas %d/%d · piedras %d/%d)"
+	hud.set_hint(0, "[F] Hacer fogata   (ramas %d/%d · piedras %d/%d)"
 		% [branches, fire_branches, stones, fire_stones], available)
+
+	# El aviso del hacha desaparece cuando ya tienes una.
+	if inventory.get_amount("hacha") > 0:
+		hud.set_hint(1, "", false)
+	else:
+		var can_axe: bool = branches >= axe_branches and stones >= axe_stones
+		hud.set_hint(1, "[C] Hacer hacha   (ramas %d/%d · piedras %d/%d)"
+			% [branches, axe_branches, stones, axe_stones], can_axe)
 
 
 ## Busca suelo delante del jugador. Devuelve la posición o null.
