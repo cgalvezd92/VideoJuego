@@ -59,6 +59,6 @@ En cada etapa, explicar paso a paso:
 | 18 | Árboles que rebrotan: tocón 12 h, brote que crece hasta árbol completo a las 48 h de juego; se guarda | ✅ Lista |
 | 19 | Mapa de África (`mapas/africa_3d.glb`): la zona de juego se lleva al punto de salida y todo se coloca sobre el relieve (`MapSetup`) | ✅ Lista |
 | 20 | Brújula arriba en el centro y mapa del continente con **M** (posición, fogatas, refugios y zona de recursos) | 🧪 En pruebas |
-| 21 | Quitar todos los sonidos; la lista de controles de la izquierda se pliega y despliega con **H** (se recuerda) | 🧪 En pruebas |
+| 21 | Quitar todos los sonidos; la lista de controles de la izquierda se pliega y despliega con **H** (se recuerda); el juego empieza en pantalla completa (botón en la pausa para cambiarlo) | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.

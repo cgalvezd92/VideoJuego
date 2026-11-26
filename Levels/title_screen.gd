@@ -14,9 +14,21 @@ var confirm_new_game: bool = false
 
 
 func _ready() -> void:
+	_apply_fullscreen_setting()
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().paused = false
 	_build_menu()
+
+
+## El juego empieza en pantalla completa (Proyecto > Configuración >
+## Mostrar > Ventana > Modo). Si en el menú de pausa se eligió ventana,
+## se respeta esa elección (guardada en user://ajustes.cfg).
+func _apply_fullscreen_setting() -> void:
+	var config := ConfigFile.new()
+	if config.load("user://ajustes.cfg") != OK:
+		return
+	if not config.get_value("display", "fullscreen", true):
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
 
 # --- Botones ---
