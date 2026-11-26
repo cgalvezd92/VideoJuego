@@ -3,9 +3,7 @@ extends RayCast3D
 ## Va en el nodo "Interactor", hijo de Camera3D.
 
 @onready var hud = owner.get_node("HUD")
-
-# Cuenta provisional. En la Etapa 3 será un inventario.
-var items: Dictionary = {}
+@onready var inventory = owner.get_node("Inventory")
 
 
 func _ready() -> void:
@@ -27,8 +25,6 @@ func _physics_process(_delta: float) -> void:
 
 
 func _pick_up(target: Object) -> void:
-	var id: String = target.item_id
-	var total: int = items.get(id, 0) + target.amount
-	items[id] = total
+	var total: int = inventory.add_item(target.item_id, target.display_name, target.amount)
 	hud.show_message("Recogiste: %s (total: %d)" % [target.display_name, total])
 	target.collect()

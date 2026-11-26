@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://fbgjygpc624u" path="res://Player/player.gd" id="1_l8h54"]
 [ext_resource type="Script" uid="uid://bgd51y4t8s2ey" path="res://Player/hud.gd" id="2_4ntmi"]
 [ext_resource type="Script" uid="uid://qd1ixq7flvji" path="res://Player/interactor.gd" id="2_btcbx"]
+[ext_resource type="Script" path="res://Player/inventory.gd" id="4_inv01"]
+[ext_resource type="Script" path="res://Player/inventory_ui.gd" id="5_invui"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_y2pph"]
 radius = 0.35
@@ -27,3 +29,9 @@ script = ExtResource("2_btcbx")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=425745157]
 script = ExtResource("2_4ntmi")
+
+[node name="Inventory" type="Node" parent="." unique_id=1730561204]
+script = ExtResource("4_inv01")
+
+[node name="InventoryUI" type="CanvasLayer" parent="." unique_id=802913377]
+script = ExtResource("5_invui")
