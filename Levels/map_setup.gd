@@ -7,9 +7,15 @@ extends Node
 ##    el suelo no choquen con árboles, rocas o animales.
 ## 3. Coloca cada objeto, árbol, roca, charca y animal sobre el relieve.
 ## 4. Planta la hierba siguiendo las colinas.
+## 5. Hace que los ríos, lagos y el mar se puedan mirar con E (Etapa 24).
 
 ## Capa de colisión del terreno (la 2).
 const GROUND_LAYER: int = 2
+## Capa de colisión del agua (la 3): solo la usa el rayo de la E.
+const WATER_LAYER: int = 3
+const FreshWater = preload("res://objects/fresh_water.gd")
+## Nombre de cada malla de agua del mapa y qué tipo de agua es.
+const WATER_MESHES: Dictionary = { "Rios": "río", "Lagos_y_oasis": "lago", "Oceano": "mar" }
 const WorldResources = preload("res://Levels/world_resources.gd")
 
 @onready var map: Node3D = $"../Mapa"
@@ -26,6 +32,7 @@ func _ready() -> void:
 	animals.process_mode = Node.PROCESS_MODE_DISABLED
 	_enable_vertex_colors()
 	_set_ground_layer()
+	_setup_water()
 	# Las colisiones del terreno están listas tras un fotograma de física.
 	await get_tree().physics_frame
 	_snap_all()
@@ -56,6 +63,28 @@ func _enable_vertex_colors() -> void:
 				material.vertex_color_use_as_albedo = true
 		# Sin sombras: mucho más rápido.
 		mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+## Crea una colisión con la forma del agua, solo en la capa 3 (no se choca
+## con ella), para que el rayo de la E pueda detectarla.
+func _setup_water() -> void:
+	for mesh_instance in map.find_children("*", "MeshInstance3D", true, false):
+		if not WATER_MESHES.has(str(mesh_instance.name)):
+			continue
+		var body := StaticBody3D.new()
+		body.set_script(FreshWater)
+		body.name = "Agua"
+		body.kind = WATER_MESHES[str(mesh_instance.name)]
+		body.collision_layer = 0
+		body.collision_mask = 0
+		body.set_collision_layer_value(WATER_LAYER, true)
+		var shape := CollisionShape3D.new()
+		var water_shape: ConcavePolygonShape3D = mesh_instance.mesh.create_trimesh_shape()
+		# Algunas caras del agua miran hacia abajo: así el rayo las detecta igual.
+		water_shape.backface_collision = true
+		shape.shape = water_shape
+		body.add_child(shape)
+		mesh_instance.add_child(body)
 
 
 func _set_ground_layer() -> void:
