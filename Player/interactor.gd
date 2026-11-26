@@ -37,7 +37,10 @@ func _physics_process(_delta: float) -> void:
 	elif target != null and target.has_method("chop"):
 		# Árboles: se talan con el hacha (clic izquierdo, lo gestiona Tools).
 		if tools.is_holding_axe():
-			hud.set_prompt("[Clic] " + target.get_chop_text())
+			if target.has_method("can_chop") and not target.can_chop():
+				hud.set_prompt(target.get_chop_text())  # Acacia joven: no se tala.
+			else:
+				hud.set_prompt("[Clic] " + target.get_chop_text())
 		else:
 			hud.set_prompt("Necesitas un hacha en la mano para talar")
 	elif tools.is_holding_food():

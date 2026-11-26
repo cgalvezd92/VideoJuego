@@ -55,6 +55,7 @@ En cada etapa, explicar paso a paso:
 | 14 | Quitar los objetos de prueba del centro del mapa (caja, pared gris y rampa roja) | ✅ Lista |
 | 15 | Sonidos generados por código (Autoload `Sounds`): pasos, hacha, fuego, beber, comer... y volumen en la pausa | ✅ Lista |
 | 16 | Pantalla de inicio (escena principal): Continuar / Nueva partida / Salir; "Volver al inicio" en la pausa | ✅ Lista |
-| 17 | Hiena nocturna: ronda y muerde de noche, teme al fuego, 3 hachazos la ahuyentan hasta la noche siguiente | 🧪 En pruebas |
+| 17 | Hiena nocturna: ronda y muerde de noche, teme al fuego, 3 hachazos la ahuyentan hasta la noche siguiente | ✅ Lista |
+| 18 | Árboles que rebrotan: tocón 12 h, brote que crece hasta árbol completo a las 48 h de juego; se guarda | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.
