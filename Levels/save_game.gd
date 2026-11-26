@@ -9,6 +9,7 @@ extends Node
 
 const SAVE_PATH: String = "user://partida.json"
 const CAMPFIRE_SCENE: PackedScene = preload("res://objects/campfire.tscn")
+const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 
 ## Cada cuántos segundos se guarda automáticamente.
 @export var autosave_seconds: float = 60.0
@@ -66,6 +67,11 @@ func save_game(show_message: bool) -> void:
 	for fire in get_tree().get_nodes_in_group("campfire"):
 		campfires.append(_vec_to_array(fire.global_position))
 
+	# Cada refugio: [x, y, z, giro].
+	var shelters: Array = []
+	for shelter in get_tree().get_nodes_in_group("shelter"):
+		shelters.append(_vec_to_array(shelter.global_position) + [shelter.rotation.y])
+
 	var data: Dictionary = {
 		"version": 1,
 		"player": {
@@ -84,6 +90,7 @@ func save_game(show_message: bool) -> void:
 			"selected": inventory.selected,
 		},
 		"campfires": campfires,
+		"shelters": shelters,
 		# Nombres de lo que sigue en el mapa (lo que falta ya se recogió o taló).
 		"objects": _names_left(objects),
 		"trees": _names_left(trees),
@@ -147,6 +154,13 @@ func load_game() -> void:
 		var fire: Node3D = CAMPFIRE_SCENE.instantiate()
 		main.add_child(fire)
 		fire.global_position = _array_to_vec(pos)
+
+	# Volver a poner los refugios.
+	for data_shelter in data.get("shelters", []):
+		var shelter: Node3D = SHELTER_SCENE.instantiate()
+		main.add_child(shelter)
+		shelter.global_position = _array_to_vec(data_shelter)
+		shelter.rotation.y = data_shelter[3]
 
 	hud.show_message("Partida cargada")
 
