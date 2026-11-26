@@ -17,7 +17,6 @@ extends CharacterBody3D
 @export var fall_limit: float = -10.0
 
 @onready var head: Node3D = $Head
-@onready var inventory_ui = $InventoryUI
 
 var spawn_position: Vector3
 
@@ -31,8 +30,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		# Esc libera el mouse.
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	elif event is InputEventMouseButton and event.pressed and not inventory_ui.is_open:
-		# Un clic vuelve a capturarlo (pero no con el inventario abierto).
+	elif event is InputEventMouseButton and event.pressed:
+		# Un clic vuelve a capturarlo.
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	elif event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		_rotate_camera(event.screen_relative)

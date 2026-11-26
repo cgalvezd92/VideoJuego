@@ -1,39 +1,72 @@
 extends Node
-## Inventario: guarda cuántos objetos de cada tipo lleva el jugador (Etapa 3).
+## Inventario por casillas (Etapa 3).
 ## Va en el nodo "Inventory", hijo de Player.
 
-## Se emite cada vez que cambia el contenido, para que la interfaz se actualice
-## solo cuando hace falta (y no en cada fotograma).
+## Se emite cuando cambia el contenido de alguna casilla.
 signal changed
+## Se emite cuando cambia la casilla seleccionada.
+signal selection_changed
 
-# Cantidad de cada objeto. Ejemplo: { "piedra": 3, "rama": 2 }
-var amounts: Dictionary = {}
-# Nombre visible de cada objeto. Ejemplo: { "piedra": "Piedra" }
-var names: Dictionary = {}
+const SLOT_COUNT: int = 8
+
+## Cada casilla es null (vacía) o un diccionario:
+## { "id": "piedra", "name": "Piedra", "amount": 3 }
+var slots: Array = []
+var selected: int = 0
 
 
-## Añade objetos y devuelve el nuevo total de ese tipo.
+func _ready() -> void:
+	slots.resize(SLOT_COUNT)  # Crea 8 casillas vacías (null).
+
+
+## Añade objetos. Si ya hay una casilla con ese objeto, se apilan;
+## si no, usa la primera casilla libre.
+## Devuelve el nuevo total, o -1 si el inventario está lleno.
 func add_item(id: String, display_name: String, amount: int = 1) -> int:
-	var total: int = amounts.get(id, 0) + amount
-	amounts[id] = total
-	names[id] = display_name
+	var index: int = _find_slot(id)
+	if index == -1:
+		index = slots.find(null)
+		if index == -1:
+			return -1
+		slots[index] = { "id": id, "name": display_name, "amount": 0 }
+
+	slots[index].amount += amount
 	changed.emit()
-	return total
+	return slots[index].amount
 
 
 ## Quita objetos si hay suficientes. Devuelve true si se pudo.
 ## (Se usará en etapas futuras, por ejemplo para fabricar o hacer fuego.)
 func remove_item(id: String, amount: int = 1) -> bool:
-	var current: int = amounts.get(id, 0)
-	if current < amount:
+	var index: int = _find_slot(id)
+	if index == -1 or slots[index].amount < amount:
 		return false
-	if current == amount:
-		amounts.erase(id)
-	else:
-		amounts[id] = current - amount
+
+	slots[index].amount -= amount
+	if slots[index].amount == 0:
+		slots[index] = null
 	changed.emit()
 	return true
 
 
 func get_amount(id: String) -> int:
-	return amounts.get(id, 0)
+	var index: int = _find_slot(id)
+	return 0 if index == -1 else slots[index].amount
+
+
+## Cambia la casilla seleccionada (da la vuelta al pasar de la última).
+func select(index: int) -> void:
+	selected = posmod(index, SLOT_COUNT)
+	selection_changed.emit()
+
+
+## Devuelve lo que hay en la casilla seleccionada (o null).
+func get_selected_item():
+	return slots[selected]
+
+
+func _find_slot(id: String) -> int:
+	for i in SLOT_COUNT:
+		if slots[i] != null and slots[i].id == id:
+			return i
+	return -1
