@@ -28,8 +28,8 @@ const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 func _ready() -> void:
 	# Los avisos "[F] Hacer fogata", "[C] Hacer hacha" y "[R] Hacer refugio"
 	# se actualizan solo cuando cambia el inventario.
-	inventory.changed.connect(_update_hint)
-	_update_hint()
+	inventory.changed.connect(_update_book)
+	_update_book()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -120,25 +120,33 @@ func _try_build_fire() -> void:
 	hud.show_message("Hiciste una fogata")
 
 
-func _update_hint() -> void:
+## Envía las recetas al libro de fabricación (se llama al cambiar el inventario).
+func _update_book() -> void:
 	var branches: int = inventory.get_amount("rama")
 	var stones: int = inventory.get_amount("piedra")
-	var available: bool = branches >= fire_branches and stones >= fire_stones
-	hud.set_hint(0, "[F] Hacer fogata   (ramas %d/%d · piedras %d/%d)"
-		% [branches, fire_branches, stones, fire_stones], available)
-
-	# El aviso del hacha desaparece cuando ya tienes una.
-	if inventory.get_amount("hacha") > 0:
-		hud.set_hint(1, "", false)
-	else:
-		var can_axe: bool = branches >= axe_branches and stones >= axe_stones
-		hud.set_hint(1, "[C] Hacer hacha   (ramas %d/%d · piedras %d/%d)"
-			% [branches, axe_branches, stones, axe_stones], can_axe)
-
 	var wood: int = inventory.get_amount("madera")
-	var can_shelter: bool = wood >= shelter_wood and branches >= shelter_branches
-	hud.set_hint(2, "[R] Hacer refugio   (madera %d/%d · ramas %d/%d)"
-		% [wood, shelter_wood, branches, shelter_branches], can_shelter)
+	var has_axe: bool = inventory.get_amount("hacha") > 0
+
+	hud.recipe_book.set_recipes([
+		{
+			"key": "F", "name": "Fogata",
+			"needs": [["Ramas", branches, fire_branches], ["Piedras", stones, fire_stones]],
+			"available": branches >= fire_branches and stones >= fire_stones,
+			"note": "Luz, calor, cura y cocina carne (E)",
+		},
+		{
+			"key": "C", "name": "Hacha",
+			"needs": [["Ramas", branches, axe_branches], ["Piedras", stones, axe_stones]],
+			"available": not has_axe and branches >= axe_branches and stones >= axe_stones,
+			"note": "Ya tienes una" if has_axe else "Tala acacias y caza",
+		},
+		{
+			"key": "R", "name": "Refugio",
+			"needs": [["Madera", wood, shelter_wood], ["Ramas", branches, shelter_branches]],
+			"available": wood >= shelter_wood and branches >= shelter_branches,
+			"note": "De noche, E para dormir",
+		},
+	])
 
 
 ## Busca suelo a "distance" metros delante del jugador. Devuelve la posición o null.
