@@ -98,6 +98,8 @@ func _build_sounds() -> void:
 	streams["cook"] = _make(_cook())
 	streams["snort"] = _make(_snort())
 	streams["click"] = _make(_click())
+	streams["whoop"] = _make(_whoop())
+	streams["bite"] = _make(_bite())
 	streams["crackle"] = _make(_crackle(), true)
 	rng.randomize()
 
@@ -216,6 +218,26 @@ func _snort() -> PackedFloat32Array:
 		var t: float = float(i) / RATE
 		low += (rng.randf_range(-1.0, 1.0) - low) * 0.25
 		s[i] = low * 0.9 * sin(PI * t / 0.28)
+	return s
+
+
+## "Risa" de la hiena: un tono que sube con un temblor.
+func _whoop() -> PackedFloat32Array:
+	var s := _buffer(0.8)
+	var phase: float = 0.0
+	for i in s.size():
+		var t: float = float(i) / RATE
+		var freq: float = lerpf(280.0, 820.0, t / 0.8) + sin(TAU * 9.0 * t) * 40.0
+		phase += TAU * freq / RATE
+		s[i] = sin(phase) * 0.45 * sin(PI * t / 0.8)
+	return s
+
+
+## Mordisco: chasquido seco con un gruñido grave.
+func _bite() -> PackedFloat32Array:
+	var s := _buffer(0.3)
+	_noise(s, 0.8, 0.8, 0.0, 60.0)
+	_tone(s, 90.0, 0.6, 0.02, 12.0)
 	return s
 
 

@@ -33,7 +33,7 @@ func _physics_process(_delta: float) -> void:
 		if tools.is_holding_axe():
 			hud.set_prompt("[Clic] " + target.get_hit_text())
 		else:
-			hud.set_prompt("Necesitas un hacha en la mano para cazar")
+			hud.set_prompt("Necesitas un hacha en la mano")
 	elif target != null and target.has_method("chop"):
 		# Árboles: se talan con el hacha (clic izquierdo, lo gestiona Tools).
 		if tools.is_holding_axe():

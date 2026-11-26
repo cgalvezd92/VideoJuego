@@ -106,7 +106,10 @@ func _swing() -> void:
 
 func _hunt(gazelle: Object) -> void:
 	var meat: int = gazelle.hit()
-	if meat == 0:
+	# Otros animales (la hiena) traen su propio mensaje.
+	if gazelle.has_method("get_hit_message"):
+		hud.show_message(gazelle.get_hit_message())
+	elif meat == 0:
 		hud.show_message("¡Gacela herida! Corre tras ella (Shift)")
 	elif inventory.add_item("carne_cruda", "Carne cruda", meat) == -1:
 		hud.show_message("Cazaste una gacela, pero el inventario está lleno")

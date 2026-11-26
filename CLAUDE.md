@@ -54,6 +54,7 @@ En cada etapa, explicar paso a paso:
 | 13 | Menú de pausa con **Esc**: continuar, guardar, cargar, nueva partida, mostrar/ocultar controles y salir | ✅ Lista |
 | 14 | Quitar los objetos de prueba del centro del mapa (caja, pared gris y rampa roja) | ✅ Lista |
 | 15 | Sonidos generados por código (Autoload `Sounds`): pasos, hacha, fuego, beber, comer... y volumen en la pausa | ✅ Lista |
-| 16 | Pantalla de inicio (escena principal): Continuar / Nueva partida / Salir; "Volver al inicio" en la pausa | 🧪 En pruebas |
+| 16 | Pantalla de inicio (escena principal): Continuar / Nueva partida / Salir; "Volver al inicio" en la pausa | ✅ Lista |
+| 17 | Hiena nocturna: ronda y muerde de noche, teme al fuego, 3 hachazos la ahuyentan hasta la noche siguiente | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.
