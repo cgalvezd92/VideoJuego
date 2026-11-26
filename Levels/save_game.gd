@@ -45,15 +45,28 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("save_game"):
 		save_game(true)
 	elif event.is_action_pressed("load_game"):
-		if FileAccess.file_exists(SAVE_PATH):
-			# Recargar la escena hace que se cargue el guardado en _ready.
-			get_tree().reload_current_scene()
+		if has_save():
+			load_last()
 		else:
 			hud.show_message("No hay ninguna partida guardada")
 	elif event.is_action_pressed("new_game"):
-		if FileAccess.file_exists(SAVE_PATH):
-			DirAccess.remove_absolute(SAVE_PATH)
-		get_tree().reload_current_scene()
+		new_game()
+
+
+func has_save() -> bool:
+	return FileAccess.file_exists(SAVE_PATH)
+
+
+## Vuelve al último guardado: recargar la escena hace que se cargue en _ready.
+func load_last() -> void:
+	get_tree().reload_current_scene()
+
+
+## Borra el guardado y empieza de cero.
+func new_game() -> void:
+	if has_save():
+		DirAccess.remove_absolute(SAVE_PATH)
+	get_tree().reload_current_scene()
 
 
 func _notification(what: int) -> void:
