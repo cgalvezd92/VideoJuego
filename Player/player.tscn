@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://Player/inventory_ui.gd" id="5_invui"]
 [ext_resource type="Script" path="res://Player/crafting.gd" id="6_craft"]
 [ext_resource type="Script" path="res://Player/survival.gd" id="7_surv"]
+[ext_resource type="Script" path="res://Player/tools.gd" id="8_tools"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_y2pph"]
 radius = 0.35
@@ -44,3 +45,6 @@ script = ExtResource("6_craft")
 
 [node name="Survival" type="Node" parent="." unique_id=1648220913]
 script = ExtResource("7_surv")
+
+[node name="Tools" type="Node" parent="." unique_id=1129384756]
+script = ExtResource("8_tools")

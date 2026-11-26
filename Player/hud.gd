@@ -4,7 +4,8 @@ extends CanvasLayer
 
 var prompt_label: Label
 var message_label: Label
-var hint_label: Label
+## Avisos encima de la barra: [0] = fogata, [1] = hacha.
+var hint_labels: Array[Label] = []
 var clock_label: Label
 var health_bar: ProgressBar
 var hunger_bar: ProgressBar
@@ -17,6 +18,8 @@ Shift  Correr
 Espacio  Saltar
 E  Recoger / Beber / Comer
 F  Hacer fogata
+C  Hacer hacha
+Clic izq.  Usar hacha
 1-8 / Rueda  Elegir casilla
 Esc  Soltar el mouse"""
 
@@ -28,10 +31,12 @@ func _ready() -> void:
 	message_label = _create_label(80.0)
 
 	# Aviso encima de la barra de casillas (por ejemplo, "[F] Hacer fogata").
-	hint_label = _create_label(0.0)
-	hint_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-	hint_label.offset_bottom = -104.0
-	hint_label.add_theme_font_size_override("font_size", 18)
+	for i in 2:
+		var hint := _create_label(0.0)
+		hint.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+		hint.offset_bottom = -104.0 - i * 26.0  # Cada aviso, una línea más arriba.
+		hint.add_theme_font_size_override("font_size", 18)
+		hint_labels.append(hint)
 
 	# Lista de controles, pequeña, arriba a la izquierda.
 	var controls := _create_label(0.0)
@@ -66,16 +71,17 @@ func set_prompt(new_text: String) -> void:
 	prompt_label.text = new_text
 
 
-## Aviso de acción encima de la barra. Si "available" es false se ve atenuado.
-func set_hint(new_text: String, available: bool) -> void:
-	hint_label.text = new_text
+## Aviso de acción encima de la barra ("line" 0 o 1).
+## Si "available" es false se ve atenuado. Con texto vacío no se ve.
+func set_hint(line: int, new_text: String, available: bool) -> void:
+	var hint: Label = hint_labels[line]
+	hint.text = new_text
 	if available:
-		hint_label.modulate = Color(1.0, 0.85, 0.3)
+		hint.modulate = Color(1.0, 0.85, 0.3)
 	else:
-		hint_label.modulate = Color(1, 1, 1, 0.55)
+		hint.modulate = Color(1, 1, 1, 0.55)
 
 
-## La llama Survival 4 veces por segundo para actualizar las barras.
 func set_stats(health: float, hunger: float, thirst: float, max_value: float, near_fire: bool) -> void:
 	health_bar.max_value = max_value
 	hunger_bar.max_value = max_value
