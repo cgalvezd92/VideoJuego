@@ -14,6 +14,12 @@ const CAMPFIRE_SCENE: PackedScene = preload("res://objects/campfire.tscn")
 @onready var hud = owner.get_node("HUD")
 
 
+func _ready() -> void:
+	# El aviso "[F] Hacer fogata" se actualiza solo cuando cambia el inventario.
+	inventory.changed.connect(_update_hint)
+	_update_hint()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("build_fire"):
 		_try_build_fire()
@@ -40,6 +46,14 @@ func _try_build_fire() -> void:
 	player.get_parent().add_child(fire)
 	fire.global_position = spot
 	hud.show_message("Hiciste una fogata")
+
+
+func _update_hint() -> void:
+	var branches: int = inventory.get_amount("rama")
+	var stones: int = inventory.get_amount("piedra")
+	var available: bool = branches >= fire_branches and stones >= fire_stones
+	hud.set_hint("[F] Hacer fogata   (ramas %d/%d · piedras %d/%d)"
+		% [branches, fire_branches, stones, fire_stones], available)
 
 
 ## Busca suelo delante del jugador. Devuelve la posición o null.
