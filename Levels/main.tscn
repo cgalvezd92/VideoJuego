@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bdbgp2xkru2d1" path="res://objects/stone.tscn" id="3_nj2yk"]
 [ext_resource type="PackedScene" path="res://objects/water.tscn" id="4_water"]
 [ext_resource type="PackedScene" path="res://objects/berry_bush.tscn" id="5_bush"]
+[ext_resource type="Script" path="res://Levels/day_night.gd" id="6_daynight"]
 
 [sub_resource type="Environment" id="Environment_y2pph"]
 background_mode = 1
@@ -54,7 +55,6 @@ size = Vector3(3, 0.3, 6)
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=1590397941]
 transform = Transform3D(0.8660254, 0.38302222, -0.32139382, 0, 0.64278764, 0.76604444, 0.5, -0.66341394, 0.5566704, 0, 1.5065196, 0)
-visible = false
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1085125831]
 environment = SubResource("Environment_y2pph")
@@ -201,3 +201,6 @@ transform = Transform3D(0.280321, 0, 0.959906, 0, 1, 0, -0.959906, 0, 0.280321, 
 
 [node name="BerryBush4" parent="Nature" unique_id=522794525 instance=ExtResource("5_bush")]
 transform = Transform3D(0.980548, 0, -0.196281, 0, 1, 0, 0.196281, 0, 0.980548, 12.54, 0, 9.68)
+
+[node name="DayNight" type="Node" parent="." unique_id=1935508217]
+script = ExtResource("6_daynight")

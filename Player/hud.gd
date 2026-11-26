@@ -5,6 +5,7 @@ extends CanvasLayer
 var prompt_label: Label
 var message_label: Label
 var hint_label: Label
+var clock_label: Label
 var health_bar: ProgressBar
 var hunger_bar: ProgressBar
 var thirst_bar: ProgressBar
@@ -45,6 +46,14 @@ func _ready() -> void:
 
 	_build_stats()
 
+	# Reloj arriba a la derecha (lo actualiza DayNight).
+	clock_label = _create_label(0.0)
+	clock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	clock_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	clock_label.offset_right = -16.0
+	clock_label.offset_top = 12.0
+	clock_label.add_theme_font_size_override("font_size", 20)
+
 
 func _process(delta: float) -> void:
 	if message_time > 0.0:
@@ -75,6 +84,10 @@ func set_stats(health: float, hunger: float, thirst: float, max_value: float, ne
 	hunger_bar.value = hunger
 	thirst_bar.value = thirst
 	health_title.text = "Vida (fogata)" if near_fire else "Vida"
+
+
+func set_clock(new_text: String) -> void:
+	clock_label.text = new_text
 
 
 func show_message(new_text: String) -> void:
