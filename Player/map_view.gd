@@ -100,7 +100,7 @@ func _draw_markers() -> void:
 	for shelter in get_tree().get_nodes_in_group("shelter"):
 		var p: Vector2 = _to_map(shelter.global_position, origin, side)
 		markers.draw_rect(Rect2(p - Vector2(4, 4), Vector2(8, 8)), Color(0.45, 0.28, 0.12))
-	for fire in get_tree().get_nodes_in_group("campfire"):
+	for fire in get_tree().get_nodes_in_group("fire_pit"):
 		markers.draw_circle(_to_map(fire.global_position, origin, side), 4.0, Color(1.0, 0.55, 0.1))
 
 	# Flecha del jugador, apuntando hacia donde mira (norte = arriba).

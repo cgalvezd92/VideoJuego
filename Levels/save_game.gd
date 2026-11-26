@@ -80,8 +80,9 @@ func _notification(what: int) -> void:
 
 func save_game(show_message: bool) -> void:
 	var campfires: Array = []
-	for fire in get_tree().get_nodes_in_group("campfire"):
-		campfires.append(_vec_to_array(fire.global_position))
+	# Cada fogata: [x, y, z, encendida] (Etapa 30: la lluvia las apaga).
+	for fire in get_tree().get_nodes_in_group("fire_pit"):
+		campfires.append(_vec_to_array(fire.global_position) + [fire.lit])
 
 	# Cada refugio: [x, y, z, giro].
 	var shelters: Array = []
@@ -180,6 +181,8 @@ func load_game() -> void:
 		var fire: Node3D = CAMPFIRE_SCENE.instantiate()
 		main.add_child(fire)
 		fire.global_position = _array_to_vec(pos)
+		if pos.size() > 3 and not pos[3]:
+			fire.extinguish()
 
 	# Volver a poner los refugios.
 	for data_shelter in (data.get("shelters", []) if same_map else []):

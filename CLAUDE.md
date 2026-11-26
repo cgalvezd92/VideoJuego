@@ -67,6 +67,7 @@ En cada etapa, explicar paso a paso:
 | 26 | Objetos iniciales: machete (tala x2), lanza (clic derecho la lanza), arco + flechas, antorcha (luz y ahuyenta a la hiena), olla (llevar agua) y bastón (+15 % velocidad) | ✅ Lista |
 | 27 | Energía (estamina): correr y saltar la gastan, se recupera al caminar/parar; agotado no corre; Mama Zuri tiene menos y el bastón ahorra | ✅ Lista |
 | 28 | Fabricar en el libro: **X** flechas (1 rama + 1 piedra = 2) y **L** lanza (2 madera + 1 piedra) | ✅ Lista |
-| 29 | Cebras y jirafas (`zebra.tscn`, `giraffe.tscn`, script `big_animal.gd`): pastan y huyen, no se cazan; manada de cada una cerca de la salida y al azar por el continente; 6 llamadas de dibujo por animal | 🧪 En pruebas |
+| 29 | Cebras y jirafas (`zebra.tscn`, `giraffe.tscn`, script `big_animal.gd`): pastan y huyen, no se cazan; manada de cada una cerca de la salida y al azar por el continente; 6 llamadas de dibujo por animal | ✅ Lista |
+| 30 | Lluvia (nodo `Weather`): a ratos llueve (partículas GPU), cielo gris; apaga fogatas lejos de un refugio (E + 1 rama las reaviva); llena la olla | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.
