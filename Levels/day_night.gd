@@ -73,6 +73,8 @@ func _apply() -> void:
 
 	var sky: Color = night_sky.lerp(day_sky, daylight)
 	environment.background_color = sky.lerp(sunset_sky, sunset * 0.7)
+	# La bruma lejana toma el color del cielo para que el horizonte se funda.
+	environment.fog_light_color = environment.background_color
 	environment.ambient_light_color = night_ambient.lerp(day_ambient, daylight)
 
 	var day_number: int = int(total_hours / 24.0) + 1
