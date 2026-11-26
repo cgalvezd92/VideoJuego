@@ -28,6 +28,9 @@ var update_time: float = 0.0
 func _ready() -> void:
 	# El grupo "day_night" permite al refugio saber la hora y adelantarla.
 	add_to_group("day_night")
+	# Tomás se orienta de noche: para él la noche es menos oscura (Etapa 25).
+	if Personajes.mod("vision_noche"):
+		night_ambient = night_ambient.lerp(Color(0.25, 0.27, 0.35), 0.6)
 	total_hours = start_hour
 	sun.visible = true
 	sun.shadow_enabled = false  # Sin sombras: mucho más rápido.

@@ -63,5 +63,6 @@ En cada etapa, explicar paso a paso:
 | 22 | Recursos por todo el continente: celdas de 64 m que se crean y borran alrededor del jugador (nodo `World`); se guarda lo recogido y talado | ✅ Lista |
 | 23 | Libro de fabricación a la derecha (se abre/cierra con **B**): recetas con materiales que tienes/necesitas; sustituye los avisos de encima de la barra | ✅ Lista |
 | 24 | Beber con **E** en los ríos y lagos del mapa (colisión solo para el rayo, capa 3); el mar avisa de que es agua salada | 🧪 En pruebas |
+| 25 | Personajes: 6 sobrevivientes (`res://personajes/`, Autoload `Personajes`); se eligen al empezar una partida nueva y cambian vida, velocidad, hambre, sed, comida, curación, sigilo y visión nocturna | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.

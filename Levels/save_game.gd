@@ -64,10 +64,12 @@ func load_last() -> void:
 
 
 ## Borra el guardado y empieza de cero.
+## Borra el guardado y vuelve a elegir personaje para empezar de cero.
 func new_game() -> void:
 	if has_save():
 		DirAccess.remove_absolute(SAVE_PATH)
-	get_tree().reload_current_scene()
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://personajes/seleccion_personaje.tscn")
 
 
 func _notification(what: int) -> void:
@@ -88,6 +90,7 @@ func save_game(show_message: bool) -> void:
 
 	var data: Dictionary = {
 		"version": 2,  # 2 = mapa de África (Etapa 19).
+		"personaje": Personajes.actual()["id"],  # Etapa 25.
 		"player": {
 			"position": _vec_to_array(player.global_position),
 			"rotation_y": player.rotation.y,
@@ -145,7 +148,7 @@ func load_game() -> void:
 
 	# Vida, hambre y sed
 	var s: Dictionary = data.get("survival", {})
-	survival.health = s.get("health", survival.max_value)
+	survival.health = minf(s.get("health", survival.max_health), survival.max_health)
 	survival.hunger = s.get("hunger", survival.max_value)
 	survival.thirst = s.get("thirst", survival.max_value)
 	survival.check_time = 0.0

@@ -109,6 +109,8 @@ func _think() -> void:
 		scare = crouch_flee_distance
 	elif player.has_method("is_sprinting") and player.is_sprinting():
 		scare = sprint_flee_distance
+	# Con poco sigilo (Lucía: 0.5) te notan desde el doble de distancia (Etapa 25).
+	scare /= Personajes.mod("sigilo_mult")
 	if player_distance < scare and state != State.FLEE:
 		_start_flee()
 		# Avisa a las gacelas cercanas de su manada.
