@@ -28,7 +28,7 @@ enum State { HIDDEN, PROWL, CHARGE, FLEE, LEAVE }
 ## La hiena nunca se acerca más que esto a una fogata.
 @export var fear_fire_radius: float = 8.0
 
-const MAP_LIMIT: float = 54.0
+const MapSetup = preload("res://Levels/map_setup.gd")
 
 var state: State = State.HIDDEN
 var state_time: float = 0.0
@@ -184,10 +184,16 @@ func _try_bite() -> void:
 func _appear() -> void:
 	hits = 0
 	# Aparece lejos del jugador, en una dirección al azar dentro del mapa.
-	var angle: float = randf() * TAU
-	var pos: Vector3 = player.global_position + Vector3(cos(angle), 0, sin(angle)) * spawn_distance
-	pos.x = clampf(pos.x, -MAP_LIMIT, MAP_LIMIT)
-	pos.z = clampf(pos.z, -MAP_LIMIT, MAP_LIMIT)
+	# Prueba varias direcciones hasta encontrar tierra firme (no el mar).
+	var pos: Vector3 = player.global_position
+	for attempt in 8:
+		var angle: float = randf() * TAU
+		var x: float = player.global_position.x + cos(angle) * spawn_distance
+		var z: float = player.global_position.z + sin(angle) * spawn_distance
+		var ground = MapSetup.ground_height(get_world_3d(), x, z)
+		if ground != null and ground > 0.5:
+			pos = Vector3(x, ground, z)
+			break
 	global_position = pos + Vector3.UP * 0.3
 	orbit_angle = atan2(pos.z - player.global_position.z, pos.x - player.global_position.x)
 	show()

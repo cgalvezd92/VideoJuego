@@ -86,7 +86,7 @@ func save_game(show_message: bool) -> void:
 		shelters.append(_vec_to_array(shelter.global_position) + [shelter.rotation.y])
 
 	var data: Dictionary = {
-		"version": 1,
+		"version": 2,  # 2 = mapa de África (Etapa 19).
 		"player": {
 			"position": _vec_to_array(player.global_position),
 			"rotation_y": player.rotation.y,
@@ -128,9 +128,13 @@ func load_game() -> void:
 		hud.show_message("La partida guardada está dañada")
 		return
 
+	# Los guardados del mapa anterior (versión 1) no sirven para posiciones:
+	# se conserva el inventario, la vida y la hora, pero empiezas en la salida.
+	var same_map: bool = int(data.get("version", 1)) >= 2
+
 	# Jugador
 	var p: Dictionary = data.get("player", {})
-	if p.has("position"):
+	if p.has("position") and same_map:
 		player.global_position = _array_to_vec(p.position)
 	player.rotation.y = p.get("rotation_y", 0.0)
 	head.rotation.x = p.get("head_x", 0.0)
@@ -164,13 +168,13 @@ func load_game() -> void:
 	_load_felled_trees(data)
 
 	# Volver a poner las fogatas.
-	for pos in data.get("campfires", []):
+	for pos in (data.get("campfires", []) if same_map else []):
 		var fire: Node3D = CAMPFIRE_SCENE.instantiate()
 		main.add_child(fire)
 		fire.global_position = _array_to_vec(pos)
 
 	# Volver a poner los refugios.
-	for data_shelter in data.get("shelters", []):
+	for data_shelter in (data.get("shelters", []) if same_map else []):
 		var shelter: Node3D = SHELTER_SCENE.instantiate()
 		main.add_child(shelter)
 		shelter.global_position = _array_to_vec(data_shelter)

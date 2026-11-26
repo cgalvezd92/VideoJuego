@@ -13,6 +13,8 @@
 [ext_resource type="Script" path="res://Levels/save_game.gd" id="11_save"]
 [ext_resource type="Script" path="res://Levels/pause_menu.gd" id="12_pause"]
 [ext_resource type="PackedScene" path="res://objects/hyena.tscn" id="13_hyena"]
+[ext_resource type="PackedScene" uid="uid://bouc2h5qytfju" path="res://mapas/africa_3d.glb" id="14_mapa"]
+[ext_resource type="Script" path="res://Levels/map_setup.gd" id="15_mapsetup"]
 
 [sub_resource type="Environment" id="Environment_y2pph"]
 background_mode = 1
@@ -21,26 +23,16 @@ ambient_light_source = 2
 ambient_light_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
 fog_enabled = true
 fog_light_color = Color(0.53, 0.81, 0.92, 1)
-fog_density = 0.006
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_827rv"]
-albedo_color = Color(0.62, 0.53, 0.31, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_y2pph"]
-size = Vector3(120, 1, 120)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_a7hjv"]
-size = Vector3(120, 1, 120)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_boundx"]
-size = Vector3(120, 10, 1)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_boundz"]
-size = Vector3(1, 10, 120)
+fog_mode = 1
+fog_depth_begin = 70.0
+fog_depth_end = 230.0
 
 [node name="Main" type="Node3D" unique_id=148664874]
 
+[node name="Mapa" parent="." unique_id=1984120377 instance=ExtResource("14_mapa")]
+
 [node name="Player" parent="." unique_id=96015915 instance=ExtResource("1_oj8hd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 308, 14.32, 114.8)
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=1590397941]
 transform = Transform3D(0.8660254, 0.38302222, -0.32139382, 0, 0.64278764, 0.76604444, 0.5, -0.66341394, 0.5566704, 0, 1.5065196, 0)
@@ -48,17 +40,8 @@ transform = Transform3D(0.8660254, 0.38302222, -0.32139382, 0, 0.64278764, 0.766
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1085125831]
 environment = SubResource("Environment_y2pph")
 
-[node name="Floor" type="StaticBody3D" parent="." unique_id=750311289]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor" unique_id=27432315]
-material_override = SubResource("StandardMaterial3D_827rv")
-mesh = SubResource("BoxMesh_y2pph")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=970873571]
-shape = SubResource("BoxShape3D_a7hjv")
-
 [node name="Objects" type="Node3D" parent="." unique_id=1176537585]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 308, 0, 114.8)
 
 [node name="Branch2" parent="Objects" unique_id=2101517281 instance=ExtResource("2_lwy2l")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -2)
@@ -145,6 +128,7 @@ transform = Transform3D(-0.8889915, 0, -0.45792374, 0, 1, 0, 0.45792374, 0, -0.8
 transform = Transform3D(0.11342307, 0, 0.9935468, 0, 1, 0, -0.9935468, 0, 0.11342307, 3.2048626, 0, 8.301281)
 
 [node name="Nature" type="Node3D" parent="." unique_id=721278126]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 308, 0, 114.8)
 
 [node name="Water" parent="Nature" unique_id=773561181 instance=ExtResource("4_water")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.20, 0, -6.52)
@@ -453,33 +437,8 @@ transform = Transform3D(-0.87235, 0, 0.48889, 0, 1.0000, 0, -0.48889, 0, -0.8723
 [node name="Branch38" parent="Objects" unique_id=796000050 instance=ExtResource("2_lwy2l")]
 transform = Transform3D(0.97961, 0, -0.20092, 0, 1.0000, 0, 0.20092, 0, 0.97961, 45.54, 0, -29.27)
 
-[node name="Bounds" type="Node3D" parent="." unique_id=118943526]
-
-[node name="North" type="StaticBody3D" parent="Bounds" unique_id=296293517]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -60.5)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/North" unique_id=242095554]
-shape = SubResource("BoxShape3D_boundx")
-
-[node name="South" type="StaticBody3D" parent="Bounds" unique_id=280450702]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 60.5)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/South" unique_id=1474441124]
-shape = SubResource("BoxShape3D_boundx")
-
-[node name="West" type="StaticBody3D" parent="Bounds" unique_id=523066227]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60.5, 5, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/West" unique_id=501532240]
-shape = SubResource("BoxShape3D_boundz")
-
-[node name="East" type="StaticBody3D" parent="Bounds" unique_id=1028194857]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60.5, 5, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/East" unique_id=1647931010]
-shape = SubResource("BoxShape3D_boundz")
-
 [node name="Animals" type="Node3D" parent="." unique_id=953600858]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 308, 0, 114.8)
 
 [node name="Gazelle1" parent="Animals" unique_id=116780684 instance=ExtResource("10_gazelle")]
 transform = Transform3D(0.11561, 0, -0.99330, 0, 1, 0, 0.99330, 0, 0.11561, 43.27, 0.05, -19.45)
@@ -529,3 +488,6 @@ script = ExtResource("11_save")
 [node name="PauseMenu" type="CanvasLayer" parent="." unique_id=1543209876]
 process_mode = 3
 script = ExtResource("12_pause")
+
+[node name="MapSetup" type="Node" parent="." unique_id=1460318722]
+script = ExtResource("15_mapsetup")

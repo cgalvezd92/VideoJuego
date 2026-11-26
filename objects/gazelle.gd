@@ -30,7 +30,6 @@ enum State { GRAZE, WALK, FLEE }
 ## Segundos hasta que vuelve a aparecer en su zona.
 @export var respawn_time: float = 180.0
 
-const MAP_LIMIT: float = 54.0
 
 var state: State = State.GRAZE
 var home: Vector3
@@ -181,8 +180,6 @@ func _start_walk() -> void:
 	var angle: float = randf() * TAU
 	var distance: float = randf_range(2.0, wander_radius)
 	target = home + Vector3(cos(angle), 0.0, sin(angle)) * distance
-	target.x = clampf(target.x, -MAP_LIMIT, MAP_LIMIT)
-	target.z = clampf(target.z, -MAP_LIMIT, MAP_LIMIT)
 
 
 func _start_flee() -> void:

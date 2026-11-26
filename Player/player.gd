@@ -22,6 +22,11 @@ extends CharacterBody3D
 
 var spawn_position: Vector3
 var crouching: bool = false
+# Último sitio seguro en tierra firme (para volver si te metes en el mar).
+var last_safe_position: Vector3
+var safe_check_time: float = 0.0
+## Por debajo de esta altura estás dentro del mar (el nivel del mar es 0).
+const SEA_DEPTH_LIMIT: float = -1.0
 # Metros recorridos desde el último paso (para el sonido de pasos).
 var step_distance: float = 0.0
 const HEAD_HEIGHT: float = 1.6
@@ -30,6 +35,7 @@ const CROUCH_HEAD_HEIGHT: float = 1.0
 
 func _ready() -> void:
 	spawn_position = global_position
+	last_safe_position = global_position
 	# El grupo "player" permite a los animales encontrar al jugador.
 	add_to_group("player")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -89,6 +95,21 @@ func _physics_process(delta: float) -> void:
 	# Si caes del mapa, vuelves al punto de partida.
 	if global_position.y < fall_limit:
 		respawn()
+	_check_sea(delta)
+
+
+func _check_sea(delta: float) -> void:
+	if global_position.y < SEA_DEPTH_LIMIT:
+		# Demasiado hondo: vuelves a la orilla.
+		global_position = last_safe_position
+		velocity = Vector3.ZERO
+		get_node("HUD").show_message("El mar es demasiado profundo: vuelves a la orilla")
+		return
+	# Cada medio segundo, si pisas tierra firme, recuerda este sitio.
+	safe_check_time -= delta
+	if safe_check_time <= 0.0 and is_on_floor() and global_position.y > 0.5:
+		safe_check_time = 0.5
+		last_safe_position = global_position
 
 
 func _footsteps(delta: float) -> void:

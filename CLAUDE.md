@@ -56,6 +56,7 @@ En cada etapa, explicar paso a paso:
 | 15 | Sonidos generados por código (Autoload `Sounds`): pasos, hacha, fuego, beber, comer... y volumen en la pausa | ✅ Lista |
 | 16 | Pantalla de inicio (escena principal): Continuar / Nueva partida / Salir; "Volver al inicio" en la pausa | ✅ Lista |
 | 17 | Hiena nocturna: ronda y muerde de noche, teme al fuego, 3 hachazos la ahuyentan hasta la noche siguiente | ✅ Lista |
-| 18 | Árboles que rebrotan: tocón 12 h, brote que crece hasta árbol completo a las 48 h de juego; se guarda | 🧪 En pruebas |
+| 18 | Árboles que rebrotan: tocón 12 h, brote que crece hasta árbol completo a las 48 h de juego; se guarda | ✅ Lista |
+| 19 | Mapa de África (`mapas/africa_3d.glb`): la zona de juego se lleva al punto de salida y todo se coloca sobre el relieve (`MapSetup`) | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.

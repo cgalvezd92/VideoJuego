@@ -10,12 +10,12 @@ extends MultiMeshInstance3D
 @export var random_seed: int = 7
 
 
-func _ready() -> void:
-	# Se espera un momento para que las charcas ya estén en el grupo "water".
-	_build.call_deferred()
+const MapSetup = preload("res://Levels/map_setup.gd")
 
 
-func _build() -> void:
+## La llama MapSetup cuando el terreno ya tiene colisión (Etapa 19):
+## cada mata se planta a la altura real del suelo.
+func build() -> void:
 	# Una mata = un cono fino de 4 lados.
 	var tuft := CylinderMesh.new()
 	tuft.top_radius = 0.0
@@ -41,12 +41,18 @@ func _build() -> void:
 
 	for i in count:
 		var size: float = rng.randf_range(0.6, 1.4)
-		# El cono tiene el centro a media altura: se sube para que toque el suelo.
-		var pos := Vector3(rng.randf_range(-half, half), 0.22 * size, rng.randf_range(-half, half))
+		var pos := Vector3(rng.randf_range(-half, half), 0.0, rng.randf_range(-half, half))
+		# Altura del suelo en ese punto (sin tierra o en el agua: no hay hierba).
+		var ground = MapSetup.ground_height(get_world_3d(), global_position.x + pos.x, global_position.z + pos.z)
+		if ground == null or ground < 0.3:
+			pos.y = -100.0
+		else:
+			# El cono tiene el centro a media altura: se sube para que toque el suelo.
+			pos.y = ground - global_position.y + 0.22 * size
 		# Sin hierba dentro de las charcas: se baja bajo el suelo.
 		for pond in ponds:
 			if Vector2(pos.x, pos.z).distance_to(Vector2(pond.global_position.x, pond.global_position.z)) < 2.6:
-				pos.y = -1.0
+				pos.y = -100.0
 
 		var basis := Basis(Vector3.UP, rng.randf() * TAU)
 		basis = basis.scaled(Vector3.ONE * size)
