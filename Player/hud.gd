@@ -15,12 +15,13 @@ var message_time: float = 0.0
 
 const CONTROLS_TEXT: String = """WASD  Moverse
 Shift  Correr
+Ctrl  Agacharse (acercarse a las gacelas)
 Espacio  Saltar
 E  Recoger / Beber / Comer
 F  Hacer fogata
 C  Hacer hacha
 R  Hacer refugio
-Clic izq.  Usar hacha
+Clic izq.  Usar hacha / Comer
 1-8 / Rueda  Elegir casilla
 Esc  Soltar el mouse
 F5 Guardar · F9 Cargar · F8 Nueva partida"""
@@ -82,6 +83,13 @@ func set_hint(line: int, new_text: String, available: bool) -> void:
 		hint.modulate = Color(1.0, 0.85, 0.3)
 	else:
 		hint.modulate = Color(1, 1, 1, 0.55)
+
+	# Coloca los avisos con texto uno encima de otro, sin dejar huecos.
+	var bottom: float = -104.0
+	for label in hint_labels:
+		if label.text != "":
+			label.offset_bottom = bottom
+			bottom -= 26.0
 
 
 func set_stats(health: float, hunger: float, thirst: float, max_value: float, near_fire: bool) -> void:

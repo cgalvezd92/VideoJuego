@@ -85,6 +85,8 @@ func _build_bar() -> void:
 		var item_name := _add_label(panel, "", 14, Control.PRESET_FULL_RECT)
 		item_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		item_name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		# Nombres largos ("Carne cocida") pasan a dos líneas.
+		item_name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		name_labels.append(item_name)
 
 		# Cantidad (abajo a la derecha).
