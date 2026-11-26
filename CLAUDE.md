@@ -51,6 +51,7 @@ En cada etapa, explicar paso a paso:
 | 10 | Guardar y cargar: automático cada minuto y al salir, **F5** guardar, **F9** cargar, **F8** nueva partida | ✅ Lista |
 | 11 | Refugio de madera con **R** (6 madera + 4 ramas); de noche, **E** para dormir hasta las 6:00 | ✅ Lista |
 | 12 | Cazar y cocinar: **Ctrl** para agacharse, cazar gacelas con el hacha, cocinar en la fogata (**E**) y comer con clic | ✅ Lista |
-| 13 | Menú de pausa con **Esc**: continuar, guardar, cargar, nueva partida, mostrar/ocultar controles y salir | 🧪 En pruebas |
+| 13 | Menú de pausa con **Esc**: continuar, guardar, cargar, nueva partida, mostrar/ocultar controles y salir | ✅ Lista |
+| 14 | Quitar los objetos de prueba del centro del mapa (caja, pared gris y rampa roja) | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.
