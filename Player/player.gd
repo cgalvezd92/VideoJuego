@@ -71,5 +71,10 @@ func _physics_process(delta: float) -> void:
 
 	# Si caes del mapa, vuelves al punto de partida.
 	if global_position.y < fall_limit:
-		global_position = spawn_position
-		velocity = Vector3.ZERO
+		respawn()
+
+
+## Vuelve al punto de partida (al caer del mapa o al desmayarse).
+func respawn() -> void:
+	global_position = spawn_position
+	velocity = Vector3.ZERO

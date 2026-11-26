@@ -1,0 +1,74 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/berry_bush.gd" id="1_k4cl7"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n7qfd"]
+albedo_color = Color(0.25, 0.42, 0.18, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_hx663"]
+material = SubResource("StandardMaterial3D_n7qfd")
+radius = 0.6
+height = 0.9
+radial_segments = 8
+rings = 4
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_8hbwk"]
+radius = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gcsm7"]
+albedo_color = Color(0.75, 0.1, 0.15, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_pc0c6"]
+material = SubResource("StandardMaterial3D_gcsm7")
+radius = 0.06
+height = 0.12
+radial_segments = 6
+rings = 3
+
+[node name="BerryBush" type="StaticBody3D" unique_id=1942312817]
+script = ExtResource("1_k4cl7")
+
+[node name="Leaves" type="MeshInstance3D" parent="." unique_id=727301786]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+mesh = SubResource("SphereMesh_hx663")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1065075570]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("SphereShape3D_8hbwk")
+
+[node name="Berries" type="Node3D" parent="." unique_id=649510912]
+
+[node name="Berry1" type="MeshInstance3D" parent="Berries" unique_id=1057715923]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 0.6, 0.2)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_pc0c6")
+
+[node name="Berry2" type="MeshInstance3D" parent="Berries" unique_id=1468006395]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.75, 0.35)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_pc0c6")
+
+[node name="Berry3" type="MeshInstance3D" parent="Berries" unique_id=7331892]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.85, -0.4)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_pc0c6")
+
+[node name="Berry4" type="MeshInstance3D" parent="Berries" unique_id=1103689241]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.5, -0.15)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_pc0c6")
+
+[node name="Berry5" type="MeshInstance3D" parent="Berries" unique_id=631938579]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.45, -0.42)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_pc0c6")
+
+[node name="Berry6" type="MeshInstance3D" parent="Berries" unique_id=2096598098]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.88, 0.3)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_pc0c6")
+
+[node name="Berry7" type="MeshInstance3D" parent="Berries" unique_id=666167656]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0.4, 0.55)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_pc0c6")

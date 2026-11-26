@@ -13,6 +13,8 @@ var time: float = 0.0
 func _ready() -> void:
 	# Cada fogata empieza en un momento distinto para que no parpadeen igual.
 	time = randf() * 10.0
+	# El grupo "campfire" permite al jugador saber si está cerca de una fogata.
+	add_to_group("campfire")
 
 
 func _process(delta: float) -> void:
