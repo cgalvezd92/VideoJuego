@@ -27,6 +27,7 @@ E  Recoger / Beber / Comer
 F  Hacer fogata
 C  Hacer hacha
 R  Hacer refugio
+X / L  Hacer flechas / lanza
 M  Mapa
 B  Libro de fabricación
 Clic izq.  Golpear / Comer / Beber

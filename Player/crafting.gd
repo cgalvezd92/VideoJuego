@@ -20,6 +20,15 @@ const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 ## A cuántos metros delante del jugador aparece el refugio.
 @export var shelter_distance: float = 3.5
 
+@export_group("Flechas y lanza")
+## Flechas (X): 1 rama + 1 piedra = 2 flechas.
+@export var arrow_branches: int = 1
+@export var arrow_stones: int = 1
+@export var arrows_made: int = 2
+## Lanza (L): 2 madera + 1 piedra.
+@export var spear_wood: int = 2
+@export var spear_stones: int = 1
+
 @onready var player: CharacterBody3D = owner
 @onready var inventory = owner.get_node("Inventory")
 @onready var hud = owner.get_node("HUD")
@@ -39,6 +48,35 @@ func _unhandled_input(event: InputEvent) -> void:
 		_try_craft_axe()
 	elif event.is_action_pressed("build_shelter"):
 		_try_build_shelter()
+	elif event.is_action_pressed("craft_arrows"):
+		_craft_item({"rama": arrow_branches, "piedra": arrow_stones}, "flecha", "Flecha", arrows_made)
+	elif event.is_action_pressed("craft_spear"):
+		_craft_item({"madera": spear_wood, "piedra": spear_stones}, "lanza", "Lanza", 1)
+
+
+## Fabrica un objeto si tienes los materiales (Etapa 28).
+## "cost" es { id del material: cantidad }.
+func _craft_item(cost: Dictionary, id: String, display_name: String, amount: int) -> void:
+	# Nombre en singular y plural de cada material.
+	var names: Dictionary = { "rama": ["rama", "ramas"], "piedra": ["piedra", "piedras"], "madera": ["de madera", "de madera"] }
+	var missing: PackedStringArray = []
+	for material in cost:
+		var have: int = inventory.get_amount(material)
+		if have < cost[material]:
+			var word: String = names[material][0] if cost[material] == 1 else names[material][1]
+			missing.append("%d %s (tienes %d)" % [cost[material], word, have])
+	if not missing.is_empty():
+		hud.show_message("Necesitas " + ", ".join(missing))
+		return
+	if inventory.add_item(id, display_name, amount) == -1:
+		hud.show_message("Inventario lleno")
+		return
+	for material in cost:
+		inventory.remove_item(material, cost[material])
+	if amount > 1:
+		hud.show_message("Hiciste %d %ss" % [amount, display_name.to_lower()])
+	else:
+		hud.show_message("Hiciste una %s" % display_name.to_lower())
 
 
 func _try_build_shelter() -> void:
@@ -145,6 +183,18 @@ func _update_book() -> void:
 			"needs": [["Madera", wood, shelter_wood], ["Ramas", branches, shelter_branches]],
 			"available": wood >= shelter_wood and branches >= shelter_branches,
 			"note": "De noche, E para dormir",
+		},
+		{
+			"key": "X", "name": "Flechas (x%d)" % arrows_made,
+			"needs": [["Ramas", branches, arrow_branches], ["Piedras", stones, arrow_stones]],
+			"available": branches >= arrow_branches and stones >= arrow_stones,
+			"note": "Para el arco (clic derecho)",
+		},
+		{
+			"key": "L", "name": "Lanza",
+			"needs": [["Madera", wood, spear_wood], ["Piedras", stones, spear_stones]],
+			"available": wood >= spear_wood and stones >= spear_stones,
+			"note": "Caza de cerca o lánzala (clic derecho)",
 		},
 	])
 

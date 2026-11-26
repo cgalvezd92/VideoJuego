@@ -65,6 +65,7 @@ En cada etapa, explicar paso a paso:
 | 24 | Beber con **E** en los ríos y lagos del mapa (colisión solo para el rayo, capa 3); el mar avisa de que es agua salada | ✅ Lista |
 | 25 | Personajes: 6 sobrevivientes (`res://personajes/`, Autoload `Personajes`); se eligen al empezar una partida nueva y cambian vida, velocidad, hambre, sed, comida, curación, sigilo y visión nocturna | ✅ Lista |
 | 26 | Objetos iniciales: machete (tala x2), lanza (clic derecho la lanza), arco + flechas, antorcha (luz y ahuyenta a la hiena), olla (llevar agua) y bastón (+15 % velocidad) | ✅ Lista |
-| 27 | Energía (estamina): correr y saltar la gastan, se recupera al caminar/parar; agotado no corre; Mama Zuri tiene menos y el bastón ahorra | 🧪 En pruebas |
+| 27 | Energía (estamina): correr y saltar la gastan, se recupera al caminar/parar; agotado no corre; Mama Zuri tiene menos y el bastón ahorra | ✅ Lista |
+| 28 | Fabricar en el libro: **X** flechas (1 rama + 1 piedra = 2) y **L** lanza (2 madera + 1 piedra) | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.
