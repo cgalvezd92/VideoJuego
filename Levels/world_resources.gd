@@ -14,6 +14,8 @@ const ACACIA: PackedScene = preload("res://objects/acacia.tscn")
 const BUSH: PackedScene = preload("res://objects/berry_bush.tscn")
 const ROCK: PackedScene = preload("res://objects/rock.tscn")
 const GAZELLE: PackedScene = preload("res://objects/gazelle.tscn")
+const ZEBRA: PackedScene = preload("res://objects/zebra.tscn")
+const GIRAFFE: PackedScene = preload("res://objects/giraffe.tscn")
 
 @export var cell_size: float = 64.0
 ## Celdas activas alrededor del jugador (2 = una cuadrícula de 5 x 5).
@@ -25,7 +27,7 @@ const GAZELLE: PackedScene = preload("res://objects/gazelle.tscn")
 ## Las piedras y las ramas son pequeñas: no hace falta verlas de lejos.
 const VIEW_DISTANCE: Dictionary = {
 	"stone": 70.0, "branch": 70.0, "berry_bush": 90.0, "gazelle": 80.0,
-	"acacia": 120.0, "rock": 120.0,
+	"acacia": 120.0, "rock": 120.0, "zebra": 90.0, "giraffe": 150.0,
 }
 
 @export_group("Cantidad por celda")
@@ -35,6 +37,9 @@ const VIEW_DISTANCE: Dictionary = {
 @export_range(0.0, 1.0) var bush_chance: float = 0.5
 @export_range(0.0, 1.0) var rock_chance: float = 0.4
 @export_range(0.0, 1.0) var herd_chance: float = 0.1
+## Probabilidad de una manada de 4 cebras o de 2-3 jirafas (Etapa 29).
+@export_range(0.0, 1.0) var zebra_chance: float = 0.06
+@export_range(0.0, 1.0) var giraffe_chance: float = 0.04
 
 var cells: Dictionary = {}  # Vector2i -> Node3D de la celda
 var pending: Array[Vector2i] = []  # Celdas que faltan por crear
@@ -113,12 +118,18 @@ func _load_cell(key: Vector2i) -> void:
 	var bush_roll: float = rng.randf()
 	var rock_roll: float = rng.randf()
 	var herd_roll: float = rng.randf()
+	var zebra_roll: float = rng.randf()
+	var giraffe_roll: float = rng.randf()
 	if bush_roll < bush_chance:
 		_place(cell, BUSH, "Bush", rng, origin, 1.0)
 	if rock_roll < rock_chance:
 		_place(cell, ROCK, "Rock", rng, origin, rng.randf_range(0.7, 1.8))
 	if herd_roll < herd_chance:
-		_place_herd(cell, rng, origin)
+		_place_herd(cell, rng, origin, GAZELLE, "G", 3)
+	if zebra_roll < zebra_chance:
+		_place_herd(cell, rng, origin, ZEBRA, "Z", 4)
+	if giraffe_roll < giraffe_chance:
+		_place_herd(cell, rng, origin, GIRAFFE, "J", 2 + int(rng.randf() < 0.5))
 
 
 ## Coloca un objeto en un punto al azar de la celda, sobre el suelo.
@@ -151,18 +162,20 @@ func _place(cell: Node3D, scene: PackedScene, id: String, rng: RandomNumberGener
 	return node
 
 
-func _place_herd(cell: Node3D, rng: RandomNumberGenerator, origin: Vector2) -> void:
-	var leader: Node3D = _place(cell, GAZELLE, "G0", rng, origin, 1.0)
+## Una manada: el primero se coloca al azar y los demás a su alrededor.
+## "prefix" da nombre a cada animal (G0, G1... para gacelas; Z para cebras; J jirafas).
+func _place_herd(cell: Node3D, rng: RandomNumberGenerator, origin: Vector2, scene: PackedScene, prefix: String, count: int) -> void:
+	var leader: Node3D = _place(cell, scene, prefix + "0", rng, origin, 1.0)
 	if leader == null:
 		return
-	for i in range(1, 3):
+	for i in range(1, count):
 		var x: float = leader.position.x + rng.randf_range(-3.0, 3.0)
 		var z: float = leader.position.z + rng.randf_range(-3.0, 3.0)
 		var ground = MapSetup.ground_height(get_world_3d(), x, z)
 		if ground == null or ground < 0.5:
 			continue
-		var gazelle: Node3D = GAZELLE.instantiate()
-		gazelle.name = "G%d" % i
+		var gazelle: Node3D = scene.instantiate()
+		gazelle.name = "%s%d" % [prefix, i]
 		gazelle.position = Vector3(x, ground + 0.05, z)
 		gazelle.rotation.y = rng.randf() * TAU
 		cell.add_child(gazelle)
