@@ -1,17 +1,39 @@
 extends Node
-## Herramientas: muestra el hacha en la mano y golpea con clic izquierdo (Etapa 9).
-## Con el hacha también se caza; con comida seleccionada, el clic come (Etapa 12).
+## Herramientas y objetos de mano (Etapas 9, 12 y 26).
 ## Va en el nodo "Tools", hijo de Player.
+##
+## - Clic izquierdo: golpear con hacha, machete, lanza o bastón (talar o
+##   cazar) o comer/beber lo que tengas seleccionado.
+## - Clic derecho: lanzar la lanza o disparar el arco.
+## - Al empezar una partida nueva, cada personaje recibe su objeto inicial.
 
 const AXE_SCENE: PackedScene = preload("res://objects/stone_axe.tscn")
+const HeldItems = preload("res://Player/held_items.gd")
+const Projectile = preload("res://objects/projectile.gd")
 
 ## Segundos entre golpe y golpe.
 @export var swing_cooldown: float = 0.5
 
-## Comida: cuánta hambre quita y cuánta vida suma (negativo = hace daño).
+## Comida y bebida: cuánta hambre/sed quita y cuánta vida suma (negativo = daño).
 const FOODS: Dictionary = {
-	"carne_cocida": { "hunger": 45.0, "health": 5.0, "text": "Comiste carne cocida. ¡Qué rica!" },
-	"carne_cruda": { "hunger": 5.0, "health": -10.0, "text": "Comiste carne cruda... te sienta mal" },
+	"carne_cocida": { "hunger": 45.0, "thirst": 0.0, "health": 5.0, "text": "Comiste carne cocida. ¡Qué rica!" },
+	"carne_cruda": { "hunger": 5.0, "thirst": 0.0, "health": -10.0, "text": "Comiste carne cruda... te sienta mal" },
+	"agua": { "hunger": 0.0, "thirst": 40.0, "health": 0.0, "text": "Bebiste agua de la olla" },
+}
+
+## Objetos que sirven para golpear (talar o cazar).
+const MELEE: Array[String] = ["hacha", "machete", "lanza", "baston"]
+## Objetos que talan y cuántos golpes de árbol cuenta cada hachazo.
+const CHOP_POWER: Dictionary = { "hacha": 1, "machete": 2 }
+
+## Objeto inicial de cada personaje (el "objeto" de personajes.gd).
+const START_ITEMS: Dictionary = {
+	"machete": [["machete", "Machete", 1]],
+	"lanza": [["lanza", "Lanza", 1]],
+	"arco": [["arco", "Arco", 1], ["flecha", "Flecha", 3]],
+	"antorcha": [["antorcha", "Antorcha", 1]],
+	"olla": [["olla", "Olla", 1]],
+	"baston": [["baston", "Bastón", 1]],
 }
 
 @onready var inventory = owner.get_node("Inventory")
@@ -20,18 +42,18 @@ const FOODS: Dictionary = {
 @onready var interactor: RayCast3D = owner.get_node("Head/Camera3D/Interactor")
 @onready var survival = owner.get_node("Survival")
 
-var axe_model: Node3D
+## Modelos en la mano ya creados (se crean la primera vez que se seleccionan).
+var held_models: Dictionary = {}
+var held: Node3D
 var rest_rotation: Vector3
 var cooldown: float = 0.0
 
 
 func _ready() -> void:
-	# El hacha se pone delante de la cámara, abajo a la derecha.
-	axe_model = AXE_SCENE.instantiate()
-	camera.add_child(axe_model)
-	axe_model.position = Vector3(0.32, -0.32, -0.55)
-	axe_model.rotation_degrees = Vector3(10, -15, 0)
-	rest_rotation = axe_model.rotation
+	# Objeto inicial del personaje. Si luego se carga una partida guardada,
+	# el inventario guardado lo sustituye.
+	for item in START_ITEMS.get(Personajes.actual()["objeto"], []):
+		inventory.add_item(item[0], item[1], item[2])
 
 	inventory.changed.connect(_update_held)
 	inventory.selection_changed.connect(_update_held)
@@ -43,25 +65,92 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Solo golpea con el mouse capturado (el primer clic tras Esc lo recaptura).
-	if event.is_action_pressed("attack") and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		if cooldown > 0.0:
-			return
-		if is_holding_axe():
+	# Solo con el mouse capturado (el primer clic tras Esc lo recaptura).
+	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED or cooldown > 0.0:
+		return
+	if event.is_action_pressed("attack"):
+		if can_melee():
 			_swing()
 		elif is_holding_food():
 			_eat()
+	elif event.is_action_pressed("throw"):
+		if is_holding("lanza"):
+			_launch("lanza", "Lanza", 22.0)
+		elif is_holding("arco"):
+			if inventory.get_amount("flecha") > 0:
+				_launch("flecha", "Flecha", 40.0)
+			else:
+				hud.show_message("No te quedan flechas")
 
 
-func is_holding_axe() -> bool:
+# --- Qué tienes en la mano ---
+
+func selected_id() -> String:
 	var item = inventory.get_selected_item()
-	return item != null and item.id == "hacha"
+	return "" if item == null else item.id
+
+
+func is_holding(id: String) -> bool:
+	return selected_id() == id
+
+
+func can_chop() -> bool:
+	return CHOP_POWER.has(selected_id())
+
+
+func can_melee() -> bool:
+	return selected_id() in MELEE
+
+
+## Compatibilidad: antes solo existía el hacha.
+func is_holding_axe() -> bool:
+	return can_chop()
+
+
+func is_holding_torch() -> bool:
+	return is_holding("antorcha")
 
 
 func is_holding_food() -> bool:
-	var item = inventory.get_selected_item()
-	return item != null and FOODS.has(item.id)
+	return FOODS.has(selected_id())
 
+
+## Aviso para la lanza y el arco cuando no miras nada en concreto.
+func ranged_prompt() -> String:
+	if is_holding("lanza"):
+		return "[Clic der.] Lanzar la lanza"
+	if is_holding("arco"):
+		return "[Clic der.] Disparar (flechas: %d)" % inventory.get_amount("flecha")
+	return ""
+
+
+func _update_held() -> void:
+	var id: String = selected_id()
+	if held != null:
+		held.visible = false
+	held = null
+	if not held_models.has(id):
+		var model: Node3D = AXE_SCENE.instantiate() if id == "hacha" else HeldItems.make(id)
+		if model == null:
+			return
+		camera.add_child(model)
+		# Delante de la cámara, abajo a la derecha.
+		model.position = Vector3(0.32, -0.32, -0.55)
+		model.rotation_degrees = Vector3(10, -15, 0)
+		if id == "lanza":
+			model.position = Vector3(0.3, -0.3, -0.4)
+			model.rotation_degrees = Vector3(0, -4, 0)
+		elif id == "antorcha":
+			# Más abajo y más lejos, para que la llama no tape la vista.
+			model.position = Vector3(0.42, -0.62, -0.85)
+			model.rotation_degrees = Vector3(-10, 0, -12)
+		held_models[id] = model
+	held = held_models[id]
+	held.visible = true
+	rest_rotation = held.rotation
+
+
+# --- Acciones ---
 
 func _eat() -> void:
 	cooldown = swing_cooldown
@@ -71,23 +160,22 @@ func _eat() -> void:
 	var hunger_gain: float = food.hunger
 	if item.id == "carne_cocida":
 		hunger_gain *= Personajes.mod("comida_mult")  # Etapa 25: el cocinero rinde más.
-	survival.eat(hunger_gain)
+	if hunger_gain > 0.0:
+		survival.eat(hunger_gain)
+	if food.thirst > 0.0:
+		survival.drink(food.thirst)
 	survival.health = clampf(survival.health + food.health, 0.0, survival.max_health)
 	hud.show_message(food.text)
-
-
-func _update_held() -> void:
-	# El hacha solo se ve si su casilla está seleccionada.
-	axe_model.visible = is_holding_axe()
 
 
 func _swing() -> void:
 	cooldown = swing_cooldown
 
-	# Animación: el hacha baja rápido y vuelve despacio.
-	var tween := create_tween()
-	tween.tween_property(axe_model, "rotation", rest_rotation + Vector3(-1.2, 0.2, 0), 0.1)
-	tween.tween_property(axe_model, "rotation", rest_rotation, 0.25)
+	# Animación: el objeto baja rápido y vuelve despacio.
+	if held != null:
+		var tween := create_tween()
+		tween.tween_property(held, "rotation", rest_rotation + Vector3(-1.2, 0.2, 0), 0.1)
+		tween.tween_property(held, "rotation", rest_rotation, 0.25)
 
 	var target: Object = interactor.get_collider()
 	if target != null and target.has_method("hit"):
@@ -95,16 +183,51 @@ func _swing() -> void:
 		return
 	if target == null or not target.has_method("chop"):
 		return
+	if not can_chop():
+		hud.show_message("Con esto no puedes talar: usa un hacha o un machete")
+		return
 	if target.has_method("can_chop") and not target.can_chop():
 		hud.show_message("Esta acacia es muy joven: deja que crezca")
 		return
 
-	var wood: int = target.chop()
+	# El machete cuenta como 2 golpes en cada hachazo.
+	var wood: int = 0
+	for i in CHOP_POWER[selected_id()]:
+		wood += target.chop()
+		if wood > 0:
+			break
 	if wood > 0:
 		if inventory.add_item("madera", "Madera", wood) == -1:
 			hud.show_message("Talaste el árbol, pero el inventario está lleno")
 		else:
 			hud.show_message("Talaste el árbol: +%d madera" % wood)
+
+
+## Lanza la lanza o dispara una flecha hacia donde mira la cámara.
+func _launch(id: String, display_name: String, speed: float) -> void:
+	cooldown = swing_cooldown
+	inventory.remove_item(id, 1)
+	var projectile := Node3D.new()
+	projectile.set_script(Projectile)
+	projectile.item_id = id
+	projectile.item_name = display_name
+	projectile.tools = self
+	var exclude: Array[RID] = [owner.get_rid()]  # No chocar con el propio jugador.
+	projectile.exclude = exclude
+	var model: Node3D = HeldItems.make(id)
+	projectile.add_child(model)
+	var forward: Vector3 = -camera.global_basis.z
+	projectile.velocity = forward * speed
+	owner.get_parent().add_child(projectile)
+	projectile.global_position = camera.global_position + forward * 0.6
+	projectile.look_at(projectile.global_position + forward, Vector3.UP)
+	if id == "lanza":
+		hud.show_message("Lanzaste la lanza: ve a recogerla con E")
+
+
+## La llama una lanza o flecha al dar a un animal.
+func on_projectile_hit(target: Object) -> void:
+	_hunt(target)
 
 
 func _hunt(gazelle: Object) -> void:

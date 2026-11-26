@@ -121,6 +121,13 @@ func _think() -> void:
 	var fire = _nearest_fire(global_position)
 	var player_fire = _nearest_fire(player.global_position)
 	var player_safe: bool = player_fire != null and player_fire.global_position.distance_to(player.global_position) < safe_fire_radius
+	# Con la antorcha en la mano el jugador es como una fogata andante (Etapa 26).
+	var torch: bool = player.get_node("Tools").is_holding_torch()
+	if torch:
+		player_safe = true
+		if state != State.FLEE and state != State.LEAVE and global_position.distance_to(player.global_position) < fear_fire_radius:
+			_flee(player.global_position, 4.0)
+			return
 
 	match state:
 		State.PROWL:

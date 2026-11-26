@@ -27,7 +27,8 @@ C  Hacer hacha
 R  Hacer refugio
 M  Mapa
 B  Libro de fabricación
-Clic izq.  Usar hacha / Comer
+Clic izq.  Golpear / Comer / Beber
+Clic der.  Lanzar lanza / Disparar arco
 1-8 / Rueda  Elegir casilla
 Esc  Pausa (menú)
 F5 Guardar · F9 Cargar · F8 Nueva partida"""

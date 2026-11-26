@@ -19,6 +19,7 @@ extends CharacterBody3D
 @export var fall_limit: float = -10.0
 
 @onready var head: Node3D = $Head
+@onready var tools = $Tools
 
 var spawn_position: Vector3
 var crouching: bool = false
@@ -79,6 +80,9 @@ func _physics_process(delta: float) -> void:
 		speed = crouch_speed
 	elif Input.is_action_pressed("sprint"):
 		speed = sprint_speed
+	# Con el bastón en la mano se camina un 15 % más rápido (Etapa 26).
+	if tools.is_holding("baston"):
+		speed *= 1.15
 
 	# Al agacharse, la cámara baja suavemente.
 	var head_target: float = CROUCH_HEAD_HEIGHT if crouching else HEAD_HEIGHT
