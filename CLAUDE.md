@@ -53,11 +53,12 @@ En cada etapa, explicar paso a paso:
 | 12 | Cazar y cocinar: **Ctrl** para agacharse, cazar gacelas con el hacha, cocinar en la fogata (**E**) y comer con clic | ✅ Lista |
 | 13 | Menú de pausa con **Esc**: continuar, guardar, cargar, nueva partida, mostrar/ocultar controles y salir | ✅ Lista |
 | 14 | Quitar los objetos de prueba del centro del mapa (caja, pared gris y rampa roja) | ✅ Lista |
-| 15 | Sonidos generados por código (Autoload `Sounds`): pasos, hacha, fuego, beber, comer... y volumen en la pausa | ✅ Lista |
+| 15 | Sonidos generados por código (Autoload `Sounds`) — **quitados en la etapa 21** a petición del usuario | ❌ Quitada |
 | 16 | Pantalla de inicio (escena principal): Continuar / Nueva partida / Salir; "Volver al inicio" en la pausa | ✅ Lista |
 | 17 | Hiena nocturna: ronda y muerde de noche, teme al fuego, 3 hachazos la ahuyentan hasta la noche siguiente | ✅ Lista |
 | 18 | Árboles que rebrotan: tocón 12 h, brote que crece hasta árbol completo a las 48 h de juego; se guarda | ✅ Lista |
 | 19 | Mapa de África (`mapas/africa_3d.glb`): la zona de juego se lleva al punto de salida y todo se coloca sobre el relieve (`MapSetup`) | ✅ Lista |
 | 20 | Brújula arriba en el centro y mapa del continente con **M** (posición, fogatas, refugios y zona de recursos) | 🧪 En pruebas |
+| 21 | Quitar todos los sonidos; la lista de controles de la izquierda se pliega y despliega con **H** (se recuerda) | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.

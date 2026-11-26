@@ -16,12 +16,6 @@ func _ready() -> void:
 	time = randf() * 10.0
 	# El grupo "campfire" permite al jugador saber si está cerca de una fogata.
 	add_to_group("campfire")
-	# Crepitar del fuego: sonido 3D que se repite (más fuerte cuanto más cerca).
-	var crackle: AudioStreamPlayer3D = Sounds.make_loop_player("crackle")
-	add_child(crackle)
-	crackle.position.y = 0.4
-	crackle.volume_db = -4.0
-	crackle.play(randf() * 1.9)
 
 
 func get_prompt() -> String:
@@ -40,7 +34,6 @@ func interact(player: Node) -> String:
 	if inventory.add_item("carne_cocida", "Carne cocida", 1) == -1:
 		return "Inventario lleno"
 	inventory.remove_item("carne_cruda", 1)
-	Sounds.play("cook")
 	return "Cocinaste un trozo de carne"
 
 

@@ -68,7 +68,6 @@ func _eat() -> void:
 	var item = inventory.get_selected_item()
 	var food: Dictionary = FOODS[item.id]
 	inventory.remove_item(item.id, 1)
-	Sounds.play("eat")
 	survival.eat(food.hunger)
 	survival.health = clampf(survival.health + food.health, 0.0, survival.max_value)
 	hud.show_message(food.text)
@@ -89,7 +88,6 @@ func _swing() -> void:
 
 	var target: Object = interactor.get_collider()
 	if target != null and target.has_method("hit"):
-		Sounds.play("hit")
 		_hunt(target)
 		return
 	if target == null or not target.has_method("chop"):
@@ -97,7 +95,6 @@ func _swing() -> void:
 	if target.has_method("can_chop") and not target.can_chop():
 		hud.show_message("Esta acacia es muy joven: deja que crezca")
 		return
-	Sounds.play("chop")
 
 	var wood: int = target.chop()
 	if wood > 0:

@@ -32,6 +32,7 @@ func _set_paused(paused: bool) -> void:
 	hud.visible = not paused  # El HUD se oculta para que no se mezcle con el menú.
 	status_label.text = ""
 	_reset_new_game_button()
+	_update_controls_text()
 	if paused:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		continue_button.grab_focus()  # Para usarlo también con flechas y Enter.
@@ -69,7 +70,7 @@ func _on_new_game() -> void:
 
 
 func _on_toggle_controls() -> void:
-	hud.controls_label.visible = not hud.controls_label.visible
+	hud.toggle_controls()  # Igual que la tecla H.
 	_update_controls_text()
 
 
@@ -91,7 +92,7 @@ func _reset_new_game_button() -> void:
 
 
 func _update_controls_text() -> void:
-	if hud.controls_label.visible:
+	if hud.controls_expanded:
 		controls_button.text = "Ocultar controles"
 	else:
 		controls_button.text = "Mostrar controles"
@@ -128,24 +129,6 @@ func _build_menu() -> void:
 	_add_button(column, "Volver al inicio", _on_title)
 	_add_button(column, "Guardar y salir", _on_quit)
 
-	# Volumen: deslizador de 0 a 100 (se recuerda en user://ajustes.cfg).
-	var volume_row := HBoxContainer.new()
-	column.add_child(volume_row)
-	volume_row.add_theme_constant_override("separation", 12)
-	var volume_label := Label.new()
-	volume_row.add_child(volume_label)
-	volume_label.text = "Volumen"
-	volume_label.add_theme_font_size_override("font_size", 20)
-	var slider := HSlider.new()
-	volume_row.add_child(slider)
-	slider.min_value = 0
-	slider.max_value = 100
-	slider.step = 5
-	slider.value = Sounds.volume * 100.0
-	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	slider.value_changed.connect(_on_volume_changed)
-
 	status_label = Label.new()
 	column.add_child(status_label)
 	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -160,10 +143,5 @@ func _add_button(parent: Control, text: String, action: Callable) -> Button:
 	button.custom_minimum_size = Vector2(340, 46)
 	button.add_theme_font_size_override("font_size", 20)
 	button.pressed.connect(action)
-	button.pressed.connect(Sounds.play.bind("click", -4.0, 0.0))
 	return button
 
-
-func _on_volume_changed(value: float) -> void:
-	Sounds.set_volume(value / 100.0)
-	Sounds.play("click", -4.0, 0.0)
