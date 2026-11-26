@@ -45,6 +45,7 @@ En cada etapa, explicar paso a paso:
 | 4 | Hacer una fogata con **F** (gasta 3 ramas y 2 piedras), con luz que parpadea | ✅ Lista |
 | 5 | Vida, hambre y sed: beber en la charca y comer bayas con **E**; la fogata cura | ✅ Lista |
 | 6 | Ciclo día/noche: el sol se mueve, el cielo cambia de color y hay reloj en pantalla | ✅ Lista |
-| 7 | Escenario de sabana: mapa de 120×120 m, acacias, rocas, hierba (MultiMesh), bruma y más recursos | 🧪 En pruebas |
+| 7 | Escenario de sabana: mapa de 120×120 m, acacias, rocas, hierba (MultiMesh), bruma y más recursos | ✅ Lista |
+| 8 | Gacelas: pastan, pasean y huyen del jugador (3 manadas de 4) | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.

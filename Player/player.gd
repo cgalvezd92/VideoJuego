@@ -23,6 +23,8 @@ var spawn_position: Vector3
 
 func _ready() -> void:
 	spawn_position = global_position
+	# El grupo "player" permite a los animales encontrar al jugador.
+	add_to_group("player")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 

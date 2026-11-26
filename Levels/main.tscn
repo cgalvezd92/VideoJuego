@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://objects/acacia.tscn" id="7_acacia"]
 [ext_resource type="PackedScene" path="res://objects/rock.tscn" id="8_rock"]
 [ext_resource type="Script" path="res://Levels/grass.gd" id="9_grass"]
+[ext_resource type="PackedScene" path="res://objects/gazelle.tscn" id="10_gazelle"]
 
 [sub_resource type="Environment" id="Environment_y2pph"]
 background_mode = 1
@@ -531,6 +532,44 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60.5, 5, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/East" unique_id=1647931010]
 shape = SubResource("BoxShape3D_boundz")
+
+[node name="Animals" type="Node3D" parent="." unique_id=953600858]
+
+[node name="Gazelle1" parent="Animals" unique_id=116780684 instance=ExtResource("10_gazelle")]
+transform = Transform3D(0.11561, 0, -0.99330, 0, 1, 0, 0.99330, 0, 0.11561, 43.27, 0.05, -19.45)
+
+[node name="Gazelle2" parent="Animals" unique_id=2144531629 instance=ExtResource("10_gazelle")]
+transform = Transform3D(0.65892, 0, 0.75221, 0, 1, 0, -0.75221, 0, 0.65892, 47.94, 0.05, -14.75)
+
+[node name="Gazelle3" parent="Animals" unique_id=399551953 instance=ExtResource("10_gazelle")]
+transform = Transform3D(-0.48270, 0, -0.87579, 0, 1, 0, 0.87579, 0, -0.48270, 43.19, 0.05, -16.68)
+
+[node name="Gazelle4" parent="Animals" unique_id=2134506590 instance=ExtResource("10_gazelle")]
+transform = Transform3D(0.57368, 0, 0.81908, 0, 1, 0, -0.81908, 0, 0.57368, 47.75, 0.05, -17.19)
+
+[node name="Gazelle5" parent="Animals" unique_id=1752983159 instance=ExtResource("10_gazelle")]
+transform = Transform3D(-0.95069, 0, 0.31014, 0, 1, 0, -0.31014, 0, -0.95069, 29.67, 0.05, -46.51)
+
+[node name="Gazelle6" parent="Animals" unique_id=1694344726 instance=ExtResource("10_gazelle")]
+transform = Transform3D(-0.94051, 0, -0.33976, 0, 1, 0, 0.33976, 0, -0.94051, 32.89, 0.05, -46.21)
+
+[node name="Gazelle7" parent="Animals" unique_id=1522670571 instance=ExtResource("10_gazelle")]
+transform = Transform3D(0.99678, 0, -0.08020, 0, 1, 0, 0.08020, 0, 0.99678, 31.33, 0.05, -46.79)
+
+[node name="Gazelle8" parent="Animals" unique_id=2051985323 instance=ExtResource("10_gazelle")]
+transform = Transform3D(0.99956, 0, -0.02974, 0, 1, 0, 0.02974, 0, 0.99956, 28.96, 0.05, -48.07)
+
+[node name="Gazelle9" parent="Animals" unique_id=1557913676 instance=ExtResource("10_gazelle")]
+transform = Transform3D(-0.10762, 0, -0.99419, 0, 1, 0, 0.99419, 0, -0.10762, -31.62, 0.05, -7.84)
+
+[node name="Gazelle10" parent="Animals" unique_id=1137000439 instance=ExtResource("10_gazelle")]
+transform = Transform3D(0.17436, 0, -0.98468, 0, 1, 0, 0.98468, 0, 0.17436, -33.61, 0.05, -9.38)
+
+[node name="Gazelle11" parent="Animals" unique_id=1989541704 instance=ExtResource("10_gazelle")]
+transform = Transform3D(-0.19552, 0, 0.98070, 0, 1, 0, -0.98070, 0, -0.19552, -36.45, 0.05, -8.36)
+
+[node name="Gazelle12" parent="Animals" unique_id=456706499 instance=ExtResource("10_gazelle")]
+transform = Transform3D(0.67776, 0, -0.73529, 0, 1, 0, 0.73529, 0, 0.67776, -36.54, 0.05, -14.56)
 
 [node name="DayNight" type="Node" parent="." unique_id=1935508217]
 script = ExtResource("6_daynight")
