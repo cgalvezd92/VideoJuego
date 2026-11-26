@@ -1,8 +1,9 @@
 extends Node
-## Construcción: con F haces una fogata (Etapa 4) y con C un hacha (Etapa 9).
+## Construcción: F fogata (Etapa 4), C hacha (Etapa 9) y R refugio (Etapa 11).
 ## Va en el nodo "Crafting", hijo de Player.
 
 const CAMPFIRE_SCENE: PackedScene = preload("res://objects/campfire.tscn")
+const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 
 @export var fire_branches: int = 3
 @export var fire_stones: int = 2
@@ -13,14 +14,20 @@ const CAMPFIRE_SCENE: PackedScene = preload("res://objects/campfire.tscn")
 @export var axe_branches: int = 2
 @export var axe_stones: int = 1
 
+@export_group("Refugio")
+@export var shelter_wood: int = 6
+@export var shelter_branches: int = 4
+## A cuántos metros delante del jugador aparece el refugio.
+@export var shelter_distance: float = 3.5
+
 @onready var player: CharacterBody3D = owner
 @onready var inventory = owner.get_node("Inventory")
 @onready var hud = owner.get_node("HUD")
 
 
 func _ready() -> void:
-	# Los avisos "[F] Hacer fogata" y "[C] Hacer hacha" se actualizan
-	# solo cuando cambia el inventario.
+	# Los avisos "[F] Hacer fogata", "[C] Hacer hacha" y "[R] Hacer refugio"
+	# se actualizan solo cuando cambia el inventario.
 	inventory.changed.connect(_update_hint)
 	_update_hint()
 
@@ -30,6 +37,44 @@ func _unhandled_input(event: InputEvent) -> void:
 		_try_build_fire()
 	elif event.is_action_pressed("craft_axe"):
 		_try_craft_axe()
+	elif event.is_action_pressed("build_shelter"):
+		_try_build_shelter()
+
+
+func _try_build_shelter() -> void:
+	var wood: int = inventory.get_amount("madera")
+	var branches: int = inventory.get_amount("rama")
+	if wood < shelter_wood or branches < shelter_branches:
+		hud.show_message("Necesitas %d de madera y %d ramas (tienes %d y %d)"
+			% [shelter_wood, shelter_branches, wood, branches])
+		return
+
+	var spot = _find_spot(shelter_distance)
+	if spot == null or not _is_area_free(spot):
+		hud.show_message("No hay espacio para el refugio aquí")
+		return
+
+	inventory.remove_item("madera", shelter_wood)
+	inventory.remove_item("rama", shelter_branches)
+
+	var shelter: Node3D = SHELTER_SCENE.instantiate()
+	player.get_parent().add_child(shelter)
+	shelter.global_position = spot
+	# La entrada del refugio mira hacia el jugador.
+	shelter.rotation.y = player.rotation.y
+	hud.show_message("Hiciste un refugio: de noche, míralo y pulsa E para dormir")
+
+
+## Comprueba que no haya árboles, rocas ni paredes donde va el refugio.
+func _is_area_free(spot: Vector3) -> bool:
+	var box := BoxShape3D.new()
+	box.size = Vector3(3.2, 2.0, 3.2)
+	var query := PhysicsShapeQueryParameters3D.new()
+	query.shape = box
+	# Se mira de 0.4 m a 2.4 m de altura, así el suelo no cuenta.
+	query.transform = Transform3D(Basis(Vector3.UP, player.rotation.y), spot + Vector3(0, 1.4, 0))
+	query.exclude = [player.get_rid()]
+	return player.get_world_3d().direct_space_state.intersect_shape(query, 1).is_empty()
 
 
 func _try_craft_axe() -> void:
@@ -60,7 +105,7 @@ func _try_build_fire() -> void:
 			% [fire_branches, fire_stones, branches, stones])
 		return
 
-	var spot = _find_spot()
+	var spot = _find_spot(place_distance)
 	if spot == null:
 		hud.show_message("No hay espacio para la fogata aquí")
 		return
@@ -90,9 +135,14 @@ func _update_hint() -> void:
 		hud.set_hint(1, "[C] Hacer hacha   (ramas %d/%d · piedras %d/%d)"
 			% [branches, axe_branches, stones, axe_stones], can_axe)
 
+	var wood: int = inventory.get_amount("madera")
+	var can_shelter: bool = wood >= shelter_wood and branches >= shelter_branches
+	hud.set_hint(2, "[R] Hacer refugio   (madera %d/%d · ramas %d/%d)"
+		% [wood, shelter_wood, branches, shelter_branches], can_shelter)
 
-## Busca suelo delante del jugador. Devuelve la posición o null.
-func _find_spot():
+
+## Busca suelo a "distance" metros delante del jugador. Devuelve la posición o null.
+func _find_spot(distance: float):
 	var space := player.get_world_3d().direct_space_state
 
 	# Dirección hacia donde mira el jugador, sin inclinación.
@@ -101,7 +151,7 @@ func _find_spot():
 	forward = forward.normalized()
 
 	var chest: Vector3 = player.global_position + Vector3.UP
-	var ahead: Vector3 = chest + forward * place_distance
+	var ahead: Vector3 = chest + forward * distance
 
 	# 1) ¿Hay una pared o caja entre el jugador y ese punto?
 	var query := PhysicsRayQueryParameters3D.create(chest, ahead)

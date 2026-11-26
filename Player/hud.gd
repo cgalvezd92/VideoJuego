@@ -4,7 +4,7 @@ extends CanvasLayer
 
 var prompt_label: Label
 var message_label: Label
-## Avisos encima de la barra: [0] = fogata, [1] = hacha.
+## Avisos encima de la barra: [0] = fogata, [1] = hacha, [2] = refugio.
 var hint_labels: Array[Label] = []
 var clock_label: Label
 var health_bar: ProgressBar
@@ -19,6 +19,7 @@ Espacio  Saltar
 E  Recoger / Beber / Comer
 F  Hacer fogata
 C  Hacer hacha
+R  Hacer refugio
 Clic izq.  Usar hacha
 1-8 / Rueda  Elegir casilla
 Esc  Soltar el mouse
@@ -32,7 +33,7 @@ func _ready() -> void:
 	message_label = _create_label(80.0)
 
 	# Aviso encima de la barra de casillas (por ejemplo, "[F] Hacer fogata").
-	for i in 2:
+	for i in 3:
 		var hint := _create_label(0.0)
 		hint.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 		hint.offset_bottom = -104.0 - i * 26.0  # Cada aviso, una línea más arriba.
@@ -91,6 +92,18 @@ func set_stats(health: float, hunger: float, thirst: float, max_value: float, ne
 	hunger_bar.value = hunger
 	thirst_bar.value = thirst
 	health_title.text = "Vida (fogata)" if near_fire else "Vida"
+
+
+## Pantalla negra un momento (al dormir).
+func fade() -> void:
+	var black := ColorRect.new()
+	add_child(black)
+	black.color = Color.BLACK
+	black.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	black.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var tween := create_tween()
+	tween.tween_property(black, "color:a", 0.0, 1.5).set_delay(0.6)
+	tween.tween_callback(black.queue_free)
 
 
 func set_clock(new_text: String) -> void:

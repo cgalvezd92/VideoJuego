@@ -26,6 +26,8 @@ var update_time: float = 0.0
 
 
 func _ready() -> void:
+	# El grupo "day_night" permite al refugio saber la hora y adelantarla.
+	add_to_group("day_night")
 	total_hours = start_hour
 	sun.visible = true
 	sun.shadow_enabled = false  # Sin sombras: mucho más rápido.
@@ -46,6 +48,15 @@ func _process(delta: float) -> void:
 ## Hora del día actual (de 0 a 24).
 func get_hour() -> float:
 	return fmod(total_hours, 24.0)
+
+
+## Adelanta el reloj hasta la próxima vez que sea "hour" (por ejemplo, 6:00).
+## Devuelve cuántas horas han pasado.
+func skip_to_hour(hour: float) -> float:
+	var hours: float = fmod(hour - get_hour() + 24.0, 24.0)
+	total_hours += hours
+	_apply()
+	return hours
 
 
 func is_night() -> bool:

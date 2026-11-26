@@ -67,6 +67,15 @@ func drink(amount: float) -> void:
 	check_time = 0.0
 
 
+## Dormir: el hambre y la sed bajan la mitad de lo normal y recuperas vida.
+## "seconds" son los segundos reales que habrían pasado.
+func rest(seconds: float) -> void:
+	hunger = maxf(hunger - hunger_per_second * seconds * 0.5, 0.0)
+	thirst = maxf(thirst - thirst_per_second * seconds * 0.5, 0.0)
+	health = minf(health + 30.0, max_value)
+	check_time = 0.0
+
+
 func _is_near_fire() -> bool:
 	for fire in get_tree().get_nodes_in_group("campfire"):
 		if fire.global_position.distance_to(player.global_position) < fire_radius:
