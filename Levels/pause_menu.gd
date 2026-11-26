@@ -9,6 +9,7 @@ extends CanvasLayer
 var panel: Control
 var status_label: Label
 var controls_button: Button
+var fullscreen_button: Button
 var new_game_button: Button
 var continue_button: Button
 var confirm_new_game: bool = false
@@ -33,6 +34,7 @@ func _set_paused(paused: bool) -> void:
 	status_label.text = ""
 	_reset_new_game_button()
 	_update_controls_text()
+	_update_fullscreen_text(_is_fullscreen())
 	if paused:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		continue_button.grab_focus()  # Para usarlo también con flechas y Enter.
@@ -91,6 +93,29 @@ func _reset_new_game_button() -> void:
 	new_game_button.text = "Nueva partida"
 
 
+func _on_toggle_fullscreen() -> void:
+	var fullscreen: bool = not _is_fullscreen()
+	if fullscreen:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	# Se recuerda para la próxima vez que abras el juego.
+	var config := ConfigFile.new()
+	config.load("user://ajustes.cfg")
+	config.set_value("display", "fullscreen", fullscreen)
+	config.save("user://ajustes.cfg")
+	_update_fullscreen_text(fullscreen)
+
+
+func _is_fullscreen() -> bool:
+	var mode := DisplayServer.window_get_mode()
+	return mode == DisplayServer.WINDOW_MODE_FULLSCREEN or mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN
+
+
+func _update_fullscreen_text(fullscreen: bool) -> void:
+	fullscreen_button.text = "Pantalla completa: Sí" if fullscreen else "Pantalla completa: No"
+
+
 func _update_controls_text() -> void:
 	if hud.controls_expanded:
 		controls_button.text = "Ocultar controles"
@@ -126,6 +151,7 @@ func _build_menu() -> void:
 	_add_button(column, "Cargar último guardado", _on_load)
 	new_game_button = _add_button(column, "Nueva partida", _on_new_game)
 	controls_button = _add_button(column, "Ocultar controles", _on_toggle_controls)
+	fullscreen_button = _add_button(column, "Pantalla completa: Sí", _on_toggle_fullscreen)
 	_add_button(column, "Volver al inicio", _on_title)
 	_add_button(column, "Guardar y salir", _on_quit)
 
