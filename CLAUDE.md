@@ -43,6 +43,7 @@ En cada etapa, explicar paso a paso:
 | 2 | Recoger piedras y ramas con la tecla **E** | ✅ Lista |
 | 3 | Inventario en barra de 8 casillas abajo al centro (teclas **1–8** o rueda para elegir) | ✅ Lista |
 | 4 | Hacer una fogata con **F** (gasta 3 ramas y 2 piedras), con luz que parpadea | ✅ Lista |
-| 5 | Vida, hambre y sed: beber en la charca y comer bayas con **E**; la fogata cura | 🧪 En pruebas |
+| 5 | Vida, hambre y sed: beber en la charca y comer bayas con **E**; la fogata cura | ✅ Lista |
+| 6 | Ciclo día/noche: el sol se mueve, el cielo cambia de color y hay reloj en pantalla | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.
