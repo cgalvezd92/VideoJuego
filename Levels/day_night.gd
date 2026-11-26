@@ -81,17 +81,27 @@ func _apply() -> void:
 	# "sunset" vale 1 cuando el sol está cerca del horizonte.
 	var sunset: float = 1.0 - smoothstep(0.0, 0.35, absf(height))
 
+	# Lluvia (Etapa 30): de 0 a 1, la pone el nodo Weather.
+	var weather = get_tree().get_first_node_in_group("weather")
+	var rain: float = weather.rain_amount if weather != null else 0.0
+
 	sun.visible = height > 0.0
-	sun.light_energy = daylight
+	sun.light_energy = daylight * (1.0 - 0.6 * rain)
 	sun.light_color = Color.WHITE.lerp(Color(1.0, 0.6, 0.35), sunset)
 
 	var sky: Color = night_sky.lerp(day_sky, daylight)
 	environment.background_color = sky.lerp(sunset_sky, sunset * 0.7)
+	# Con lluvia el cielo se vuelve gris y la bruma se acerca.
+	environment.background_color = environment.background_color.lerp(Color(0.42, 0.45, 0.5) * (0.3 + 0.7 * daylight), rain * 0.8)
+	environment.fog_depth_end = lerpf(230.0, 110.0, rain)
 	# La bruma lejana toma el color del cielo para que el horizonte se funda.
 	environment.fog_light_color = environment.background_color
-	environment.ambient_light_color = night_ambient.lerp(day_ambient, daylight)
+	environment.ambient_light_color = night_ambient.lerp(day_ambient, daylight) * (1.0 - 0.3 * rain)
 
 	var day_number: int = int(total_hours / 24.0) + 1
 	var hours: int = int(hour)
 	var minutes: int = int((hour - hours) * 60.0)
-	hud.set_clock("Día %d · %02d:%02d" % [day_number, hours, minutes])
+	var clock: String = "Día %d · %02d:%02d" % [day_number, hours, minutes]
+	if weather != null and weather.raining:
+		clock += " · Lluvia"
+	hud.set_clock(clock)

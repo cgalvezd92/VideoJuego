@@ -18,6 +18,7 @@
 [ext_resource type="Script" path="res://Levels/world_resources.gd" id="16_world"]
 [ext_resource type="PackedScene" path="res://objects/zebra.tscn" id="17_zebra"]
 [ext_resource type="PackedScene" path="res://objects/giraffe.tscn" id="18_giraffe"]
+[ext_resource type="Script" path="res://Levels/weather.gd" id="19_weather"]
 
 [sub_resource type="Environment" id="Environment_y2pph"]
 background_mode = 1
@@ -512,6 +513,9 @@ script = ExtResource("11_save")
 [node name="PauseMenu" type="CanvasLayer" parent="." unique_id=1543209876]
 process_mode = 3
 script = ExtResource("12_pause")
+
+[node name="Weather" type="Node" parent="." unique_id=1657203948]
+script = ExtResource("19_weather")
 
 [node name="World" type="Node3D" parent="." unique_id=1873402651]
 script = ExtResource("16_world")
