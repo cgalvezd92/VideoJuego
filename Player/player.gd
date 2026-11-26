@@ -27,8 +27,6 @@ var last_safe_position: Vector3
 var safe_check_time: float = 0.0
 ## Por debajo de esta altura estás dentro del mar (el nivel del mar es 0).
 const SEA_DEPTH_LIMIT: float = -1.0
-# Metros recorridos desde el último paso (para el sonido de pasos).
-var step_distance: float = 0.0
 const HEAD_HEIGHT: float = 1.6
 const CROUCH_HEAD_HEIGHT: float = 1.0
 
@@ -90,7 +88,6 @@ func _physics_process(delta: float) -> void:
 	velocity.z = horizontal.y
 
 	move_and_slide()
-	_footsteps(delta)
 
 	# Si caes del mapa, vuelves al punto de partida.
 	if global_position.y < fall_limit:
@@ -110,17 +107,6 @@ func _check_sea(delta: float) -> void:
 	if safe_check_time <= 0.0 and is_on_floor() and global_position.y > 0.5:
 		safe_check_time = 0.5
 		last_safe_position = global_position
-
-
-func _footsteps(delta: float) -> void:
-	if not is_on_floor():
-		return
-	step_distance += Vector2(velocity.x, velocity.z).length() * delta
-	# Zancada más corta agachado y más larga corriendo.
-	var stride: float = 1.2 if crouching else (2.6 if Input.is_action_pressed("sprint") else 2.1)
-	if step_distance >= stride:
-		step_distance = 0.0
-		Sounds.play("step", -14.0 if crouching else -6.0, 0.15)
 
 
 ## Las gacelas la usan para saber si te estás acercando con sigilo.

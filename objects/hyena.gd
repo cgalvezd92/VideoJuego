@@ -127,7 +127,6 @@ func _think() -> void:
 			whoop_time -= 0.2
 			if whoop_time <= 0.0:
 				whoop_time = randf_range(8.0, 15.0)
-				Sounds.play_at("whoop", global_position, -2.0)
 			if fire != null and fire.global_position.distance_to(global_position) < fear_fire_radius:
 				_flee(fire.global_position, 3.0)
 			elif state_time <= 0.0 and not player_safe:
@@ -151,7 +150,6 @@ func hit() -> int:
 	if state == State.HIDDEN or state == State.LEAVE:
 		return 0
 	hits += 1
-	Sounds.play_at("whoop", global_position, 2.0)
 	if hits >= hits_to_drive_away:
 		gone_tonight = true
 		_leave()
@@ -174,7 +172,6 @@ func _try_bite() -> void:
 	if bite_time > 0.0:
 		return
 	bite_time = bite_cooldown
-	Sounds.play("bite")
 	player.get_node("Survival").damage(bite_damage)
 	var hud = player.get_node("HUD")
 	hud.flash_damage()

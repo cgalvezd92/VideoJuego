@@ -91,7 +91,6 @@ func _add_button(parent: Control, text: String, action: Callable) -> Button:
 	button.text = text
 	button.custom_minimum_size = Vector2(420, 52)
 	button.add_theme_font_size_override("font_size", 22)
-	button.pressed.connect(Sounds.play.bind("click", -4.0, 0.0))
 	button.pressed.connect(action)
 	return button
 
