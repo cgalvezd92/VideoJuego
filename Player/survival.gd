@@ -92,6 +92,7 @@ func rest(seconds: float) -> void:
 	hunger = maxf(hunger - hunger_per_second * seconds * 0.5, 0.0)
 	thirst = maxf(thirst - thirst_per_second * seconds * 0.5, 0.0)
 	health = minf(health + 30.0, max_health)
+	player.restore_stamina()
 	check_time = 0.0
 
 
@@ -105,6 +106,7 @@ func _is_near_fire() -> bool:
 func _faint() -> void:
 	# Te desmayas: vuelves al inicio con el inventario intacto.
 	health = max_health
+	player.restore_stamina()
 	hunger = max_value * 0.6
 	thirst = max_value * 0.6
 	player.respawn()

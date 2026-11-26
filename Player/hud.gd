@@ -14,6 +14,8 @@ const SETTINGS_PATH: String = "user://ajustes.cfg"
 var health_bar: ProgressBar
 var hunger_bar: ProgressBar
 var thirst_bar: ProgressBar
+var stamina_bar: ProgressBar
+var stamina_title: Label
 var health_title: Label
 var message_time: float = 0.0
 
@@ -89,6 +91,13 @@ func set_stats(health: float, max_health: float, hunger: float, thirst: float, m
 	hunger_bar.value = hunger
 	thirst_bar.value = thirst
 	health_title.text = "Vida (fogata)" if near_fire else "Vida"
+
+
+## La llama Player cuando cambia la energía (Etapa 27).
+func set_stamina(value: float, max_value: float, exhausted: bool) -> void:
+	stamina_bar.max_value = max_value
+	stamina_bar.value = value
+	stamina_title.text = "Energía (agotado)" if exhausted else "Energía"
 
 
 ## Destello rojo al recibir daño.
@@ -169,7 +178,7 @@ func _create_label(offset_y: float) -> Label:
 
 
 func _build_stats() -> void:
-	# Tres barras abajo a la izquierda: vida, hambre y sed.
+	# Barras abajo a la izquierda: vida, hambre, sed y energía.
 	var column := VBoxContainer.new()
 	add_child(column)
 	column.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
@@ -184,6 +193,8 @@ func _build_stats() -> void:
 	hunger_bar = _add_stat_bar(column, Color(0.9, 0.55, 0.15))
 	_add_stat_title(column, "Sed")
 	thirst_bar = _add_stat_bar(column, Color(0.2, 0.55, 0.95))
+	stamina_title = _add_stat_title(column, "Energía")
+	stamina_bar = _add_stat_bar(column, Color(0.95, 0.8, 0.25))
 
 
 func _add_stat_title(parent: Control, text: String) -> Label:

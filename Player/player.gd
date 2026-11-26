@@ -11,6 +11,18 @@ extends CharacterBody3D
 @export var ground_acceleration: float = 30.0
 @export var air_acceleration: float = 8.0
 
+@export_group("Energía (estamina)")
+## Energía máxima (se multiplica por la "estamina" del personaje).
+@export var max_stamina: float = 100.0
+## Energía que gasta correr, por segundo.
+@export var sprint_cost: float = 15.0
+## Energía que gasta cada salto.
+@export var jump_cost: float = 12.0
+## Energía que se recupera por segundo al caminar (x1.5 si estás parado).
+@export var stamina_regen: float = 14.0
+## Segundos de espera tras correr o saltar antes de empezar a recuperar.
+@export var regen_delay: float = 1.0
+
 @export_group("Cámara")
 @export var mouse_sensitivity: float = 0.0025
 @export_range(0.0, 89.0) var max_pitch_degrees: float = 85.0
@@ -20,6 +32,16 @@ extends CharacterBody3D
 
 @onready var head: Node3D = $Head
 @onready var tools = $Tools
+@onready var hud = $HUD
+@onready var survival = $Survival
+
+var stamina: float = 100.0
+## Agotado: no puede correr hasta recuperar el 30 % de la energía.
+var exhausted: bool = false
+var sprinting: bool = false
+var regen_wait: float = 0.0
+var shown_stamina: float = -1.0
+var shown_exhausted: bool = false
 
 var spawn_position: Vector3
 var crouching: bool = false
@@ -35,6 +57,9 @@ const CROUCH_HEAD_HEIGHT: float = 1.0
 func _ready() -> void:
 	spawn_position = global_position
 	# Velocidad según el personaje elegido (Etapa 25).
+	# Energía según el personaje (Mama Zuri tiene menos) (Etapa 27).
+	max_stamina *= Personajes.mod("estamina_mult")
+	stamina = max_stamina
 	var speed_mult: float = Personajes.mod("velocidad_mult")
 	walk_speed *= speed_mult
 	sprint_speed *= speed_mult
@@ -66,8 +91,11 @@ func _rotate_camera(mouse_delta: Vector2) -> void:
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_gravity() * delta
-	elif Input.is_action_just_pressed("jump"):
+	elif Input.is_action_just_pressed("jump") and stamina >= jump_cost:
+		# Saltar cuesta energía (sin energía suficiente no se salta).
 		velocity.y = jump_velocity
+		stamina -= jump_cost
+		regen_wait = regen_delay
 
 	var input_dir: Vector2 = Input.get_vector(
 		"move_left", "move_right", "move_forward", "move_back"
@@ -75,11 +103,15 @@ func _physics_process(delta: float) -> void:
 	var direction: Vector3 = transform.basis * Vector3(input_dir.x, 0.0, input_dir.y)
 
 	crouching = Input.is_action_pressed("crouch")
+	var moving: bool = input_dir.length() > 0.1
+	# Solo se corre si hay energía y no estás agotado.
+	sprinting = Input.is_action_pressed("sprint") and moving and not crouching and not exhausted
 	var speed: float = walk_speed
 	if crouching:
 		speed = crouch_speed
-	elif Input.is_action_pressed("sprint"):
+	elif sprinting:
 		speed = sprint_speed
+	_update_stamina(moving, delta)
 	# Con el bastón en la mano se camina un 15 % más rápido (Etapa 26).
 	if tools.is_holding("baston"):
 		speed *= 1.15
@@ -125,7 +157,44 @@ func is_crouching() -> bool:
 
 ## ¿Va corriendo? (las gacelas te oyen desde más lejos).
 func is_sprinting() -> bool:
-	return Input.is_action_pressed("sprint") and not crouching
+	return sprinting
+
+
+## Gasta o recupera energía y actualiza la barra (Etapa 27).
+func _update_stamina(moving: bool, delta: float) -> void:
+	if sprinting:
+		# Con el bastón correr cansa un 25 % menos.
+		var cost: float = sprint_cost * (0.75 if tools.is_holding("baston") else 1.0)
+		stamina -= cost * delta
+		regen_wait = regen_delay
+		if stamina <= 0.0:
+			stamina = 0.0
+			exhausted = true
+			hud.show_message("Estás agotado: camina un poco para recuperar el aliento")
+	else:
+		regen_wait -= delta
+		if regen_wait <= 0.0:
+			var rate: float = stamina_regen * (1.0 if moving else 1.5)
+			# Con hambre o sed a cero se recupera la mitad.
+			if survival.hunger <= 0.0 or survival.thirst <= 0.0:
+				rate *= 0.5
+			stamina = minf(stamina + rate * delta, max_stamina)
+	if exhausted and stamina >= max_stamina * 0.3:
+		exhausted = false
+	stamina = maxf(stamina, 0.0)
+
+	# La barra solo se redibuja si la energía cambió algo.
+	if absf(stamina - shown_stamina) > 0.5 or exhausted != shown_exhausted \
+			or (stamina == max_stamina and shown_stamina != max_stamina):
+		shown_stamina = stamina
+		shown_exhausted = exhausted
+		hud.set_stamina(stamina, max_stamina, exhausted)
+
+
+## Energía al máximo (al dormir o al despertar tras desmayarte).
+func restore_stamina() -> void:
+	stamina = max_stamina
+	exhausted = false
 
 
 ## Vuelve al punto de partida (al caer del mapa o al desmayarse).
