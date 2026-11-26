@@ -61,5 +61,6 @@ En cada etapa, explicar paso a paso:
 | 20 | Brújula arriba en el centro y mapa del continente con **M** (posición, fogatas, refugios y zona de recursos) | ✅ Lista |
 | 21 | Quitar todos los sonidos; la lista de controles de la izquierda se pliega y despliega con **H** (se recuerda); el juego empieza en pantalla completa (botón en la pausa para cambiarlo) | ✅ Lista |
 | 22 | Recursos por todo el continente: celdas de 64 m que se crean y borran alrededor del jugador (nodo `World`); se guarda lo recogido y talado | 🧪 En pruebas |
+| 23 | Libro de fabricación a la derecha (se abre/cierra con **B**): recetas con materiales que tienes/necesitas; sustituye los avisos de encima de la barra | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.
