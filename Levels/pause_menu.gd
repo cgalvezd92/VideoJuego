@@ -73,6 +73,13 @@ func _on_toggle_controls() -> void:
 	_update_controls_text()
 
 
+func _on_title() -> void:
+	# Guarda y vuelve a la pantalla de inicio.
+	save_game.save_game(false)
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://Levels/title_screen.tscn")
+
+
 func _on_quit() -> void:
 	save_game.save_game(false)
 	get_tree().quit()
@@ -118,6 +125,7 @@ func _build_menu() -> void:
 	_add_button(column, "Cargar último guardado", _on_load)
 	new_game_button = _add_button(column, "Nueva partida", _on_new_game)
 	controls_button = _add_button(column, "Ocultar controles", _on_toggle_controls)
+	_add_button(column, "Volver al inicio", _on_title)
 	_add_button(column, "Guardar y salir", _on_quit)
 
 	# Volumen: deslizador de 0 a 100 (se recuerda en user://ajustes.cfg).
