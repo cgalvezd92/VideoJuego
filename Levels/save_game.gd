@@ -10,6 +10,8 @@ extends Node
 const SAVE_PATH: String = "user://partida.json"
 const CAMPFIRE_SCENE: PackedScene = preload("res://objects/campfire.tscn")
 const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
+const Chest = preload("res://objects/chest.gd")
+const Bed = preload("res://objects/bed.gd")
 
 ## Cada cuántos segundos se guarda automáticamente.
 @export var autosave_seconds: float = 60.0
@@ -90,6 +92,14 @@ func save_game(show_message: bool) -> void:
 	for shelter in get_tree().get_nodes_in_group("shelter"):
 		shelters.append(_vec_to_array(shelter.global_position) + [shelter.rotation.y])
 
+	# Cofres con lo que guardan y camas (Etapa 41): [x, y, z, giro, (casillas)].
+	var chests: Array = []
+	for chest in get_tree().get_nodes_in_group("chest"):
+		chests.append(_vec_to_array(chest.global_position) + [chest.rotation.y, chest.slots])
+	var beds: Array = []
+	for bed in get_tree().get_nodes_in_group("bed"):
+		beds.append(_vec_to_array(bed.global_position) + [bed.rotation.y])
+
 	var data: Dictionary = {
 		"version": 2,  # 2 = mapa de África (Etapa 19).
 		"personaje": Personajes.actual()["id"],  # Etapa 25.
@@ -117,6 +127,8 @@ func save_game(show_message: bool) -> void:
 		# Acacias taladas y la hora del juego en que se talaron (para el rebrote).
 		"felled_trees": _felled_trees(),
 		"backpack": inventory.has_backpack(),  # Etapa 31.
+		"chests": chests,
+		"beds": beds,
 		# Objetivos cumplidos y si ya te rescataron (Etapa 34).
 		"objectives": objectives.get_save_data(),
 		# Lo recogido y talado fuera de la zona inicial (Etapa 22).
@@ -203,6 +215,23 @@ func load_game() -> void:
 		main.add_child(shelter)
 		shelter.global_position = _array_to_vec(data_shelter)
 		shelter.rotation.y = data_shelter[3]
+
+	# Cofres y camas (Etapa 41).
+	for c in (data.get("chests", []) if same_map else []):
+		var chest: Node3D = Chest.new()
+		chest.slots.resize(Chest.SLOT_COUNT)
+		var saved: Array = c[4]
+		for i in mini(saved.size(), Chest.SLOT_COUNT):
+			var slot = saved[i]
+			chest.slots[i] = null if slot == null else { "id": slot.id, "name": slot.name, "amount": int(slot.amount) }
+		main.add_child(chest)
+		chest.global_position = _array_to_vec(c)
+		chest.rotation.y = c[3]
+	for b in (data.get("beds", []) if same_map else []):
+		var bed: Node3D = Bed.new()
+		main.add_child(bed)
+		bed.global_position = _array_to_vec(b)
+		bed.rotation.y = b[3]
 
 	hud.show_message("Partida cargada")
 
