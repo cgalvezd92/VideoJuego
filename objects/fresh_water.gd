@@ -16,6 +16,8 @@ func get_prompt() -> String:
 		return "Agua salada: no se puede beber"
 	if _holding_pot():
 		return "[E] Llenar la olla de agua"
+	if _holding("arpon"):
+		return "[Clic] Pescar   ·   [E] Beber agua del " + kind
 	return "[E] Beber agua del " + kind
 
 
@@ -32,5 +34,9 @@ func interact(player: Node) -> String:
 
 ## ¿Lleva la olla en la mano? (Etapa 26: Kenji puede llevarse agua).
 func _holding_pot() -> bool:
+	return _holding("olla")
+
+
+func _holding(id: String) -> bool:
 	var player = get_tree().get_first_node_in_group("player")
-	return player != null and player.get_node("Tools").is_holding("olla")
+	return player != null and player.get_node("Tools").is_holding(id)

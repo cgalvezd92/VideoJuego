@@ -1,6 +1,6 @@
 extends StaticBody3D
 ## Fogata: la luz y las llamas parpadean un poco (Etapa 4).
-## Mírala y pulsa E para cocinar carne cruda (Etapa 12).
+## Mírala y pulsa E para cocinar carne cruda (Etapa 12) o pescado (Etapa 33).
 ## La lluvia la apaga; con E y 1 rama se reaviva (Etapa 30).
 ## Va en el nodo raíz "Campfire" de campfire.tscn.
 
@@ -30,7 +30,10 @@ func get_prompt() -> String:
 	var raw: int = inventory.get_amount("carne_cruda")
 	if raw > 0:
 		return "[E] Cocinar carne cruda (tienes %d)" % raw
-	return "Fogata (aquí puedes cocinar carne)"
+	var fish: int = inventory.get_amount("pescado_crudo")
+	if fish > 0:
+		return "[E] Cocinar pescado crudo (tienes %d)" % fish
+	return "Fogata (aquí puedes cocinar carne y pescado)"
 
 
 ## La llama el Interactor. Cocina un trozo de carne por pulsación.
@@ -41,12 +44,18 @@ func interact(player: Node) -> String:
 			return "Necesitas 1 rama para reavivar la fogata"
 		relight()
 		return "Reavivaste la fogata"
-	if inventory.get_amount("carne_cruda") == 0:
-		return "No tienes carne cruda para cocinar"
-	if inventory.add_item("carne_cocida", "Carne cocida", 1) == -1:
-		return "Inventario lleno"
-	inventory.remove_item("carne_cruda", 1)
-	return "Cocinaste un trozo de carne"
+	if inventory.get_amount("carne_cruda") > 0:
+		if inventory.add_item("carne_cocida", "Carne cocida", 1) == -1:
+			return "Inventario lleno"
+		inventory.remove_item("carne_cruda", 1)
+		return "Cocinaste un trozo de carne"
+	# Etapa 33: también se cocina el pescado.
+	if inventory.get_amount("pescado_crudo") > 0:
+		if inventory.add_item("pescado_cocido", "Pescado cocido", 1) == -1:
+			return "Inventario lleno"
+		inventory.remove_item("pescado_crudo", 1)
+		return "Cocinaste un pescado"
+	return "No tienes carne ni pescado crudo para cocinar"
 
 
 func _process(delta: float) -> void:
