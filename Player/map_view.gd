@@ -66,7 +66,7 @@ func _build() -> void:
 
 	var title := _add_label("Mapa de África", 26, Control.PRESET_CENTER_TOP)
 	title.offset_top = 12.0
-	var legend := _add_label("Flecha: tú   ·   Naranja: fogatas   ·   Marrón: refugios   ·   Círculo: zona de recursos   ·   Rojo: león   ·   Verde: extracción   ·   [M] Cerrar", 15, Control.PRESET_CENTER_BOTTOM)
+	var legend := _add_label("Flecha: tú   ·   Naranja: fogatas   ·   Marrón: refugios   ·   Círculo: zona de recursos   ·   Rojo: león   ·   Verde: extracción   ·   Amarillo: lugares descubiertos   ·   [M] Cerrar", 15, Control.PRESET_CENTER_BOTTOM)
 	legend.offset_bottom = -16.0
 
 
@@ -109,6 +109,19 @@ func _draw_markers() -> void:
 		var e: Vector2 = _to_map(extraction.global_position, origin, side)
 		markers.draw_rect(Rect2(e - Vector2(7, 7), Vector2(14, 14)), Color(0.2, 0.85, 0.3))
 		markers.draw_rect(Rect2(e - Vector2(7, 7), Vector2(14, 14)), Color.BLACK, false, 1.5)
+
+	# Lugares especiales descubiertos (Etapa 47): rombo amarillo con su nombre.
+	var places = get_tree().get_first_node_in_group("places")
+	if places != null:
+		var font: Font = markers.get_theme_default_font()
+		for id in places.discovered:
+			var info: Array = places.PLACES[id]
+			var q: Vector2 = _to_map(Vector3(info[1], 0, info[2]), origin, side)
+			var diamond := PackedVector2Array([q + Vector2(0, -7), q + Vector2(7, 0), q + Vector2(0, 7), q + Vector2(-7, 0)])
+			markers.draw_colored_polygon(diamond, Color(1.0, 0.85, 0.2))
+			markers.draw_polyline(diamond + PackedVector2Array([diamond[0]]), Color.BLACK, 1.5)
+			markers.draw_string_outline(font, q + Vector2(10, 5), info[0], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, 3, Color.BLACK)
+			markers.draw_string(font, q + Vector2(10, 5), info[0], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(1.0, 0.9, 0.5))
 
 	for shelter in get_tree().get_nodes_in_group("shelter"):
 		var p: Vector2 = _to_map(shelter.global_position, origin, side)

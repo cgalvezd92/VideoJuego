@@ -27,6 +27,7 @@ const HeldItems = preload("res://Player/held_items.gd")
 @onready var objects: Node = $"../Objects"
 @onready var trees: Node = $"../Nature/Trees"
 @onready var world = $"../World"
+@onready var places = $"../Places"
 @onready var objectives = $"../Player/Objectives"
 
 var autosave_time: float = 0.0
@@ -137,6 +138,7 @@ func save_game(show_message: bool) -> void:
 		"chests": chests,
 		"beds": beds,
 		"dropped": dropped,
+		"places": places.get_save_data(),  # Etapa 47.
 		"torch_fuel": player.get_node("Tools").torch_fuel,  # Etapa 43.
 		# Objetivos cumplidos y si ya te rescataron (Etapa 34).
 		"objectives": objectives.get_save_data(),
@@ -252,6 +254,9 @@ func load_game() -> void:
 		item.global_position = _array_to_vec(d)
 
 	player.get_node("Tools").torch_fuel = data.get("torch_fuel", player.get_node("Tools").torch_seconds)
+
+	if same_map and data.has("places"):
+		places.set_save_data(data.places)
 
 	hud.show_message("Partida cargada")
 

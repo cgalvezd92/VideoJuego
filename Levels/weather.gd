@@ -93,6 +93,10 @@ func _is_sheltered(where: Vector3) -> bool:
 	for shelter in get_tree().get_nodes_in_group("shelter"):
 		if shelter.global_position.distance_to(where) < shelter_protect_radius:
 			return true
+	# Cuevas (Etapa 47).
+	for cover in get_tree().get_nodes_in_group("cover"):
+		if cover.global_position.distance_to(where) < cover.cover_radius:
+			return true
 	return false
 
 
