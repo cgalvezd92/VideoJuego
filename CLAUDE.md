@@ -83,5 +83,6 @@ En cada etapa, explicar paso a paso:
 | 42 | Soltar objetos: **Q** suelta 1 del objeto elegido y **Shift+Q** todo el montón delante de ti (los que no tienen modelo 3D se ven con su icono); se recogen con **E** y se guardan en la partida (grupo `dropped`) | ✅ Lista |
 | 43 | Antorchas y fogatas mejores: **T** fabrica una antorcha (1 rama + 1 piel); en la mano dura 3 min (el doble de rápido con lluvia) y su luz baja al final; con piedras en la mano, **E** rodea una fogata con un muro (4 piedras) y la lluvia ya no la apaga; se guarda | ✅ Lista |
 | 44 | Herramientas que se gastan: hacha 40 usos, machete 60, lanza 30, arpón 40 y arco 50 (`MAX_DURABILITY` en `inventory.gd`); barrita de color en su casilla; aviso cuando queda poco y al romperse; el desgaste se conserva en el cofre, al soltarla y al guardar | 🧪 En pruebas |
+| 45 | Iconos en el libro de fabricación: cada receta muestra el dibujo de lo que se fabrica (nuevos: fogata, refugio, cofre, cama y mochila) y los materiales llevan su dibujito (rama, piedra, madera, piel) | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.

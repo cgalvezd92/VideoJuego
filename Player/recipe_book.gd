@@ -4,6 +4,16 @@ extends PanelContainer
 ## Crafting (crafting.gd) le pasa las recetas cuando cambia el inventario.
 
 const SETTINGS_PATH: String = "user://ajustes.cfg"
+## Dibujos de los objetos (Etapa 40). El libro los usa para cada receta y
+## para los materiales (Etapa 45).
+const ICONS_PATH: String = "res://iconos/%s.png"
+## Material del libro -> su dibujo.
+const MATERIAL_ICONS: Dictionary = {
+	"Ramas": "rama", "Piedras": "piedra", "Madera": "madera", "Pieles": "piel",
+}
+
+## Dibujos ya cargados (id -> Texture2D o null).
+var icons: Dictionary = {}
 
 var expanded: bool = true
 var recipes: Array = []
@@ -74,22 +84,28 @@ func _rebuild() -> void:
 		grid.add_theme_constant_override("v_separation", 4)
 		content.add_child(grid)
 		for recipe in recipes:
+			# Cada receta: dibujo del resultado a la izquierda y el texto al lado.
+			var entry := HBoxContainer.new()
+			entry.add_theme_constant_override("separation", 6)
+			grid.add_child(entry)
+			_add_icon(entry, recipe.get("icon", ""), 34, 1.0 if recipe.available else 0.55)
 			var box := VBoxContainer.new()
 			box.add_theme_constant_override("separation", 0)
-			grid.add_child(box)
+			entry.add_child(box)
 			var title_color: Color = Color(1.0, 0.85, 0.3) if recipe.available else Color(1, 1, 1, 0.8)
 			_add("[%s] %s" % [recipe.key, recipe.name], 14, title_color, box)
-			# Todos los materiales en una sola línea (verde si tienes, rojo si falta).
+			# Materiales en una línea: dibujito + tienes/necesitas (verde o rojo).
 			var row := HBoxContainer.new()
-			row.add_theme_constant_override("separation", 10)
+			row.add_theme_constant_override("separation", 3)
 			box.add_child(row)
-			_add(" ", 12, Color.WHITE, row)
 			for need in recipe.needs:
 				var enough: bool = need[1] >= need[2]
 				var color: Color = Color(0.55, 0.9, 0.5) if enough else Color(1.0, 0.55, 0.5)
-				_add("%s %d/%d" % [need[0], need[1], need[2]], 12, color, row)
+				if not _add_icon(row, MATERIAL_ICONS.get(need[0], ""), 16, 1.0):
+					_add(need[0], 12, color, row)
+				_add("%d/%d " % [need[1], need[2]], 12, color, row)
 			if recipe.note != "":
-				_add("   " + recipe.note, 11, Color(1, 1, 1, 0.6), box)
+				_add(recipe.note, 11, Color(1, 1, 1, 0.6), box)
 
 	# Ajusta el recuadro al contenido (al cerrarlo se hace pequeño).
 	_fit.call_deferred()
@@ -112,3 +128,24 @@ func _add(text: String, font_size: int, color: Color, parent: Control = null) ->
 	label.add_theme_color_override("font_color", color)
 	label.add_theme_constant_override("outline_size", 3)
 	label.add_theme_color_override("font_outline_color", Color.BLACK)
+
+
+## Pone el dibujo de un objeto de "size" píxeles. Devuelve false si no hay.
+func _add_icon(parent: Control, id: String, size: float, alpha: float) -> bool:
+	if id == "":
+		return false
+	if not icons.has(id):
+		var path: String = ICONS_PATH % id
+		icons[id] = load(path) if ResourceLoader.exists(path) else null
+	if icons[id] == null:
+		return false
+	var rect := TextureRect.new()
+	rect.texture = icons[id]
+	rect.custom_minimum_size = Vector2(size, size)
+	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rect.modulate.a = alpha
+	parent.add_child(rect)
+	return true
