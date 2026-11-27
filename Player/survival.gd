@@ -49,6 +49,10 @@ var thirst: float = 100.0
 var near_fire: bool = false
 ## Segundos de sangrado que quedan (0 = no sangras).
 var bleeding: float = 0.0
+## Lo último que te hizo daño, para la pantalla de muerte (Etapa 53).
+var last_cause: String = ""
+## Ya está abierta la pantalla de muerte (para no abrirla dos veces).
+var fainted: bool = false
 ## Clima (Etapa 39): calor al sol del mediodía y frío de noche lejos del fuego.
 var hot: bool = false
 var cold: bool = false
@@ -120,7 +124,7 @@ func _process(delta: float) -> void:
 		near_fire = _is_near_fire()
 		hud.set_stats(health, max_health, hunger, thirst, max_value, near_fire, bleeding > 0.0)
 
-	if health <= 0.0:
+	if health <= 0.0 and not fainted:
 		_faint()
 
 
@@ -137,7 +141,9 @@ func drink(amount: float) -> void:
 
 ## Daño recibido (por ejemplo, un mordisco de la hiena).
 ## Con "bleed" la herida además sangra hasta que te vendes (Etapa 37).
-func damage(amount: float, bleed: bool = false) -> void:
+func damage(amount: float, bleed: bool = false, cause: String = "") -> void:
+	if cause != "":
+		last_cause = cause
 	amount *= Personajes.dif("dano")  # Mordiscos más o menos fuertes (Etapa 36).
 	health = maxf(health - amount, 0.0)
 	if bleed:
@@ -230,11 +236,40 @@ func _is_near_fire() -> bool:
 
 
 func _faint() -> void:
-	# Te desmayas: vuelves al inicio con el inventario intacto.
+	# Etapa 53: primero sale la pantalla con la causa y el resumen; al elegir
+	# "Despertar" se llama a wake_up().
+	fainted = true
+	var screen: CanvasLayer = preload("res://Player/death_screen.gd").new()
+	owner.add_child(screen)
+	screen.show_death(_death_cause())
+
+
+## ¿Qué te dejó sin vida? (Etapa 53)
+func _death_cause() -> String:
+	if hunger <= 0.0 and thirst <= 0.0:
+		return "el hambre y la sed"
+	if thirst <= 0.0:
+		return "la sed"
+	if hunger <= 0.0:
+		return "el hambre"
+	if bleeding > 0.0 and last_cause != "":
+		return "la sangre que perdiste tras el mordisco de %s" % last_cause
+	if bleeding > 0.0:
+		return "la sangre que perdiste"
+	if last_cause != "":
+		return last_cause if last_cause.begins_with("la ") or last_cause.begins_with("el ") else "el ataque de %s" % last_cause
+	return "el agotamiento"
+
+
+## Despiertas en el punto de salida con el inventario intacto.
+func wake_up() -> void:
 	health = max_health
 	bleeding = 0.0
 	player.restore_stamina()
 	hunger = max_value * 0.6
 	thirst = max_value * 0.6
+	fainted = false
+	last_cause = ""
 	player.respawn()
-	hud.show_message("Te desmayaste... despiertas en el inicio")
+	check_time = 0.0
+	hud.show_message("Despiertas en el punto de salida...")
