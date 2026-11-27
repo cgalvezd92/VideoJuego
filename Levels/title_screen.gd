@@ -41,6 +41,9 @@ func _on_continue() -> void:
 		for i in Personajes.lista.size():
 			if Personajes.lista[i]["id"] == data.personaje:
 				Personajes.elegido = i
+	# Y la dificultad de esa partida (Etapa 36). Las antiguas son Normal.
+	if typeof(data) == TYPE_DICTIONARY:
+		Personajes.dificultad = Personajes.indice_dificultad(data.get("dificultad", "normal"))
 	# El nivel carga solo el guardado al empezar (SaveGame).
 	get_tree().change_scene_to_file(GAME_SCENE)
 
@@ -71,7 +74,8 @@ func _saved_time_text() -> String:
 	for p in Personajes.lista:
 		if p["id"] == data.get("personaje", ""):
 			who = p["nombre"] + " · "
-	return "  (%sDía %d · %02d:%02d)" % [who, int(total / 24.0) + 1, int(hour), int(fmod(hour, 1.0) * 60.0)]
+	var level: String = Personajes.DIFICULTADES[Personajes.indice_dificultad(data.get("dificultad", "normal"))]["nombre"]
+	return "  (%sDía %d · %02d:%02d · %s)" % [who, int(total / 24.0) + 1, int(hour), int(fmod(hour, 1.0) * 60.0), level]
 
 
 # --- Menú (por código) ---

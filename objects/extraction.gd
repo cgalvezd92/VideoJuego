@@ -1,6 +1,6 @@
 extends StaticBody3D
 ## Punto de extracción (Etapa 34): un campamento con una radio, una bandera
-## roja y una columna de humo que se ve desde lejos. El día 15 a las 7:00
+## roja y una columna de humo que se ve desde lejos. El día 15 a las 7:00 (en Normal)
 ## aterriza un helicóptero: míralo y pulsa E para subir y ganar la partida.
 ## Va en el nodo "Extraction" (StaticBody3D), hijo de Main (en main.tscn).
 ## Todo el modelo se crea por código con figuras sencillas.
@@ -67,7 +67,7 @@ func interact(_player: Node) -> String:
 		objectives.finish_mission()
 		return ""
 	return "Radio: «Aguanta. Llegaremos el día %d a las 7:00» (faltan %d días)" % [
-		objectives.DAYS_TO_SURVIVE + 1, objectives.days_left()]
+		objectives.days_to_survive() + 1, objectives.days_left()]
 
 
 func _build() -> void:

@@ -14,6 +14,29 @@ extends Node
 # Índice del personaje elegido en la pantalla de selección.
 var elegido: int = 0
 
+# Dificultad elegida al empezar (Etapa 36): 0 = Fácil, 1 = Normal, 2 = Difícil.
+# Se guarda en la partida. Desde cualquier script: Personajes.dif("dias")
+var dificultad: int = 1
+const DIFICULTADES := [
+	{
+		"id": "facil", "nombre": "Fácil",
+		"hambre_sed": 0.75,  # el hambre y la sed bajan más despacio
+		"dano": 0.6,         # los animales hacen menos daño
+		"dias": 10,          # días hasta la extracción
+		"texto": "10 días · el hambre y la sed bajan más despacio · los animales hacen menos daño",
+	},
+	{
+		"id": "normal", "nombre": "Normal",
+		"hambre_sed": 1.0, "dano": 1.0, "dias": 14,
+		"texto": "14 días · la experiencia pensada para el juego",
+	},
+	{
+		"id": "dificil", "nombre": "Difícil",
+		"hambre_sed": 1.3, "dano": 1.5, "dias": 20,
+		"texto": "20 días · más hambre y sed · los animales muerden más fuerte",
+	},
+]
+
 # Valores por defecto de los modificadores de juego.
 # Si un personaje no define uno, se usa este valor.
 const MOD_BASE := {
@@ -133,6 +156,19 @@ var lista: Array[Dictionary] = [
 		},
 	},
 ]
+
+
+# Un valor de la dificultad elegida: "nombre", "hambre_sed", "dano" o "dias".
+func dif(clave: String) -> Variant:
+	return DIFICULTADES[dificultad][clave]
+
+
+# Busca la dificultad por su id ("facil", "normal", "dificil"); Normal si no existe.
+func indice_dificultad(id: String) -> int:
+	for i in DIFICULTADES.size():
+		if DIFICULTADES[i]["id"] == id:
+			return i
+	return 1
 
 
 # El personaje elegido (un Dictionary).

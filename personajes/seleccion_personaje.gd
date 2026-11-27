@@ -33,6 +33,8 @@ var lbl_objeto: Label
 var lbl_fortaleza: Label
 var lbl_debilidad: Label
 var lbl_contador: Label
+var lbl_dificultad: Label
+var botones_dificultad: Array[Button] = []
 var barras: Array[ProgressBar] = []
 var valores: Array[Label] = []
 
@@ -101,7 +103,7 @@ func _crear_interfaz() -> void:
 	var margen := MarginContainer.new()
 	margen.set_anchors_preset(Control.PRESET_FULL_RECT)
 	for lado in ["left", "right", "top", "bottom"]:
-		margen.add_theme_constant_override("margin_" + lado, 48)
+		margen.add_theme_constant_override("margin_" + lado, 32)
 	add_child(margen)
 
 	var fila := HBoxContainer.new()
@@ -165,11 +167,11 @@ func _crear_vista_3d(padre: Control) -> void:
 func _crear_panel(padre: Control) -> void:
 	var panel := VBoxContainer.new()
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	panel.add_theme_constant_override("separation", 14)
+	panel.add_theme_constant_override("separation", 8)
 	padre.add_child(panel)
 
-	panel.add_child(_label("ELIGE A TU SOBREVIVIENTE · 14 DÍAS EN ÁFRICA", 16, COLOR_ACENTO))
-	lbl_nombre = _label("", 52, COLOR_TEXTO)
+	panel.add_child(_label("ELIGE A TU SOBREVIVIENTE Y LA DIFICULTAD", 16, COLOR_ACENTO))
+	lbl_nombre = _label("", 44, COLOR_TEXTO)
 	panel.add_child(lbl_nombre)
 	lbl_rol = _label("", 20, COLOR_ACENTO)
 	panel.add_child(lbl_rol)
@@ -181,7 +183,7 @@ func _crear_panel(padre: Control) -> void:
 	var grilla := GridContainer.new()
 	grilla.columns = 3
 	grilla.add_theme_constant_override("h_separation", 16)
-	grilla.add_theme_constant_override("v_separation", 10)
+	grilla.add_theme_constant_override("v_separation", 6)
 	panel.add_child(grilla)
 	for s in STATS:
 		grilla.add_child(_label(s[1], 18, COLOR_TEXTO))
@@ -207,6 +209,8 @@ func _crear_panel(padre: Control) -> void:
 		var valor := _label("0", 18, COLOR_TEXTO)
 		grilla.add_child(valor)
 		valores.append(valor)
+
+	_crear_dificultad(panel)
 
 	var espacio := Control.new()
 	espacio.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -239,12 +243,51 @@ func _crear_panel(padre: Control) -> void:
 	comenzar.grab_focus()
 
 
+# Fila de dificultad (Etapa 36): tres botones; el elegido queda marcado.
+func _crear_dificultad(padre: Control) -> void:
+	var caja := VBoxContainer.new()
+	caja.add_theme_constant_override("separation", 4)
+	padre.add_child(caja)
+	var fila := HBoxContainer.new()
+	fila.add_theme_constant_override("separation", 8)
+	caja.add_child(fila)
+	var titulo := _label("DIFICULTAD", 14, COLOR_ACENTO)
+	titulo.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	titulo.custom_minimum_size.x = 110
+	fila.add_child(titulo)
+	# El botón elegido se ve con el color de acento.
+	var marcado := StyleBoxFlat.new()
+	marcado.bg_color = COLOR_ACENTO
+	marcado.set_corner_radius_all(4)
+	var grupo := ButtonGroup.new()
+	for i in Personajes.DIFICULTADES.size():
+		var b := _boton(Personajes.DIFICULTADES[i]["nombre"])
+		b.custom_minimum_size = Vector2(110, 36)
+		b.add_theme_stylebox_override("pressed", marcado)
+		b.add_theme_stylebox_override("hover_pressed", marcado)
+		b.toggle_mode = true
+		b.button_group = grupo
+		b.button_pressed = i == Personajes.dificultad
+		b.pressed.connect(_elegir_dificultad.bind(i))
+		fila.add_child(b)
+		botones_dificultad.append(b)
+	lbl_dificultad = _label("", 16, COLOR_TEXTO)
+	lbl_dificultad.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	caja.add_child(lbl_dificultad)
+	_elegir_dificultad(Personajes.dificultad)
+
+
+func _elegir_dificultad(i: int) -> void:
+	Personajes.dificultad = i
+	lbl_dificultad.text = Personajes.DIFICULTADES[i]["texto"]
+
+
 func _seccion(padre: Control, titulo: String, color: Color) -> Label:
 	var caja := VBoxContainer.new()
 	caja.add_theme_constant_override("separation", 2)
 	padre.add_child(caja)
 	caja.add_child(_label(titulo, 14, color))
-	var texto := _label("", 18, COLOR_TEXTO)
+	var texto := _label("", 16, COLOR_TEXTO)
 	texto.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	caja.add_child(texto)
 	return texto

@@ -39,8 +39,9 @@ func _ready() -> void:
 	# Ajustes según el personaje elegido (Etapa 25).
 	max_health = Personajes.salud_maxima()
 	health = max_health
-	hunger_per_second *= Personajes.mod("hambre_mult")
-	thirst_per_second *= Personajes.mod("sed_mult")
+	# Dificultad (Etapa 36): en Fácil bajan más despacio, en Difícil más rápido.
+	hunger_per_second *= Personajes.mod("hambre_mult") * Personajes.dif("hambre_sed")
+	thirst_per_second *= Personajes.mod("sed_mult") * Personajes.dif("hambre_sed")
 	fed_regen *= Personajes.mod("curacion_mult")
 	fire_regen *= Personajes.mod("curacion_mult")
 
@@ -83,6 +84,7 @@ func drink(amount: float) -> void:
 
 ## Daño recibido (por ejemplo, un mordisco de la hiena).
 func damage(amount: float) -> void:
+	amount *= Personajes.dif("dano")  # Mordiscos más o menos fuertes (Etapa 36).
 	health = maxf(health - amount, 0.0)
 	check_time = 0.0  # Actualiza las barras enseguida.
 
