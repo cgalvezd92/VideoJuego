@@ -108,6 +108,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif is_holding("arco"):
 			if inventory.get_amount("flecha") > 0:
 				_launch("flecha", "Flecha", 40.0)
+				_wear("arco")
 			else:
 				hud.show_message("No te quedan flechas")
 
@@ -219,8 +220,10 @@ func _swing() -> void:
 		tween.tween_property(held, "rotation", rest_rotation, 0.25)
 
 	var target: Object = interactor.get_collider()
+	var tool_id: String = selected_id()
 	if target != null and target.has_method("hit"):
 		_hunt(target)
+		_wear(tool_id)
 		return
 	if target == null or not target.has_method("chop"):
 		return
@@ -237,6 +240,7 @@ func _swing() -> void:
 		wood += target.chop()
 		if wood > 0:
 			break
+	_wear(tool_id)
 	if wood > 0:
 		if inventory.add_item("madera", "Madera", wood) == -1:
 			hud.show_message("Talaste el árbol, pero el inventario está lleno")
@@ -313,6 +317,7 @@ func _fish(water: Object) -> void:
 	if water.kind == "mar":
 		hud.show_message("Las olas del mar son muy fuertes: pesca en ríos y lagos")
 		return
+	_wear("arpon")
 	if randf() >= fish_chance:
 		hud.show_message("Fallaste... el pez se escapó. Vuelve a intentarlo")
 		return
@@ -334,8 +339,10 @@ func drop_selected(all: bool) -> void:
 	var amount: int = item.amount if all else 1
 	var id: String = item.id
 	var item_name: String = item.name
+	var durability: int = item.get("durability", -1)
 	inventory.remove_item(id, amount)
 	var pickable: Area3D = HeldItems.make_pickable(id, item_name, amount)
+	pickable.set_meta("durability", durability)  # Conserva el desgaste (Etapa 44).
 	owner.get_parent().add_child(pickable)
 	pickable.global_position = _drop_spot()
 	if amount > 1:
@@ -378,3 +385,23 @@ func _burn_torch(delta: float) -> void:
 			hud.show_message("Tu antorcha se consumió: enciendes otra (te quedan %d)" % left)
 		else:
 			hud.show_message("Tu antorcha se consumió. Haz otra con T (1 rama + 1 piel)")
+
+
+# --- Herramientas que se gastan (Etapa 44) ---
+
+## Gasta un uso y avisa (un momento después, para no tapar el mensaje de la acción).
+func _wear(id: String) -> void:
+	var item_name: String = ""
+	var index: int = inventory._find_slot(id)
+	if index != -1:
+		item_name = inventory.slots[index].name.to_lower()
+	var result: String = inventory.wear(id)
+	var male: bool = id in ["machete", "arpon", "arco"]
+	var text: String = ""
+	if result == "roto":
+		var left: int = inventory.get_amount(id)
+		text = "¡Se rompió tu %s!" % item_name + ((" (te queda 1)" if left == 1 else " (te quedan %d)" % left) if left > 0 else (" Fabrica %s en el libro (B)" % ("otro" if male else "otra")))
+	elif result == "gastado":
+		text = "Tu %s está muy %s: pronto se romperá" % [item_name, "gastado" if male else "gastada"]
+	if text != "":
+		get_tree().create_timer(1.2).timeout.connect(hud.show_message.bind(text))

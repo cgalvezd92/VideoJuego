@@ -105,7 +105,7 @@ func save_game(show_message: bool) -> void:
 	var dropped: Array = []
 	for item in get_tree().get_nodes_in_group("dropped"):
 		if not item.is_queued_for_deletion():
-			dropped.append(_vec_to_array(item.global_position) + [item.item_id, item.display_name, item.amount])
+			dropped.append(_vec_to_array(item.global_position) + [item.item_id, item.display_name, item.amount, item.get_meta("durability", -1)])
 
 	var data: Dictionary = {
 		"version": 2,  # 2 = mapa de África (Etapa 19).
@@ -198,7 +198,7 @@ func load_game() -> void:
 		if slot == null:
 			inventory.slots[i] = null
 		else:
-			inventory.slots[i] = { "id": slot.id, "name": slot.name, "amount": int(slot.amount) }
+			inventory.slots[i] = _slot_from_save(slot)
 	inventory.changed.emit()
 	inventory.select(int(inv.get("selected", 0)))
 
@@ -234,7 +234,7 @@ func load_game() -> void:
 		var saved: Array = c[4]
 		for i in mini(saved.size(), Chest.SLOT_COUNT):
 			var slot = saved[i]
-			chest.slots[i] = null if slot == null else { "id": slot.id, "name": slot.name, "amount": int(slot.amount) }
+			chest.slots[i] = null if slot == null else _slot_from_save(slot)
 		main.add_child(chest)
 		chest.global_position = _array_to_vec(c)
 		chest.rotation.y = c[3]
@@ -246,6 +246,8 @@ func load_game() -> void:
 
 	for d in (data.get("dropped", []) if same_map else []):
 		var item: Area3D = HeldItems.make_pickable(d[3], d[4], int(d[5]))
+		if d.size() > 6:
+			item.set_meta("durability", int(d[6]))
 		main.add_child(item)
 		item.global_position = _array_to_vec(d)
 
@@ -294,6 +296,14 @@ func _remove_missing(parent: Node, names_left) -> void:
 	for child in parent.get_children():
 		if not names_left.has(str(child.name)):
 			child.queue_free()
+
+
+## Casilla guardada -> casilla del juego (JSON guarda los números como decimales).
+func _slot_from_save(slot: Dictionary) -> Dictionary:
+	var result: Dictionary = { "id": slot.id, "name": slot.name, "amount": int(slot.amount) }
+	if slot.has("durability"):
+		result.durability = int(slot.durability)  # Etapa 44.
+	return result
 
 
 func _vec_to_array(v: Vector3) -> Array:

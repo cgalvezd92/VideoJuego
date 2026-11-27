@@ -69,7 +69,11 @@ func _physics_process(_delta: float) -> void:
 
 
 func _pick_up(target: Object) -> void:
+	var had: int = inventory.get_amount(target.item_id)
 	var total: int = inventory.add_item(target.item_id, target.display_name, target.amount)
+	# Una herramienta soltada conserva su desgaste (Etapa 44).
+	if total != -1 and had == 0 and target.get_meta("durability", -1) > 0:
+		inventory.set_durability(target.item_id, target.get_meta("durability"))
 	if total == -1:
 		hud.show_message("Inventario lleno")
 		return

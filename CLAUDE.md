@@ -81,6 +81,7 @@ En cada etapa, explicar paso a paso:
 | 40 | Inventario con dibujos: cada objeto tiene su icono PNG de 128×128 en `res://iconos/<id>.png` (19 iconos, hechos fotografiando sus modelos 3D con `iconos/generar_iconos.gd`); el nombre del objeto elegido sale encima de la barra | ✅ Lista |
 | 41 | Mejorar el refugio: **J** cofre (4 madera + 2 ramas, `objects/chest.gd`): E abre una ventana con 12 casillas y tu inventario, clic para pasar objetos; **N** cama de pieles (3 pieles + 2 madera, `objects/bed.gd`): de noche, dormir cura 60 y para la sangre; se guardan con su contenido; libro de fabricación en dos columnas | ✅ Lista |
 | 42 | Soltar objetos: **Q** suelta 1 del objeto elegido y **Shift+Q** todo el montón delante de ti (los que no tienen modelo 3D se ven con su icono); se recogen con **E** y se guardan en la partida (grupo `dropped`) | ✅ Lista |
-| 43 | Antorchas y fogatas mejores: **T** fabrica una antorcha (1 rama + 1 piel); en la mano dura 3 min (el doble de rápido con lluvia) y su luz baja al final; con piedras en la mano, **E** rodea una fogata con un muro (4 piedras) y la lluvia ya no la apaga; se guarda | 🧪 En pruebas |
+| 43 | Antorchas y fogatas mejores: **T** fabrica una antorcha (1 rama + 1 piel); en la mano dura 3 min (el doble de rápido con lluvia) y su luz baja al final; con piedras en la mano, **E** rodea una fogata con un muro (4 piedras) y la lluvia ya no la apaga; se guarda | ✅ Lista |
+| 44 | Herramientas que se gastan: hacha 40 usos, machete 60, lanza 30, arpón 40 y arco 50 (`MAX_DURABILITY` en `inventory.gd`); barrita de color en su casilla; aviso cuando queda poco y al romperse; el desgaste se conserva en el cofre, al soltarla y al guardar | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.

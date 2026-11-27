@@ -102,6 +102,7 @@ static func make_pickable(id: String, display_name: String, amount: int = 1) -> 
 	area.item_id = id
 	area.display_name = display_name
 	area.amount = amount
+	area.set_meta("durability", -1)
 	# Lo que queda en el suelo se guarda en la partida (Etapa 42).
 	area.add_to_group("dropped")
 	return area
