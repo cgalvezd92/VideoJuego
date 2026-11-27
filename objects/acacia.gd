@@ -30,6 +30,7 @@ var check_time: float = 0.0
 
 func _ready() -> void:
 	base_scale = scale  # Cada acacia del mapa tiene su propio tamaño.
+	add_to_group("shade_tree")  # Su copa da sombra al mediodía (Etapa 39).
 	set_process(false)  # Solo los árboles talados necesitan revisarse.
 
 

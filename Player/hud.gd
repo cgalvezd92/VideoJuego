@@ -16,6 +16,10 @@ var hunger_bar: ProgressBar
 var thirst_bar: ProgressBar
 var stamina_bar: ProgressBar
 var stamina_title: Label
+var thirst_title: Label
+var climate_hot: bool = false
+var climate_cold: bool = false
+var stamina_exhausted: bool = false
 var health_title: Label
 var message_time: float = 0.0
 
@@ -108,7 +112,36 @@ func set_stats(health: float, max_health: float, hunger: float, thirst: float, m
 func set_stamina(value: float, max_value: float, exhausted: bool) -> void:
 	stamina_bar.max_value = max_value
 	stamina_bar.value = value
-	stamina_title.text = "Energía (agotado)" if exhausted else "Energía"
+	stamina_exhausted = exhausted
+	_update_climate_titles()
+
+
+## Calor y frío (Etapa 39): se ven en los títulos de la sed y la energía.
+func set_climate(hot: bool, cold: bool) -> void:
+	if hot == climate_hot and cold == climate_cold:
+		return
+	climate_hot = hot
+	climate_cold = cold
+	_update_climate_titles()
+
+
+func _update_climate_titles() -> void:
+	thirst_title.text = "Sed (calor: busca sombra)" if climate_hot else "Sed"
+	_tint(thirst_title, climate_hot, Color(1.0, 0.7, 0.3))
+	if stamina_exhausted:
+		stamina_title.text = "Energía (agotado)"
+	elif climate_cold:
+		stamina_title.text = "Energía (frío: busca fuego)"
+	else:
+		stamina_title.text = "Energía"
+	_tint(stamina_title, climate_cold and not stamina_exhausted, Color(0.6, 0.85, 1.0))
+
+
+func _tint(label: Label, on: bool, color: Color) -> void:
+	if on:
+		label.add_theme_color_override("font_color", color)
+	else:
+		label.remove_theme_color_override("font_color")
 
 
 ## Destello rojo al recibir daño.
@@ -205,7 +238,7 @@ func _build_stats() -> void:
 	health_bar = _add_stat_bar(column, Color(0.85, 0.2, 0.2))
 	_add_stat_title(column, "Hambre")
 	hunger_bar = _add_stat_bar(column, Color(0.9, 0.55, 0.15))
-	_add_stat_title(column, "Sed")
+	thirst_title = _add_stat_title(column, "Sed")
 	thirst_bar = _add_stat_bar(column, Color(0.2, 0.55, 0.95))
 	stamina_title = _add_stat_title(column, "Energía")
 	stamina_bar = _add_stat_bar(column, Color(0.95, 0.8, 0.25))
