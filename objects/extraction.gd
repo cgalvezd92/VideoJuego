@@ -66,8 +66,23 @@ func interact(_player: Node) -> String:
 	if objectives.rescue_ready():
 		objectives.finish_mission()
 		return ""
-	return "Radio: «Aguanta. Llegaremos el día %d a las 7:00» (faltan %d días)" % [
-		objectives.days_to_survive() + 1, objectives.days_left()]
+	return "Radio: «%s» (llegada: día %d a las 7:00)" % [_radio_message(), objectives.days_to_survive() + 1]
+
+
+## Mensaje de la radio según los días que faltan (Etapa 51).
+func _radio_message() -> String:
+	var left: int = objectives.days_left()
+	if left >= 10:
+		return "Aquí base Nairobi. Recibimos tu señal. Las tormentas del norte no nos dejan volar. Aguanta"
+	if left >= 7:
+		return "Base Nairobi: el satélite encontró los restos de la Kilima 7. ¿Hay más supervivientes?"
+	if left >= 4:
+		return "Base Nairobi: el piloto, Joseph, no ha llegado al puesto. Si lo ves, dile que siga el humo"
+	if left >= 2:
+		return "Base Nairobi: el helicóptero está listo. En cuanto se calme la arena, despegamos"
+	if left == 1:
+		return "Base Nairobi: mañana al amanecer. Ten el fuego encendido para que te veamos"
+	return "Base Nairobi: ya estamos en el aire. ¡Aguanta un poco más!"
 
 
 func _build() -> void:

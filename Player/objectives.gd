@@ -268,6 +268,20 @@ func _show_victory() -> void:
 	_victory_label(box, "¡Te rescataron!", 44, Color(1.0, 0.85, 0.3))
 	_victory_label(box, "Sobreviviste %d días en África como %s." % [days, Personajes.actual()["nombre"]], 20, Color.WHITE)
 	_victory_label(box, "Objetivos cumplidos: %d de %d" % [done.size(), LIST.size()], 18, Color(0.75, 0.9, 0.55))
+	# Final de cada personaje y la pista del humo (Etapa 51).
+	var story = get_tree().get_first_node_in_group("story")
+	if story != null:
+		var ending := Label.new()
+		ending.text = story.ENDINGS.get(Personajes.actual()["id"], "") + "\n\n" + story.TEASER
+		ending.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		ending.custom_minimum_size = Vector2(620, 0)
+		ending.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		ending.add_theme_font_size_override("font_size", 17)
+		ending.add_theme_color_override("font_color", Color(1, 0.95, 0.85))
+		ending.add_theme_constant_override("outline_size", 5)
+		ending.add_theme_color_override("font_outline_color", Color.BLACK)
+		box.add_child(ending)
+		_victory_label(box, "Notas de Joseph encontradas: %d de %d" % [story.found.size(), story.NOTES.size()], 15, Color(0.9, 0.8, 0.6))
 
 	var keep := Button.new()
 	keep.text = "Seguir explorando"
