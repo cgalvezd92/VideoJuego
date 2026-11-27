@@ -26,6 +26,7 @@ T  Hacer antorcha
 C  Hacer hacha
 R  Hacer refugio
 J / N  Hacer cofre / cama de pieles
+U  Poner trampa de lazo
 X / K  Hacer flechas / arco
 L / G  Hacer lanza / arpón
 P  Hacer mochila

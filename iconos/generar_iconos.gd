@@ -57,6 +57,7 @@ func _initialize() -> void:
 		"cama": _built("res://objects/bed.gd"),
 		"mochila": _backpack(),
 		"miel": _honey(),
+		"trampa": _built("res://objects/trap.gd"),
 	}
 	# Lanza, flecha, arpón y venda: modelos propios con la punta más grande.
 	items["lanza"] = _spear()
@@ -301,7 +302,14 @@ func _built(path: String) -> Node3D:
 		var copy := MeshInstance3D.new()
 		copy.mesh = mi.mesh
 		copy.material_override = mi.material_override
-		copy.transform = mi.transform
+		var t: Transform3D = mi.transform
+		var parent: Node = mi.get_parent()
+		while parent != thing and parent is Node3D:
+			t = parent.transform * t
+			parent = parent.get_parent()
+		copy.transform = t
+		copy.scale = t.basis.get_scale()
+		copy.transform = t
 		root.add_child(copy)
 	thing.free()
 	return root
