@@ -103,6 +103,7 @@ func save_game(show_message: bool) -> void:
 			"health": survival.health,
 			"hunger": survival.hunger,
 			"thirst": survival.thirst,
+			"bleeding": survival.bleeding,  # Etapa 37.
 		},
 		"hours": day_night.total_hours,
 		"inventory": {
@@ -159,6 +160,7 @@ func load_game() -> void:
 	survival.health = minf(s.get("health", survival.max_health), survival.max_health)
 	survival.hunger = s.get("hunger", survival.max_value)
 	survival.thirst = s.get("thirst", survival.max_value)
+	survival.bleeding = s.get("bleeding", 0.0)
 	survival.check_time = 0.0
 
 	# Hora

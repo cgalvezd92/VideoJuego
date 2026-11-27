@@ -22,10 +22,20 @@ var max_health: float = 100.0
 @export var fire_regen: float = 3.0
 @export var fire_radius: float = 4.0
 
+@export_group("Sangrar (Etapa 37)")
+## Vida que pierdes por segundo mientras sangras.
+@export var bleed_damage: float = 1.0
+## Segundos que sangras tras un mordisco si no te vendas.
+@export var bleed_seconds: float = 40.0
+## Vida que cura una venda.
+@export var bandage_heal: float = 15.0
+
 var health: float = 100.0
 var hunger: float = 100.0
 var thirst: float = 100.0
 var near_fire: bool = false
+## Segundos de sangrado que quedan (0 = no sangras).
+var bleeding: float = 0.0
 
 # Cada cuánto se revisan las fogatas y se redibujan las barras.
 # Así no se hace en cada fotograma (ahorra recursos).
@@ -44,6 +54,7 @@ func _ready() -> void:
 	thirst_per_second *= Personajes.mod("sed_mult") * Personajes.dif("hambre_sed")
 	fed_regen *= Personajes.mod("curacion_mult")
 	fire_regen *= Personajes.mod("curacion_mult")
+	bandage_heal *= Personajes.mod("curacion_mult")
 
 
 func _process(delta: float) -> void:
@@ -55,7 +66,13 @@ func _process(delta: float) -> void:
 		change -= empty_damage
 	if thirst <= 0.0:
 		change -= empty_damage
-	if hunger > max_value * 0.5 and thirst > max_value * 0.5:
+	if bleeding > 0.0:
+		# Sangrando: pierdes vida y no te recuperas comiendo (Etapa 37).
+		bleeding = maxf(bleeding - delta, 0.0)
+		change -= bleed_damage
+		if bleeding == 0.0:
+			hud.show_message("La herida dejó de sangrar")
+	elif hunger > max_value * 0.5 and thirst > max_value * 0.5:
 		change += fed_regen
 	if near_fire:
 		change += fire_regen
@@ -65,7 +82,7 @@ func _process(delta: float) -> void:
 	if check_time <= 0.0:
 		check_time = 0.25
 		near_fire = _is_near_fire()
-		hud.set_stats(health, max_health, hunger, thirst, max_value, near_fire)
+		hud.set_stats(health, max_health, hunger, thirst, max_value, near_fire, bleeding > 0.0)
 
 	if health <= 0.0:
 		_faint()
@@ -83,10 +100,24 @@ func drink(amount: float) -> void:
 
 
 ## Daño recibido (por ejemplo, un mordisco de la hiena).
-func damage(amount: float) -> void:
+## Con "bleed" la herida además sangra hasta que te vendes (Etapa 37).
+func damage(amount: float, bleed: bool = false) -> void:
 	amount *= Personajes.dif("dano")  # Mordiscos más o menos fuertes (Etapa 36).
 	health = maxf(health - amount, 0.0)
+	if bleed:
+		bleeding = bleed_seconds
 	check_time = 0.0  # Actualiza las barras enseguida.
+
+
+## Usar una venda: para la sangre y cura un poco (Etapa 37).
+func bandage() -> String:
+	var was_bleeding: bool = bleeding > 0.0
+	bleeding = 0.0
+	health = minf(health + bandage_heal, max_health)
+	check_time = 0.0
+	if was_bleeding:
+		return "Te vendaste la herida: ya no sangras"
+	return "Te pusiste una venda: +%d de vida" % roundi(bandage_heal)
 
 
 ## Dormir: el hambre y la sed bajan la mitad de lo normal y recuperas vida.
@@ -109,6 +140,7 @@ func _is_near_fire() -> bool:
 func _faint() -> void:
 	# Te desmayas: vuelves al inicio con el inventario intacto.
 	health = max_health
+	bleeding = 0.0
 	player.restore_stamina()
 	hunger = max_value * 0.6
 	thirst = max_value * 0.6

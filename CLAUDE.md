@@ -74,6 +74,7 @@ En cada etapa, explicar paso a paso:
 | 33 | Pesca: arpón con **G** (1 madera + 2 piedras); con el arpón en la mano, clic mirando un río o lago (35 % de sacar un pez); el pescado crudo se cocina en la fogata (**E**). Además, arco con **K** (2 madera + 2 ramas) para usar las flechas | ✅ Lista |
 | 34 | Misión principal (sobrevivir 14 días y llegar a la extracción: helicóptero el día 15 a las 7:00, punto verde en mapa y brújula, nodo `Extraction`) y 13 objetivos (nodo `Objectives` del Player, recuadro con **O**); pantalla de rescate; se guarda | ✅ Lista |
 | 35 | Cocodrilos (`objects/crocodile.gd`, sin escena, malla única): hundidos en ríos y lagos; a 12 m (7 agachado) nadan hacia ti, saltan a la orilla y muerden (25); 3 golpes los alejan; uno en el lago de la salida y al azar por celdas | ✅ Lista |
-| 36 | Dificultad al elegir personaje (Fácil / Normal / Difícil, en `Personajes`): hambre y sed ×0,75 / 1 / 1,3, daño de animales ×0,6 / 1 / 1,5, días hasta la extracción 10 / 14 / 20; se guarda y se ve en Continuar | 🧪 En pruebas |
+| 36 | Dificultad al elegir personaje (Fácil / Normal / Difícil, en `Personajes`): hambre y sed ×0,75 / 1 / 1,3, daño de animales ×0,6 / 1 / 1,5, días hasta la extracción 10 / 14 / 20; se guarda y se ve en Continuar | ✅ Lista |
+| 37 | Vendas: los mordiscos (león, hiena, cocodrilo) hacen sangrar 40 s (1 de vida/s, sin curarte comiendo); **V** fabrica 2 vendas (1 piel + 1 rama); con la venda en la mano, clic para parar la sangre y curar 15; todos empiezan con 2 vendas; se guarda | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.

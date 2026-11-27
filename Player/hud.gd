@@ -30,10 +30,11 @@ R  Hacer refugio
 X / K  Hacer flechas / arco
 L / G  Hacer lanza / arpón
 P  Hacer mochila
+V  Hacer vendas
 M  Mapa
 O  Misión y objetivos
 B  Libro de fabricación
-Clic izq.  Golpear / Comer / Beber / Pescar
+Clic izq.  Golpear / Comer / Pescar / Vendarse
 Clic der.  Lanzar lanza / Disparar arco
 1-8 / Rueda  Elegir casilla (9 y 0 con mochila)
 Esc  Pausa (menú)
@@ -87,14 +88,20 @@ func set_prompt(new_text: String) -> void:
 	prompt_label.text = new_text
 
 
-func set_stats(health: float, max_health: float, hunger: float, thirst: float, max_value: float, near_fire: bool) -> void:
+func set_stats(health: float, max_health: float, hunger: float, thirst: float, max_value: float, near_fire: bool, bleeding: bool = false) -> void:
 	health_bar.max_value = max_health
 	hunger_bar.max_value = max_value
 	thirst_bar.max_value = max_value
 	health_bar.value = health
 	hunger_bar.value = hunger
 	thirst_bar.value = thirst
-	health_title.text = "Vida (fogata)" if near_fire else "Vida"
+	if bleeding:
+		# Etapa 37: aviso en rojo hasta que te vendes.
+		health_title.text = "Vida (sangrando)"
+		health_title.add_theme_color_override("font_color", Color(1.0, 0.4, 0.35))
+	else:
+		health_title.text = "Vida (fogata)" if near_fire else "Vida"
+		health_title.remove_theme_color_override("font_color")
 
 
 ## La llama Player cuando cambia la energía (Etapa 27).

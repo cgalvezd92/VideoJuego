@@ -37,6 +37,10 @@ const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 ## Arco (K): 2 madera + 2 ramas. Dispara flechas con clic derecho.
 @export var bow_wood: int = 2
 @export var bow_branches: int = 2
+## Vendas (V, Etapa 37): 1 piel + 1 rama = 2 vendas.
+@export var bandage_hides: int = 1
+@export var bandage_branches: int = 1
+@export var bandages_made: int = 2
 
 @onready var player: CharacterBody3D = owner
 @onready var inventory = owner.get_node("Inventory")
@@ -63,6 +67,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		_try_craft_backpack()
 	elif event.is_action_pressed("craft_spear"):
 		_craft_item({"madera": spear_wood, "piedra": spear_stones}, "lanza", "Lanza", 1)
+	elif event.is_action_pressed("craft_bandage"):
+		_craft_item({"piel": bandage_hides, "rama": bandage_branches}, "venda", "Venda", bandages_made)
 	elif event.is_action_pressed("craft_bow"):
 		if inventory.get_amount("arco") > 0:
 			hud.show_message("Ya tienes un arco")
@@ -254,6 +260,12 @@ func _update_book() -> void:
 			"needs": [["Madera", wood, harpoon_wood], ["Piedras", stones, harpoon_stones]],
 			"available": inventory.get_amount("arpon") == 0 and wood >= harpoon_wood and stones >= harpoon_stones,
 			"note": "Ya tienes uno" if inventory.get_amount("arpon") > 0 else "Pesca en ríos y lagos (clic)",
+		},
+		{
+			"key": "V", "name": "Vendas (x%d)" % bandages_made,
+			"needs": [["Pieles", inventory.get_amount("piel"), bandage_hides], ["Ramas", branches, bandage_branches]],
+			"available": inventory.get_amount("piel") >= bandage_hides and branches >= bandage_branches,
+			"note": "Paran la sangre de un mordisco (clic)",
 		},
 		{
 			"key": "P", "name": "Mochila",
