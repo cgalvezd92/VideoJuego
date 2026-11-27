@@ -18,10 +18,13 @@ var chest_grid: GridContainer
 var inventory_grid: GridContainer
 var player: Node
 var closed_at: int = 0
+## Cofres de los lugares especiales (Etapa 47): los guarda Places, no SaveGame.
+var persistent: bool = false
 
 
 func _ready() -> void:
-	add_to_group("chest")
+	if not persistent:
+		add_to_group("chest")
 	if slots.size() != SLOT_COUNT:
 		slots.resize(SLOT_COUNT)
 	_build_model()

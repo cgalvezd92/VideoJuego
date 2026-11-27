@@ -31,6 +31,7 @@ const FOODS: Dictionary = {
 	"carne_cruda": { "hunger": 5.0, "thirst": 0.0, "health": -10.0, "text": "Comiste carne cruda... te sienta mal" },
 	"pescado_cocido": { "hunger": 35.0, "thirst": 0.0, "health": 5.0, "text": "Comiste pescado cocido. ¡Muy bueno!" },
 	"pescado_crudo": { "hunger": 8.0, "thirst": 0.0, "health": -6.0, "text": "Comiste pescado crudo... no te sienta bien" },
+	"miel": { "hunger": 20.0, "thirst": 0.0, "health": 8.0, "text": "Comiste miel. ¡Qué dulce! (+8 vida)" },
 	"agua": { "hunger": 0.0, "thirst": 40.0, "health": 0.0, "text": "Bebiste agua de la olla" },
 }
 

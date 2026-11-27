@@ -169,7 +169,7 @@ func _update_climate() -> void:
 			return
 	var hour: float = day_night.get_hour()
 	var raining: bool = weather != null and weather.rain_amount > 0.5
-	var near_shelter: bool = _near_group("shelter", shelter_radius)
+	var near_shelter: bool = _near_group("shelter", shelter_radius) or _in_cover()
 
 	var was_hot: bool = hot
 	hot = hour >= heat_start_hour and hour < heat_end_hour and not raining \
@@ -193,6 +193,14 @@ func _in_shade() -> bool:
 			continue
 		var radius: float = shade_radius * tree.scale.x
 		if Vector2(tree.global_position.x, tree.global_position.z).distance_squared_to(here) < radius * radius:
+			return true
+	return false
+
+
+## ¿Estás dentro o junto a una cueva? (Etapa 47)
+func _in_cover() -> bool:
+	for cover in get_tree().get_nodes_in_group("cover"):
+		if cover.global_position.distance_to(player.global_position) < cover.cover_radius:
 			return true
 	return false
 

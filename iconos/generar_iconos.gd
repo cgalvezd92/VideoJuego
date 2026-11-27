@@ -56,6 +56,7 @@ func _initialize() -> void:
 		"cofre": _built("res://objects/chest.gd"),
 		"cama": _built("res://objects/bed.gd"),
 		"mochila": _backpack(),
+		"miel": _honey(),
 	}
 	# Lanza, flecha, arpón y venda: modelos propios con la punta más grande.
 	items["lanza"] = _spear()
@@ -316,4 +317,13 @@ func _backpack() -> Node3D:
 	_part(root, _box(0.06, 0.5, 0.04), Color("#5a3c22"), Vector3(-0.14, 0.32, -0.16))
 	_part(root, _box(0.06, 0.5, 0.04), Color("#5a3c22"), Vector3(0.14, 0.32, -0.16))
 	_part(root, _box(0.08, 0.06, 0.04), Color("#d8c9a0"), Vector3(0, 0.46, 0.16))
+	return root
+
+
+func _honey() -> Node3D:
+	var root := Node3D.new()
+	_part(root, _cyl(0.2, 0.32, 14), Color("#e0a020"), Vector3(0, 0, 0))
+	_part(root, _cyl(0.21, 0.06, 14), Color("#c98a2b"), Vector3(0, 0.05, 0))
+	_part(root, _cyl(0.17, 0.08, 14), Color("#8a5a2a"), Vector3(0, 0.2, 0))
+	_part(root, _box(0.36, 0.03, 0.06), Color("#d8c9a0"), Vector3(0, 0.24, 0))
 	return root
