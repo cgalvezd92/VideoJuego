@@ -12,6 +12,7 @@ const CAMPFIRE_SCENE: PackedScene = preload("res://objects/campfire.tscn")
 const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 const Chest = preload("res://objects/chest.gd")
 const Bed = preload("res://objects/bed.gd")
+const HeldItems = preload("res://Player/held_items.gd")
 
 ## Cada cuántos segundos se guarda automáticamente.
 @export var autosave_seconds: float = 60.0
@@ -100,6 +101,12 @@ func save_game(show_message: bool) -> void:
 	for bed in get_tree().get_nodes_in_group("bed"):
 		beds.append(_vec_to_array(bed.global_position) + [bed.rotation.y])
 
+	# Objetos soltados en el suelo (Etapa 42): [x, y, z, id, nombre, cantidad].
+	var dropped: Array = []
+	for item in get_tree().get_nodes_in_group("dropped"):
+		if not item.is_queued_for_deletion():
+			dropped.append(_vec_to_array(item.global_position) + [item.item_id, item.display_name, item.amount])
+
 	var data: Dictionary = {
 		"version": 2,  # 2 = mapa de África (Etapa 19).
 		"personaje": Personajes.actual()["id"],  # Etapa 25.
@@ -129,6 +136,7 @@ func save_game(show_message: bool) -> void:
 		"backpack": inventory.has_backpack(),  # Etapa 31.
 		"chests": chests,
 		"beds": beds,
+		"dropped": dropped,
 		# Objetivos cumplidos y si ya te rescataron (Etapa 34).
 		"objectives": objectives.get_save_data(),
 		# Lo recogido y talado fuera de la zona inicial (Etapa 22).
@@ -232,6 +240,11 @@ func load_game() -> void:
 		main.add_child(bed)
 		bed.global_position = _array_to_vec(b)
 		bed.rotation.y = b[3]
+
+	for d in (data.get("dropped", []) if same_map else []):
+		var item: Area3D = HeldItems.make_pickable(d[3], d[4], int(d[5]))
+		main.add_child(item)
+		item.global_position = _array_to_vec(d)
 
 	hud.show_message("Partida cargada")
 
