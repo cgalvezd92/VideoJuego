@@ -178,7 +178,15 @@ func _update_stamina(moving: bool, delta: float) -> void:
 			# Con hambre o sed a cero se recupera la mitad.
 			if survival.hunger <= 0.0 or survival.thirst <= 0.0:
 				rate *= 0.5
-			stamina = minf(stamina + rate * delta, max_stamina)
+			# Con frío (Etapa 39) se recupera despacio y no pasa de un tope.
+			var top: float = max_stamina
+			if survival.cold:
+				rate *= 0.35
+				top = max_stamina * clampf(1.0 - 0.45 * Personajes.dano_clima(), 0.35, 0.85)
+			if stamina > top:
+				stamina = maxf(stamina - 3.0 * delta, top)  # El frío te va cansando.
+			else:
+				stamina = minf(stamina + rate * delta, top)
 	if exhausted and stamina >= max_stamina * 0.3:
 		exhausted = false
 	stamina = maxf(stamina, 0.0)

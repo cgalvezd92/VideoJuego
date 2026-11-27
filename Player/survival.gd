@@ -30,12 +30,31 @@ var max_health: float = 100.0
 ## Vida que cura una venda.
 @export var bandage_heal: float = 15.0
 
+@export_group("Clima (Etapa 39)")
+## Horas del día en las que el sol aprieta.
+@export var heat_start_hour: float = 11.0
+@export var heat_end_hour: float = 16.0
+## Sed extra al sol (1.5 = la sed baja 2,5 veces más rápido con aguante normal).
+@export var heat_thirst_extra: float = 1.5
+## Radio de la sombra de una acacia (se multiplica por su tamaño).
+@export var shade_radius: float = 3.2
+## Cerca de una fogata a esta distancia no tienes frío.
+@export var warm_radius: float = 6.0
+## Cerca de un refugio tienes sombra de día y no pasas frío de noche.
+@export var shelter_radius: float = 3.5
+
 var health: float = 100.0
 var hunger: float = 100.0
 var thirst: float = 100.0
 var near_fire: bool = false
 ## Segundos de sangrado que quedan (0 = no sangras).
 var bleeding: float = 0.0
+## Clima (Etapa 39): calor al sol del mediodía y frío de noche lejos del fuego.
+var hot: bool = false
+var cold: bool = false
+var climate_time: float = 0.0
+var day_night: Node
+var weather: Node
 
 # Cada cuánto se revisan las fogatas y se redibujan las barras.
 # Así no se hace en cada fotograma (ahorra recursos).
@@ -59,7 +78,17 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	hunger = maxf(hunger - hunger_per_second * delta, 0.0)
-	thirst = maxf(thirst - thirst_per_second * delta, 0.0)
+	# Al sol del mediodía la sed baja más rápido (más con poco aguante al clima).
+	var thirst_rate: float = thirst_per_second
+	if hot:
+		thirst_rate *= 1.0 + heat_thirst_extra * Personajes.dano_clima()
+	thirst = maxf(thirst - thirst_rate * delta, 0.0)
+
+	# El clima se revisa una vez por segundo (no en cada fotograma).
+	climate_time -= delta
+	if climate_time <= 0.0:
+		climate_time = 1.0
+		_update_climate()
 
 	var change: float = 0.0
 	if hunger <= 0.0:
@@ -128,6 +157,50 @@ func rest(seconds: float) -> void:
 	health = minf(health + 30.0, max_health)
 	player.restore_stamina()
 	check_time = 0.0
+
+
+## ¿Calor o frío? (Etapa 39)
+func _update_climate() -> void:
+	if day_night == null:
+		day_night = get_tree().get_first_node_in_group("day_night")
+		weather = get_tree().get_first_node_in_group("weather")
+		if day_night == null:
+			return
+	var hour: float = day_night.get_hour()
+	var raining: bool = weather != null and weather.rain_amount > 0.5
+	var near_shelter: bool = _near_group("shelter", shelter_radius)
+
+	var was_hot: bool = hot
+	hot = hour >= heat_start_hour and hour < heat_end_hour and not raining \
+		and not near_shelter and not _in_shade()
+	var was_cold: bool = cold
+	cold = day_night.is_night() and not near_shelter and not _near_group("campfire", warm_radius) \
+		and not player.get_node("Tools").is_holding_torch()
+
+	if hot and not was_hot:
+		hud.show_message("¡Qué calor! Busca la sombra de una acacia o un refugio")
+	if cold and not was_cold:
+		hud.show_message("Hace frío: acércate a una fogata, a un refugio o usa la antorcha")
+	hud.set_climate(hot, cold)
+
+
+## ¿Estás bajo la copa de una acacia en pie?
+func _in_shade() -> bool:
+	var here := Vector2(player.global_position.x, player.global_position.z)
+	for tree in get_tree().get_nodes_in_group("shade_tree"):
+		if tree.felled or not tree.is_inside_tree():
+			continue
+		var radius: float = shade_radius * tree.scale.x
+		if Vector2(tree.global_position.x, tree.global_position.z).distance_squared_to(here) < radius * radius:
+			return true
+	return false
+
+
+func _near_group(group: String, radius: float) -> bool:
+	for node in get_tree().get_nodes_in_group(group):
+		if node.global_position.distance_squared_to(player.global_position) < radius * radius:
+			return true
+	return false
 
 
 func _is_near_fire() -> bool:

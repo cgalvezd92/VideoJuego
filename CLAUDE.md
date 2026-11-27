@@ -76,6 +76,7 @@ En cada etapa, explicar paso a paso:
 | 35 | Cocodrilos (`objects/crocodile.gd`, sin escena, malla única): hundidos en ríos y lagos; a 12 m (7 agachado) nadan hacia ti, saltan a la orilla y muerden (25); 3 golpes los alejan; uno en el lago de la salida y al azar por celdas | ✅ Lista |
 | 36 | Dificultad al elegir personaje (Fácil / Normal / Difícil, en `Personajes`): hambre y sed ×0,75 / 1 / 1,3, daño de animales ×0,6 / 1 / 1,5, días hasta la extracción 10 / 14 / 20; se guarda y se ve en Continuar | ✅ Lista |
 | 37 | Vendas: los mordiscos (león, hiena, cocodrilo) hacen sangrar 40 s (1 de vida/s, sin curarte comiendo); **V** fabrica 2 vendas (1 piel + 1 rama); con la venda en la mano, clic para parar la sangre y curar 15; todos empiezan con 2 vendas; se guarda | ✅ Lista |
-| 38 | Plantas venenosas: arbustos con bayas más oscuras (`poisonous` en `berry_bush.gd`; 3 en la salida y 35 % en las celdas): comerlas quita 15 de vida y 15 de sed y el arbusto queda marcado; Mama Zuri los reconoce y no se las come | 🧪 En pruebas |
+| 38 | Plantas venenosas: arbustos con bayas más oscuras (`poisonous` en `berry_bush.gd`; 3 en la salida y 35 % en las celdas): comerlas quita 15 de vida y 15 de sed y el arbusto queda marcado; Mama Zuri los reconoce y no se las come | ✅ Lista |
+| 39 | Sol y temperatura: de 11:00 a 16:00 al sol (sin lluvia) la sed baja más rápido, salvo a la sombra de una acacia o junto a un refugio; de noche, lejos de fogata, refugio o antorcha, hace frío: la energía se recupera despacio y baja a un tope; depende del aguante al clima del personaje | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.
