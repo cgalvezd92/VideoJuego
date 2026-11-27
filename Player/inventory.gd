@@ -17,6 +17,12 @@ signal resized
 var slots: Array = []
 var selected: int = 0
 
+## Usos que aguanta cada herramienta antes de romperse (Etapa 44).
+## La casilla guarda los usos que le quedan en "durability".
+const MAX_DURABILITY: Dictionary = {
+	"hacha": 40, "machete": 60, "lanza": 30, "arpon": 40, "arco": 50,
+}
+
 
 func _ready() -> void:
 	slots.resize(SLOT_COUNT)  # Crea 8 casillas vacías (null).
@@ -32,6 +38,8 @@ func add_item(id: String, display_name: String, amount: int = 1) -> int:
 		if index == -1:
 			return -1
 		slots[index] = { "id": id, "name": display_name, "amount": 0 }
+		if MAX_DURABILITY.has(id):
+			slots[index].durability = MAX_DURABILITY[id]
 
 	slots[index].amount += amount
 	changed.emit()
@@ -89,3 +97,39 @@ func expand(count: int) -> void:
 
 func has_backpack() -> bool:
 	return SLOT_COUNT > 8
+
+
+## Gasta un uso de una herramienta (Etapa 44). Si se acaba, se rompe: se
+## quita 1 y, si tenías más, la siguiente empieza nueva.
+## Devuelve "roto", "gastado" (le queda poco) o "".
+func wear(id: String, uses: int = 1) -> String:
+	var index: int = _find_slot(id)
+	if index == -1 or not MAX_DURABILITY.has(id):
+		return ""
+	var slot: Dictionary = slots[index]
+	var top: int = MAX_DURABILITY[id]
+	var before: int = slot.get("durability", top)
+	slot.durability = before - uses
+	if slot.durability <= 0:
+		slot.durability = top
+		remove_item(id, 1)  # También avisa del cambio.
+		return "roto"
+	changed.emit()
+	if before > top * 0.2 and slot.durability <= top * 0.2:
+		return "gastado"
+	return ""
+
+
+## Usos que le quedan a una herramienta (0 a 1), o -1 si no se gasta.
+func durability_ratio(slot) -> float:
+	if slot == null or not MAX_DURABILITY.has(slot.id):
+		return -1.0
+	return float(slot.get("durability", MAX_DURABILITY[slot.id])) / MAX_DURABILITY[slot.id]
+
+
+## Pone los usos que le quedan a una herramienta (al recogerla o sacarla del cofre).
+func set_durability(id: String, value: int) -> void:
+	var index: int = _find_slot(id)
+	if index != -1 and MAX_DURABILITY.has(id):
+		slots[index].durability = clampi(value, 1, MAX_DURABILITY[id])
+		changed.emit()

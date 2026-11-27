@@ -20,6 +20,8 @@ var slot_panels: Array[Panel] = []
 var name_labels: Array[Label] = []
 var count_labels: Array[Label] = []
 var icon_rects: Array[TextureRect] = []
+## Barrita de desgaste de cada casilla (Etapa 44).
+var wear_bars: Array[ColorRect] = []
 ## Dibujos ya cargados (id -> Texture2D, o null si no hay).
 var icons: Dictionary = {}
 var selected_label: Label
@@ -64,12 +66,20 @@ func _refresh_items() -> void:
 			name_labels[i].text = ""
 			count_labels[i].text = ""
 			icon_rects[i].texture = null
+			wear_bars[i].visible = false
 		else:
 			var icon: Texture2D = _icon(item.id)
 			icon_rects[i].texture = icon
 			# Con dibujo no hace falta el nombre dentro de la casilla.
 			name_labels[i].text = "" if icon != null else item.name
 			count_labels[i].text = "x%d" % item.amount
+			# Barrita de desgaste: verde llena, amarilla a medias, roja casi rota.
+			var ratio: float = inventory.durability_ratio(item)
+			wear_bars[i].visible = ratio >= 0.0
+			if ratio >= 0.0:
+				var width: float = slot_panels[i].custom_minimum_size.x - 12.0
+				wear_bars[i].size = Vector2(maxf(width * ratio, 2.0), 4.0)
+				wear_bars[i].color = Color(1.0, 0.25, 0.2) if ratio <= 0.2 else (Color(1.0, 0.8, 0.2) if ratio <= 0.5 else Color(0.4, 0.9, 0.35))
 	_refresh_selected_name()
 
 
@@ -103,6 +113,7 @@ func _rebuild() -> void:
 	name_labels.clear()
 	count_labels.clear()
 	icon_rects.clear()
+	wear_bars.clear()
 	selected_label.queue_free()
 	_build_bar()
 	_refresh_items()
@@ -163,6 +174,15 @@ func _build_bar() -> void:
 		count.offset_right = -6.0
 		count.offset_bottom = -3.0
 		count_labels.append(count)
+
+		# Barrita de desgaste, abajo a la izquierda (oculta si no se gasta).
+		var wear := ColorRect.new()
+		panel.add_child(wear)
+		wear.position = Vector2(6, size - 9)
+		wear.size = Vector2(size - 12, 4)
+		wear.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		wear.visible = false
+		wear_bars.append(wear)
 
 		slot_panels.append(panel)
 

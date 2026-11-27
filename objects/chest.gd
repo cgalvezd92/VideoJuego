@@ -123,9 +123,14 @@ func _take(index: int) -> void:
 	var item = slots[index]
 	if item == null:
 		return
-	if player.get_node("Inventory").add_item(item.id, item.name, item.amount) == -1:
+	var inventory = player.get_node("Inventory")
+	var had: int = inventory.get_amount(item.id)
+	if inventory.add_item(item.id, item.name, item.amount) == -1:
 		player.get_node("HUD").show_message("Tu inventario está lleno")
 		return
+	# La herramienta conserva su desgaste (Etapa 44).
+	if had == 0 and item.has("durability"):
+		inventory.set_durability(item.id, item.durability)
 	slots[index] = null
 	_refresh()
 
@@ -147,6 +152,8 @@ func _store(index: int) -> void:
 		return
 	if slots[target] == null:
 		slots[target] = { "id": item.id, "name": item.name, "amount": 0 }
+		if item.has("durability"):
+			slots[target].durability = item.durability
 	slots[target].amount += item.amount
 	inventory.remove_item(item.id, item.amount)
 	_refresh()
