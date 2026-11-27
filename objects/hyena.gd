@@ -179,7 +179,7 @@ func _try_bite() -> void:
 	if bite_time > 0.0:
 		return
 	bite_time = bite_cooldown
-	player.get_node("Survival").damage(bite_damage, true)  # El mordisco sangra (Etapa 37).
+	player.get_node("Survival").damage(bite_damage, true, "una hiena")  # Sangra (Etapa 37); causa (Etapa 53).
 	var hud = player.get_node("HUD")
 	hud.flash_damage()
 	hud.show_message("¡La hiena te muerde! Busca una fogata o golpéala con el hacha")

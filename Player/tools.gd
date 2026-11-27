@@ -201,6 +201,8 @@ func _eat() -> void:
 	if food.thirst > 0.0:
 		survival.drink(food.thirst)
 	survival.health = clampf(survival.health + food.health, 0.0, survival.max_health)
+	if food.health < 0.0:
+		survival.last_cause = "la comida cruda"
 	hud.show_message(food.text)
 
 
@@ -248,6 +250,7 @@ func _swing() -> void:
 		else:
 			hud.show_message("Talaste el árbol: +%d madera" % wood)
 		get_tree().call_group("objectives", "complete", "talar")
+		get_tree().call_group("objectives", "count", "arboles")
 
 
 ## Lanza la lanza o dispara una flecha hacia donde mira la cámara.
@@ -288,6 +291,7 @@ func _hunt(gazelle: Object) -> void:
 		hud.show_message("Cazaste una gacela, pero el inventario está lleno")
 	else:
 		get_tree().call_group("objectives", "complete", "cazar")
+		get_tree().call_group("objectives", "count", "cazas")
 		# Cada gacela da también 1 piel (para la mochila, Etapa 31).
 		inventory.add_item("piel", "Piel", 1)
 		hud.show_message("Cazaste una gacela: +%d carne cruda y 1 piel" % meat)
@@ -327,6 +331,7 @@ func _fish(water: Object) -> void:
 		return
 	hud.show_message("¡Pescaste un pez! Cocínalo en una fogata (E)")
 	get_tree().call_group("objectives", "complete", "pescar")
+	get_tree().call_group("objectives", "count", "peces")
 
 
 # --- Soltar objetos (Etapa 42) ---

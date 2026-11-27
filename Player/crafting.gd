@@ -245,6 +245,7 @@ func _try_build_fire() -> void:
 	player.get_parent().add_child(fire)
 	fire.global_position = spot
 	hud.show_message("Hiciste una fogata")
+	get_tree().call_group("objectives", "count", "fogatas")
 
 
 ## Envía las recetas al libro de fabricación (se llama al cambiar el inventario).

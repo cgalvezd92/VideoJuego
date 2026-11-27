@@ -61,6 +61,10 @@ var rescue_announced: bool = false
 var panel: PanelContainer
 var content: VBoxContainer
 var victory: CanvasLayer
+## Estadísticas de la partida (Etapa 53): cazas, peces, arboles, fogatas,
+## desmayos y metros recorridos.
+var stats: Dictionary = {}
+var last_position := Vector3.INF
 
 
 func _ready() -> void:
@@ -108,6 +112,13 @@ func _process(delta: float) -> void:
 		if day_night == null:
 			return
 
+	# Metros recorridos (no cuenta los saltos al despertar o cargar).
+	if last_position != Vector3.INF:
+		var step: float = Vector2(player.global_position.x - last_position.x, player.global_position.z - last_position.z).length()
+		if step < 30.0:
+			stats["metros"] = stats.get("metros", 0.0) + step
+	last_position = player.global_position
+
 	if inventory.get_amount("rama") >= 3:
 		complete("ramas")
 	if not get_tree().get_nodes_in_group("fire_pit").is_empty():
@@ -128,6 +139,19 @@ func _process(delta: float) -> void:
 		rescue_announced = true
 		hud.show_message("¡Llegó la extracción! Ve al punto verde del mapa (M)")
 	_rebuild()
+
+
+## Suma 1 a una estadística (Etapa 53): "cazas", "peces", "arboles"...
+func count(key: String) -> void:
+	stats[key] = stats.get(key, 0) + 1
+
+
+## Resumen de la partida en texto (pantalla de muerte y de rescate).
+func summary() -> String:
+	var day: int = 1 if day_night == null else int(day_night.total_hours / 24.0) + 1
+	return "Día %d · %d gacelas cazadas · %d peces · %d árboles talados · %d fogatas · %.1f km recorridos" % [
+		day, stats.get("cazas", 0), stats.get("peces", 0), stats.get("arboles", 0),
+		stats.get("fogatas", 0), stats.get("metros", 0.0) / 1000.0]
 
 
 ## Marca un objetivo como cumplido (si no lo estaba ya).
@@ -268,6 +292,7 @@ func _show_victory() -> void:
 	_victory_label(box, "¡Te rescataron!", 44, Color(1.0, 0.85, 0.3))
 	_victory_label(box, "Sobreviviste %d días en África como %s." % [days, Personajes.actual()["nombre"]], 20, Color.WHITE)
 	_victory_label(box, "Objetivos cumplidos: %d de %d" % [done.size(), LIST.size()], 18, Color(0.75, 0.9, 0.55))
+	_victory_label(box, summary(), 15, Color(1, 1, 1, 0.8))
 	# Final de cada personaje y la pista del humo (Etapa 51).
 	var story = get_tree().get_first_node_in_group("story")
 	if story != null:
@@ -328,7 +353,7 @@ func _on_back_to_title() -> void:
 # --- Guardar y cargar (lo usa SaveGame) ---
 
 func get_save_data() -> Dictionary:
-	return { "done": done.keys(), "rescued": rescued }
+	return { "done": done.keys(), "rescued": rescued, "stats": stats }
 
 
 func set_save_data(data: Dictionary) -> void:
@@ -336,5 +361,7 @@ func set_save_data(data: Dictionary) -> void:
 	for id in data.get("done", []):
 		done[id] = true
 	rescued = data.get("rescued", false)
+	stats = data.get("stats", {}).duplicate()
+	last_position = Vector3.INF
 	rescue_announced = rescued
 	_rebuild()
