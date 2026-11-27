@@ -2,6 +2,12 @@ extends CanvasLayer
 ## Barra de inventario con casillas, abajo al centro (Etapa 3).
 ## Teclas 1-8 (y 9, 0 con la mochila) o rueda del mouse para elegir casilla.
 ## Va en el nodo "InventoryUI", hijo de Player.
+##
+## Cada objeto se ve con su dibujo (Etapa 40): res://iconos/<id>.png.
+## Si un objeto no tiene dibujo, se ve su nombre. El nombre del objeto
+## elegido aparece encima de la barra.
+
+const ICONS_PATH: String = "res://iconos/%s.png"
 
 ## Tamaño de cada casilla: más pequeñas con la mochila para que quepan 12.
 const SLOT_SIZE: float = 72.0
@@ -13,6 +19,10 @@ const SMALL_SLOT_SIZE: float = 60.0
 var slot_panels: Array[Panel] = []
 var name_labels: Array[Label] = []
 var count_labels: Array[Label] = []
+var icon_rects: Array[TextureRect] = []
+## Dibujos ya cargados (id -> Texture2D, o null si no hay).
+var icons: Dictionary = {}
+var selected_label: Label
 
 var style_normal: StyleBoxFlat
 var style_selected: StyleBoxFlat
@@ -53,15 +63,37 @@ func _refresh_items() -> void:
 		if item == null:
 			name_labels[i].text = ""
 			count_labels[i].text = ""
+			icon_rects[i].texture = null
 		else:
-			name_labels[i].text = item.name
+			var icon: Texture2D = _icon(item.id)
+			icon_rects[i].texture = icon
+			# Con dibujo no hace falta el nombre dentro de la casilla.
+			name_labels[i].text = "" if icon != null else item.name
 			count_labels[i].text = "x%d" % item.amount
+	_refresh_selected_name()
 
 
 func _refresh_selection() -> void:
 	for i in inventory.SLOT_COUNT:
 		var style: StyleBoxFlat = style_selected if i == inventory.selected else style_normal
 		slot_panels[i].add_theme_stylebox_override("panel", style)
+	_refresh_selected_name()
+
+
+## Nombre del objeto elegido, encima de la barra.
+func _refresh_selected_name() -> void:
+	if selected_label == null:
+		return
+	var item = inventory.get_selected_item()
+	selected_label.text = "" if item == null else item.name
+
+
+## Carga el dibujo de un objeto una sola vez (luego se reutiliza).
+func _icon(id: String) -> Texture2D:
+	if not icons.has(id):
+		var path: String = ICONS_PATH % id
+		icons[id] = load(path) if ResourceLoader.exists(path) else null
+	return icons[id]
 
 
 ## Vuelve a crear la barra (cuando la mochila añade casillas).
@@ -70,6 +102,8 @@ func _rebuild() -> void:
 	slot_panels.clear()
 	name_labels.clear()
 	count_labels.clear()
+	icon_rects.clear()
+	selected_label.queue_free()
 	_build_bar()
 	_refresh_items()
 	_refresh_selection()
@@ -94,6 +128,20 @@ func _build_bar() -> void:
 		panel.custom_minimum_size = Vector2(size, size)
 		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
+		# Dibujo del objeto (Etapa 40), detrás de los números.
+		var icon := TextureRect.new()
+		panel.add_child(icon)
+		icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		var margin: float = size * 0.1
+		icon.offset_left = margin
+		icon.offset_top = margin
+		icon.offset_right = -margin
+		icon.offset_bottom = -margin
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon_rects.append(icon)
+
 		# Número de la casilla (arriba a la izquierda).
 		var key_text: String = str(i + 1) if i < 9 else ("0" if i == 9 else "")
 		var number := _add_label(panel, key_text, 12, Control.PRESET_TOP_LEFT)
@@ -117,6 +165,19 @@ func _build_bar() -> void:
 		count_labels.append(count)
 
 		slot_panels.append(panel)
+
+	# Nombre del objeto elegido, justo encima de la barra.
+	selected_label = Label.new()
+	add_child(selected_label)
+	selected_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+	selected_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	selected_label.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	selected_label.offset_bottom = -20.0 - size - 4.0
+	selected_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	selected_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	selected_label.add_theme_font_size_override("font_size", 15)
+	selected_label.add_theme_constant_override("outline_size", 4)
+	selected_label.add_theme_color_override("font_outline_color", Color.BLACK)
 
 
 func _add_label(parent: Control, text: String, size: int, preset: int) -> Label:
