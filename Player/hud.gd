@@ -28,11 +28,12 @@ F  Hacer fogata
 C  Hacer hacha
 R  Hacer refugio
 X / L  Hacer flechas / lanza
+P  Hacer mochila
 M  Mapa
 B  Libro de fabricación
 Clic izq.  Golpear / Comer / Beber
 Clic der.  Lanzar lanza / Disparar arco
-1-8 / Rueda  Elegir casilla
+1-8 / Rueda  Elegir casilla (9 y 0 con mochila)
 Esc  Pausa (menú)
 F5 Guardar · F9 Cargar · F8 Nueva partida"""
 

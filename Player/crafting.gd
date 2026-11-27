@@ -25,6 +25,9 @@ const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 @export var arrow_branches: int = 1
 @export var arrow_stones: int = 1
 @export var arrows_made: int = 2
+## Mochila (P): 3 pieles + 2 ramas; el inventario pasa a 12 casillas.
+@export var backpack_hides: int = 3
+@export var backpack_branches: int = 2
 ## Lanza (L): 2 madera + 1 piedra.
 @export var spear_wood: int = 2
 @export var spear_stones: int = 1
@@ -50,15 +53,21 @@ func _unhandled_input(event: InputEvent) -> void:
 		_try_build_shelter()
 	elif event.is_action_pressed("craft_arrows"):
 		_craft_item({"rama": arrow_branches, "piedra": arrow_stones}, "flecha", "Flecha", arrows_made)
+	elif event.is_action_pressed("craft_backpack"):
+		_try_craft_backpack()
 	elif event.is_action_pressed("craft_spear"):
 		_craft_item({"madera": spear_wood, "piedra": spear_stones}, "lanza", "Lanza", 1)
 
 
 ## Fabrica un objeto si tienes los materiales (Etapa 28).
 ## "cost" es { id del material: cantidad }.
-func _craft_item(cost: Dictionary, id: String, display_name: String, amount: int) -> void:
+## ¿Tienes los materiales? Si no, avisa de lo que falta.
+func _has_materials(cost: Dictionary) -> bool:
 	# Nombre en singular y plural de cada material.
-	var names: Dictionary = { "rama": ["rama", "ramas"], "piedra": ["piedra", "piedras"], "madera": ["de madera", "de madera"] }
+	var names: Dictionary = {
+		"rama": ["rama", "ramas"], "piedra": ["piedra", "piedras"],
+		"madera": ["de madera", "de madera"], "piel": ["piel", "pieles"],
+	}
 	var missing: PackedStringArray = []
 	for material in cost:
 		var have: int = inventory.get_amount(material)
@@ -67,6 +76,27 @@ func _craft_item(cost: Dictionary, id: String, display_name: String, amount: int
 			missing.append("%d %s (tienes %d)" % [cost[material], word, have])
 	if not missing.is_empty():
 		hud.show_message("Necesitas " + ", ".join(missing))
+		return false
+	return true
+
+
+## La mochila no ocupa casilla: amplía el inventario a 12 (Etapa 31).
+func _try_craft_backpack() -> void:
+	if inventory.has_backpack():
+		hud.show_message("Ya tienes una mochila")
+		return
+	var cost: Dictionary = { "piel": backpack_hides, "rama": backpack_branches }
+	if not _has_materials(cost):
+		return
+	for material in cost:
+		inventory.remove_item(material, cost[material])
+	inventory.expand(12)
+	hud.show_message("Hiciste una mochila: ahora tienes 12 casillas (teclas 9 y 0, y la rueda)")
+
+
+func _craft_item(cost: Dictionary, id: String, display_name: String, amount: int) -> void:
+	# Nombre en singular y plural de cada material.
+	if not _has_materials(cost):
 		return
 	if inventory.add_item(id, display_name, amount) == -1:
 		hud.show_message("Inventario lleno")
@@ -195,6 +225,12 @@ func _update_book() -> void:
 			"needs": [["Madera", wood, spear_wood], ["Piedras", stones, spear_stones]],
 			"available": wood >= spear_wood and stones >= spear_stones,
 			"note": "Caza de cerca o lánzala (clic derecho)",
+		},
+		{
+			"key": "P", "name": "Mochila",
+			"needs": [["Pieles", inventory.get_amount("piel"), backpack_hides], ["Ramas", branches, backpack_branches]],
+			"available": not inventory.has_backpack() and inventory.get_amount("piel") >= backpack_hides and branches >= backpack_branches,
+			"note": "Ya tienes una (12 casillas)" if inventory.has_backpack() else "+4 casillas. Piel: caza gacelas",
 		},
 	])
 

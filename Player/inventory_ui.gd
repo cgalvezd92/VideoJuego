@@ -1,9 +1,11 @@
 extends CanvasLayer
 ## Barra de inventario con casillas, abajo al centro (Etapa 3).
-## Teclas 1-8 o rueda del mouse para elegir casilla.
+## Teclas 1-8 (y 9, 0 con la mochila) o rueda del mouse para elegir casilla.
 ## Va en el nodo "InventoryUI", hijo de Player.
 
+## Tamaño de cada casilla: más pequeñas con la mochila para que quepan 12.
 const SLOT_SIZE: float = 72.0
+const SMALL_SLOT_SIZE: float = 60.0
 
 @onready var inventory = owner.get_node("Inventory")
 
@@ -14,6 +16,7 @@ var count_labels: Array[Label] = []
 
 var style_normal: StyleBoxFlat
 var style_selected: StyleBoxFlat
+var bar: HBoxContainer
 
 
 func _ready() -> void:
@@ -22,6 +25,7 @@ func _ready() -> void:
 	_build_bar()
 	inventory.changed.connect(_refresh_items)
 	inventory.selection_changed.connect(_refresh_selection)
+	inventory.resized.connect(_rebuild)
 	_refresh_items()
 	_refresh_selection()
 
@@ -30,7 +34,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	# Teclas 1 a 8: elegir casilla directamente.
 	if event is InputEventKey and event.pressed and not event.echo:
 		var number: int = event.physical_keycode - KEY_1
-		if number >= 0 and number < inventory.SLOT_COUNT:
+		if event.physical_keycode == KEY_0:
+			number = 9  # La tecla 0 es la casilla 10.
+		if number >= 0 and number < mini(inventory.SLOT_COUNT, 10):
 			inventory.select(number)
 	# Rueda del mouse: casilla siguiente o anterior.
 	elif event is InputEventMouseButton and event.pressed:
@@ -58,9 +64,21 @@ func _refresh_selection() -> void:
 		slot_panels[i].add_theme_stylebox_override("panel", style)
 
 
+## Vuelve a crear la barra (cuando la mochila añade casillas).
+func _rebuild() -> void:
+	bar.queue_free()
+	slot_panels.clear()
+	name_labels.clear()
+	count_labels.clear()
+	_build_bar()
+	_refresh_items()
+	_refresh_selection()
+
+
 func _build_bar() -> void:
 	# Fila de casillas pegada abajo y centrada.
-	var bar := HBoxContainer.new()
+	var size: float = SLOT_SIZE if inventory.SLOT_COUNT <= 8 else SMALL_SLOT_SIZE
+	bar = HBoxContainer.new()
 	add_child(bar)
 	bar.add_theme_constant_override("separation", 6)
 	bar.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
@@ -73,11 +91,12 @@ func _build_bar() -> void:
 	for i in inventory.SLOT_COUNT:
 		var panel := Panel.new()
 		bar.add_child(panel)
-		panel.custom_minimum_size = Vector2(SLOT_SIZE, SLOT_SIZE)
+		panel.custom_minimum_size = Vector2(size, size)
 		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 		# Número de la casilla (arriba a la izquierda).
-		var number := _add_label(panel, str(i + 1), 12, Control.PRESET_TOP_LEFT)
+		var key_text: String = str(i + 1) if i < 9 else ("0" if i == 9 else "")
+		var number := _add_label(panel, key_text, 12, Control.PRESET_TOP_LEFT)
 		number.position = Vector2(5, 2)
 		number.modulate = Color(1, 1, 1, 0.6)
 

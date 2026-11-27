@@ -23,12 +23,12 @@ func _ready() -> void:
 	style.border_color = Color(0.6, 0.45, 0.25)
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	style.set_content_margin_all(10)
 	add_theme_stylebox_override("panel", style)
 
 	content = VBoxContainer.new()
 	add_child(content)
-	content.add_theme_constant_override("separation", 2)
+	content.add_theme_constant_override("separation", 0)
 
 	var config := ConfigFile.new()
 	if config.load(SETTINGS_PATH) == OK:
@@ -65,18 +65,18 @@ func _rebuild() -> void:
 	if not expanded:
 		_add("[B] Libro de fabricación", 14, Color(1, 1, 1, 0.85))
 	else:
-		_add("Libro de fabricación", 18, Color(1.0, 0.88, 0.65))
+		_add("Libro de fabricación", 16, Color(1.0, 0.88, 0.65))
 		_add("[B] Cerrar", 12, Color(1, 1, 1, 0.55))
 		for recipe in recipes:
-			_add("", 6, Color.WHITE)  # Pequeño espacio entre recetas.
+			_add("", 2, Color.WHITE)  # Pequeño espacio entre recetas.
 			var title_color: Color = Color(1.0, 0.85, 0.3) if recipe.available else Color(1, 1, 1, 0.8)
-			_add("[%s] %s" % [recipe.key, recipe.name], 16, title_color)
+			_add("[%s] %s" % [recipe.key, recipe.name], 14, title_color)
 			for need in recipe.needs:
 				var enough: bool = need[1] >= need[2]
 				var color: Color = Color(0.55, 0.9, 0.5) if enough else Color(1.0, 0.55, 0.5)
-				_add("    %s  %d/%d" % [need[0], need[1], need[2]], 14, color)
+				_add("    %s  %d/%d" % [need[0], need[1], need[2]], 12, color)
 			if recipe.note != "":
-				_add("    " + recipe.note, 12, Color(1, 1, 1, 0.6))
+				_add("    " + recipe.note, 11, Color(1, 1, 1, 0.6))
 
 	# Ajusta el recuadro al contenido (al cerrarlo se hace pequeño).
 	_fit.call_deferred()
