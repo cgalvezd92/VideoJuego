@@ -139,6 +139,7 @@ func save_game(show_message: bool) -> void:
 		"beds": beds,
 		"dropped": dropped,
 		"places": places.get_save_data(),  # Etapa 47.
+		"map_fog": player.get_node("MapView").get_save_data(),  # Etapa 48.
 		"torch_fuel": player.get_node("Tools").torch_fuel,  # Etapa 43.
 		# Objetivos cumplidos y si ya te rescataron (Etapa 34).
 		"objectives": objectives.get_save_data(),
@@ -255,6 +256,8 @@ func load_game() -> void:
 
 	player.get_node("Tools").torch_fuel = data.get("torch_fuel", player.get_node("Tools").torch_seconds)
 
+	if same_map and data.has("map_fog"):
+		player.get_node("MapView").set_save_data(data.map_fog)
 	if same_map and data.has("places"):
 		places.set_save_data(data.places)
 
