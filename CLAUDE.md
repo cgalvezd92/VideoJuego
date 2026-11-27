@@ -78,5 +78,6 @@ En cada etapa, explicar paso a paso:
 | 37 | Vendas: los mordiscos (león, hiena, cocodrilo) hacen sangrar 40 s (1 de vida/s, sin curarte comiendo); **V** fabrica 2 vendas (1 piel + 1 rama); con la venda en la mano, clic para parar la sangre y curar 15; todos empiezan con 2 vendas; se guarda | ✅ Lista |
 | 38 | Plantas venenosas: arbustos con bayas más oscuras (`poisonous` en `berry_bush.gd`; 3 en la salida y 35 % en las celdas): comerlas quita 15 de vida y 15 de sed y el arbusto queda marcado; Mama Zuri los reconoce y no se las come | ✅ Lista |
 | 39 | Sol y temperatura: de 11:00 a 16:00 al sol (sin lluvia) la sed baja más rápido, salvo a la sombra de una acacia o junto a un refugio; de noche, lejos de fogata, refugio o antorcha, hace frío: la energía se recupera despacio y baja a un tope; depende del aguante al clima del personaje | 🧪 En pruebas |
+| 40 | Inventario con dibujos: cada objeto tiene su icono PNG de 128×128 en `res://iconos/<id>.png` (19 iconos, hechos fotografiando sus modelos 3D con `iconos/generar_iconos.gd`); el nombre del objeto elegido sale encima de la barra | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.
