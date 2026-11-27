@@ -32,6 +32,9 @@ const VIEW_DISTANCE: Dictionary = {
 	"acacia": 120.0, "rock": 120.0, "zebra": 90.0, "giraffe": 150.0, "lion": 100.0,
 }
 
+## Multiplica las distancias de dibujo (lo cambia la calidad, Etapa 52).
+static var view_factor: float = 1.0
+
 @export_group("Cantidad por celda")
 @export var stones_per_cell: int = 3
 @export var branches_per_cell: int = 3
@@ -239,7 +242,7 @@ static func apply_view_distance(node: Node) -> void:
 	if not VIEW_DISTANCE.has(kind):
 		return
 	for mesh in node.find_children("*", "MeshInstance3D", true, false):
-		mesh.visibility_range_end = VIEW_DISTANCE[kind]
+		mesh.visibility_range_end = VIEW_DISTANCE[kind] * view_factor
 
 
 func _unload_cell(key: Vector2i) -> void:
