@@ -30,6 +30,7 @@ var near_fire: bool = false
 var hot: bool = false
 var cold: bool = false
 var exhausted: bool = false
+var sandstorm: bool = false
 
 var blink_on: bool = true
 var blink_time: float = 0.0
@@ -81,6 +82,14 @@ func set_climate(is_hot: bool, is_cold: bool) -> void:
 	_changed()
 
 
+## Tormenta de arena (Etapa 49): aviso "ARENA" en la sed.
+func set_sandstorm(value: bool) -> void:
+	if value == sandstorm:
+		return
+	sandstorm = value
+	_changed()
+
+
 func _changed() -> void:
 	# Solo hace falta animar (parpadeo) si algo está en peligro.
 	set_process(bleeding or health < 0.25 or hunger < 0.2 or thirst < 0.2)
@@ -111,7 +120,7 @@ func _draw() -> void:
 		tag = "FOGATA"
 	_draw_meter(x, 8.0, "VIDA", health, health_text, COLORS.vida, tag, bleeding)
 	_draw_meter(x, 42.0, "HAMBRE", hunger, "%d%%" % roundi(hunger * 100.0), COLORS.hambre, "", false)
-	_draw_meter(x, 76.0, "SED", thirst, "%d%%" % roundi(thirst * 100.0), COLORS.sed, "CALOR" if hot else "", hot)
+	_draw_meter(x, 76.0, "SED", thirst, "%d%%" % roundi(thirst * 100.0), COLORS.sed, "ARENA" if sandstorm else ("CALOR" if hot else ""), hot or sandstorm)
 	var energy_tag: String = "AGOTADO" if exhausted else ("FRÍO" if cold else "")
 	_draw_meter(x, 110.0, "ENERGÍA", stamina, "%d%%" % roundi(stamina * 100.0), COLORS.energia, energy_tag, exhausted or cold)
 

@@ -94,6 +94,12 @@ func _apply() -> void:
 	# Con lluvia el cielo se vuelve gris y la bruma se acerca.
 	environment.background_color = environment.background_color.lerp(Color(0.42, 0.45, 0.5) * (0.3 + 0.7 * daylight), rain * 0.8)
 	environment.fog_depth_end = lerpf(230.0, 110.0, rain)
+	# Tormenta de arena (Etapa 49): cielo y bruma color arena, muy cerca.
+	var sand: float = weather.sand_amount if weather != null else 0.0
+	if sand > 0.0:
+		environment.background_color = environment.background_color.lerp(Color(0.72, 0.56, 0.36) * (0.35 + 0.65 * daylight), sand * 0.9)
+		environment.fog_depth_end = lerpf(environment.fog_depth_end, 32.0, sand)
+	environment.fog_depth_begin = lerpf(70.0, 3.0, sand)
 	# La bruma lejana toma el color del cielo para que el horizonte se funda.
 	environment.fog_light_color = environment.background_color
 	environment.ambient_light_color = night_ambient.lerp(day_ambient, daylight) * (1.0 - 0.3 * rain)
@@ -104,4 +110,6 @@ func _apply() -> void:
 	var clock: String = "Día %d · %02d:%02d" % [day_number, hours, minutes]
 	if weather != null and weather.raining:
 		clock += " · Lluvia"
+	if weather != null and weather.sandstorm:
+		clock += " · Tormenta de arena"
 	hud.set_clock(clock)
