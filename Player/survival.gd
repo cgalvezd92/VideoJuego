@@ -83,6 +83,9 @@ func _process(delta: float) -> void:
 	var thirst_rate: float = thirst_per_second
 	if hot:
 		thirst_rate *= 1.0 + heat_thirst_extra * Personajes.dano_clima()
+	# Estación seca (Etapa 50): un poco más de sed.
+	if weather != null and weather.season == "seca":
+		thirst_rate *= 1.15
 	# Tormenta de arena (Etapa 49): la sed baja mucho más rápido al descubierto.
 	if in_sandstorm:
 		thirst_rate *= 1.0 + 2.0 * weather.sand_amount * Personajes.dano_clima()
