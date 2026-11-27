@@ -86,7 +86,7 @@ func save_game(show_message: bool) -> void:
 	var campfires: Array = []
 	# Cada fogata: [x, y, z, encendida] (Etapa 30: la lluvia las apaga).
 	for fire in get_tree().get_nodes_in_group("fire_pit"):
-		campfires.append(_vec_to_array(fire.global_position) + [fire.lit])
+		campfires.append(_vec_to_array(fire.global_position) + [fire.lit, fire.protected])
 
 	# Cada refugio: [x, y, z, giro].
 	var shelters: Array = []
@@ -137,6 +137,7 @@ func save_game(show_message: bool) -> void:
 		"chests": chests,
 		"beds": beds,
 		"dropped": dropped,
+		"torch_fuel": player.get_node("Tools").torch_fuel,  # Etapa 43.
 		# Objetivos cumplidos y si ya te rescataron (Etapa 34).
 		"objectives": objectives.get_save_data(),
 		# Lo recogido y talado fuera de la zona inicial (Etapa 22).
@@ -216,6 +217,8 @@ func load_game() -> void:
 		fire.global_position = _array_to_vec(pos)
 		if pos.size() > 3 and not pos[3]:
 			fire.extinguish()
+		if pos.size() > 4 and pos[4]:
+			fire.protect()  # Muro de piedras (Etapa 43).
 
 	# Volver a poner los refugios.
 	for data_shelter in (data.get("shelters", []) if same_map else []):
@@ -245,6 +248,8 @@ func load_game() -> void:
 		var item: Area3D = HeldItems.make_pickable(d[3], d[4], int(d[5]))
 		main.add_child(item)
 		item.global_position = _array_to_vec(d)
+
+	player.get_node("Tools").torch_fuel = data.get("torch_fuel", player.get_node("Tools").torch_seconds)
 
 	hud.show_message("Partida cargada")
 

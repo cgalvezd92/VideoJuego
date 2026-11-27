@@ -80,6 +80,7 @@ En cada etapa, explicar paso a paso:
 | 39 | Sol y temperatura: de 11:00 a 16:00 al sol (sin lluvia) la sed baja más rápido, salvo a la sombra de una acacia o junto a un refugio; de noche, lejos de fogata, refugio o antorcha, hace frío: la energía se recupera despacio y baja a un tope; depende del aguante al clima del personaje | ✅ Lista |
 | 40 | Inventario con dibujos: cada objeto tiene su icono PNG de 128×128 en `res://iconos/<id>.png` (19 iconos, hechos fotografiando sus modelos 3D con `iconos/generar_iconos.gd`); el nombre del objeto elegido sale encima de la barra | ✅ Lista |
 | 41 | Mejorar el refugio: **J** cofre (4 madera + 2 ramas, `objects/chest.gd`): E abre una ventana con 12 casillas y tu inventario, clic para pasar objetos; **N** cama de pieles (3 pieles + 2 madera, `objects/bed.gd`): de noche, dormir cura 60 y para la sangre; se guardan con su contenido; libro de fabricación en dos columnas | ✅ Lista |
-| 42 | Soltar objetos: **Q** suelta 1 del objeto elegido y **Shift+Q** todo el montón delante de ti (los que no tienen modelo 3D se ven con su icono); se recogen con **E** y se guardan en la partida (grupo `dropped`) | 🧪 En pruebas |
+| 42 | Soltar objetos: **Q** suelta 1 del objeto elegido y **Shift+Q** todo el montón delante de ti (los que no tienen modelo 3D se ven con su icono); se recogen con **E** y se guardan en la partida (grupo `dropped`) | ✅ Lista |
+| 43 | Antorchas y fogatas mejores: **T** fabrica una antorcha (1 rama + 1 piel); en la mano dura 3 min (el doble de rápido con lluvia) y su luz baja al final; con piedras en la mano, **E** rodea una fogata con un muro (4 piedras) y la lluvia ya no la apaga; se guarda | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.

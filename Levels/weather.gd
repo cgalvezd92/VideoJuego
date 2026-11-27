@@ -83,7 +83,8 @@ func _douse_fires() -> void:
 	if rain_amount < 0.5:
 		return
 	for fire in get_tree().get_nodes_in_group("fire_pit"):
-		if fire.lit and not _is_sheltered(fire.global_position):
+		# Las rodeadas de piedras aguantan la lluvia (Etapa 43).
+		if fire.lit and not fire.protected and not _is_sheltered(fire.global_position):
 			fire.extinguish()
 			hud.show_message("La lluvia apagó una fogata (E para reavivarla con 1 rama)")
 
