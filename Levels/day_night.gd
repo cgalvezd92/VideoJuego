@@ -108,6 +108,9 @@ func _apply() -> void:
 	var hours: int = int(hour)
 	var minutes: int = int((hour - hours) * 60.0)
 	var clock: String = "Día %d · %02d:%02d" % [day_number, hours, minutes]
+	# Estación (Etapa 50).
+	if weather != null and weather.season != "":
+		clock += " · Estación " + weather.season
 	if weather != null and weather.raining:
 		clock += " · Lluvia"
 	if weather != null and weather.sandstorm:

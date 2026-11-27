@@ -1,5 +1,9 @@
 extends Node
-## Lluvia (Etapa 30) y tormentas de arena (Etapa 49).
+## Lluvia (Etapa 30), tormentas de arena (Etapa 49) y estaciones (Etapa 50).
+##
+## Estaciones: cada SEASON_DAYS días cambia entre la estación seca (casi no
+## llueve, más sed, charcas secas, ríos bajos y hierba amarilla) y la lluviosa
+## (llueve mucho, ríos y lagos más altos y hierba verde).
 ## Va en el nodo "Weather", hijo de Main (en main.tscn).
 ##
 ## Tormentas de arena: solo en el desierto del norte (más al norte que
@@ -22,6 +26,13 @@ extends Node
 ## Cada cuántos segundos de lluvia se añade 1 de agua si llevas la olla.
 @export var pot_fill_seconds: float = 20.0
 @export var max_pot_water: int = 5
+
+@export_group("Estaciones (Etapa 50)")
+## Días que dura cada estación. Se empieza en la seca.
+@export var season_days: int = 5
+## Cuánto suben (lluviosa) o bajan (seca) los ríos y lagos, en metros.
+@export var rainy_water_rise: float = 0.45
+@export var dry_water_drop: float = 0.25
 
 @export_group("Tormenta de arena (Etapa 49)")
 ## Al norte de esta Z (metros) empieza el desierto.
@@ -46,6 +57,13 @@ var sand_amount: float = 0.0
 var sand_check: float = 0.0
 var was_in_desert: bool = false
 var sand_fx: GPUParticles3D
+## "seca" o "lluviosa".
+var season: String = ""
+## Nivel del agua de ríos y lagos (-1 seca, 0 normal, 1 lluviosa); cambia despacio.
+var water_level: float = 0.0
+var water_meshes: Array[Node3D] = []
+var water_base_y: Array[float] = []
+var season_check: float = 0.0
 
 @onready var day_night = $"../DayNight"
 @onready var player: Node3D = $"../Player"
@@ -65,11 +83,13 @@ func _process(delta: float) -> void:
 	check_time -= delta
 	if not raining and check_time <= 0.0:
 		check_time = check_every
-		# En el desierto casi no llueve.
+		# En el desierto casi no llueve; en la estación lluviosa mucho más.
 		var chance: float = rain_chance * (0.25 if in_desert() else 1.0)
+		chance *= 2.5 if season == "lluviosa" else 0.3
 		if randf() < chance and not sandstorm:
 			start_rain()
 	_update_sandstorm(delta)
+	_update_season(delta)
 	if raining and day_night.total_hours >= rain_until:
 		stop_rain()
 
@@ -87,6 +107,60 @@ func _process(delta: float) -> void:
 		if pot_time >= pot_fill_seconds:
 			pot_time = 0.0
 			_fill_pot()
+
+
+# --- Estaciones (Etapa 50) ---
+
+## Estación según el día del juego: días 1-5 seca, 6-10 lluviosa, 11-15 seca...
+func current_season() -> String:
+	var day: int = int(day_night.total_hours / 24.0)
+	return "seca" if (day / season_days) % 2 == 0 else "lluviosa"
+
+
+func _update_season(delta: float) -> void:
+	season_check -= delta
+	if season_check <= 0.0:
+		season_check = 1.0
+		var now: String = current_season()
+		if now != season:
+			var first: bool = season == ""
+			season = now
+			_apply_season(first)
+	# El agua de ríos y lagos sube o baja poco a poco (unos 40 s de seca a lluviosa).
+	var target: float = 1.0 if season == "lluviosa" else -1.0
+	if water_level != target:
+		water_level = move_toward(water_level, target, delta / 20.0)
+		_move_water()
+
+
+func _apply_season(first: bool) -> void:
+	var dry_season: bool = season == "seca"
+	for pond in get_tree().get_nodes_in_group("water"):
+		if pond.has_method("set_dry"):
+			pond.set_dry(dry_season)
+	var grass = get_node_or_null("../Nature/Grass")
+	if grass != null and grass.material != null:
+		grass.material.albedo_color = Color(1.15, 1.0, 0.65) if dry_season else Color(0.8, 1.15, 0.8)
+	if first:
+		water_level = 1.0 if not dry_season else -1.0
+		_move_water()
+		return
+	if dry_season:
+		hud.show_message("Empieza la estación seca: llueve poco, las charcas se secan y los ríos bajan")
+	else:
+		hud.show_message("Empieza la estación de lluvias: los ríos crecen y las charcas se llenan")
+
+
+## Mueve las mallas de ríos y lagos (con su colisión para beber).
+func _move_water() -> void:
+	if water_meshes.is_empty():
+		for mesh in get_node("../Mapa").find_children("*", "MeshInstance3D", true, false):
+			if str(mesh.name) == "Rios" or str(mesh.name) == "Lagos_y_oasis":
+				water_meshes.append(mesh)
+				water_base_y.append(mesh.position.y)
+	var offset: float = water_level * (rainy_water_rise if water_level > 0.0 else dry_water_drop)
+	for i in water_meshes.size():
+		water_meshes[i].position.y = water_base_y[i] + offset
 
 
 ## ¿Está el jugador en el desierto del norte? (Etapa 49)

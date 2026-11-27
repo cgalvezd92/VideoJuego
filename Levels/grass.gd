@@ -12,6 +12,9 @@ extends MultiMeshInstance3D
 
 const MapSetup = preload("res://Levels/map_setup.gd")
 
+## Material de las matas: Weather lo tiñe según la estación (Etapa 50).
+var material: StandardMaterial3D
+
 
 ## La llama MapSetup cuando el terreno ya tiene colisión (Etapa 19):
 ## cada mata se planta a la altura real del suelo.
@@ -24,7 +27,7 @@ func build() -> void:
 	tuft.radial_segments = 4
 	tuft.rings = 0
 
-	var material := StandardMaterial3D.new()
+	material = StandardMaterial3D.new()
 	material.vertex_color_use_as_albedo = true  # Cada mata con su propio tono.
 	tuft.material = material
 
