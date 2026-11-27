@@ -53,6 +53,7 @@ var bleeding: float = 0.0
 var hot: bool = false
 var cold: bool = false
 var climate_time: float = 0.0
+var in_sandstorm: bool = false
 var day_night: Node
 var weather: Node
 
@@ -82,6 +83,9 @@ func _process(delta: float) -> void:
 	var thirst_rate: float = thirst_per_second
 	if hot:
 		thirst_rate *= 1.0 + heat_thirst_extra * Personajes.dano_clima()
+	# Tormenta de arena (Etapa 49): la sed baja mucho más rápido al descubierto.
+	if in_sandstorm:
+		thirst_rate *= 1.0 + 2.0 * weather.sand_amount * Personajes.dano_clima()
 	thirst = maxf(thirst - thirst_rate * delta, 0.0)
 
 	# El clima se revisa una vez por segundo (no en cada fotograma).
@@ -182,7 +186,10 @@ func _update_climate() -> void:
 		hud.show_message("¡Qué calor! Busca la sombra de una acacia o un refugio")
 	if cold and not was_cold:
 		hud.show_message("Hace frío: acércate a una fogata, a un refugio o usa la antorcha")
+	# Tormenta de arena (Etapa 49): en un refugio o una cueva no te afecta.
+	in_sandstorm = weather != null and weather.sand_amount > 0.3 and not near_shelter
 	hud.set_climate(hot, cold)
+	hud.body_status.set_sandstorm(in_sandstorm)
 
 
 ## ¿Estás bajo la copa de una acacia en pie?
