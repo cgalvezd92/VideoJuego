@@ -11,16 +11,8 @@ var clock_label: Label
 var controls_label: Label
 var controls_expanded: bool = true
 const SETTINGS_PATH: String = "user://ajustes.cfg"
-var health_bar: ProgressBar
-var hunger_bar: ProgressBar
-var thirst_bar: ProgressBar
-var stamina_bar: ProgressBar
-var stamina_title: Label
-var thirst_title: Label
-var climate_hot: bool = false
-var climate_cold: bool = false
-var stamina_exhausted: bool = false
-var health_title: Label
+## Panel digital con la silueta del cuerpo y los medidores (Etapa 46).
+var body_status: Control
 var message_time: float = 0.0
 
 const CONTROLS_TEXT: String = """WASD  Moverse
@@ -96,55 +88,17 @@ func set_prompt(new_text: String) -> void:
 
 
 func set_stats(health: float, max_health: float, hunger: float, thirst: float, max_value: float, near_fire: bool, bleeding: bool = false) -> void:
-	health_bar.max_value = max_health
-	hunger_bar.max_value = max_value
-	thirst_bar.max_value = max_value
-	health_bar.value = health
-	hunger_bar.value = hunger
-	thirst_bar.value = thirst
-	if bleeding:
-		# Etapa 37: aviso en rojo hasta que te vendes.
-		health_title.text = "Vida (sangrando)"
-		health_title.add_theme_color_override("font_color", Color(1.0, 0.4, 0.35))
-	else:
-		health_title.text = "Vida (fogata)" if near_fire else "Vida"
-		health_title.remove_theme_color_override("font_color")
+	body_status.set_values(health, max_health, hunger, thirst, max_value, near_fire, bleeding)
 
 
 ## La llama Player cuando cambia la energía (Etapa 27).
 func set_stamina(value: float, max_value: float, exhausted: bool) -> void:
-	stamina_bar.max_value = max_value
-	stamina_bar.value = value
-	stamina_exhausted = exhausted
-	_update_climate_titles()
+	body_status.set_stamina(value, max_value, exhausted)
 
 
-## Calor y frío (Etapa 39): se ven en los títulos de la sed y la energía.
+## Calor y frío (Etapa 39): se ven como avisos en los medidores.
 func set_climate(hot: bool, cold: bool) -> void:
-	if hot == climate_hot and cold == climate_cold:
-		return
-	climate_hot = hot
-	climate_cold = cold
-	_update_climate_titles()
-
-
-func _update_climate_titles() -> void:
-	thirst_title.text = "Sed (calor: busca sombra)" if climate_hot else "Sed"
-	_tint(thirst_title, climate_hot, Color(1.0, 0.7, 0.3))
-	if stamina_exhausted:
-		stamina_title.text = "Energía (agotado)"
-	elif climate_cold:
-		stamina_title.text = "Energía (frío: busca fuego)"
-	else:
-		stamina_title.text = "Energía"
-	_tint(stamina_title, climate_cold and not stamina_exhausted, Color(0.6, 0.85, 1.0))
-
-
-func _tint(label: Label, on: bool, color: Color) -> void:
-	if on:
-		label.add_theme_color_override("font_color", color)
-	else:
-		label.remove_theme_color_override("font_color")
+	body_status.set_climate(hot, cold)
 
 
 ## Destello rojo al recibir daño.
@@ -228,49 +182,7 @@ func _create_label(offset_y: float) -> Label:
 
 
 func _build_stats() -> void:
-	# Barras abajo a la izquierda: vida, hambre, sed y energía.
-	var column := VBoxContainer.new()
-	add_child(column)
-	column.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
-	column.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	column.offset_left = 16.0
-	column.offset_bottom = -20.0
-	column.add_theme_constant_override("separation", 2)
-
-	health_title = _add_stat_title(column, "Vida")
-	health_bar = _add_stat_bar(column, Color(0.85, 0.2, 0.2))
-	_add_stat_title(column, "Hambre")
-	hunger_bar = _add_stat_bar(column, Color(0.9, 0.55, 0.15))
-	thirst_title = _add_stat_title(column, "Sed")
-	thirst_bar = _add_stat_bar(column, Color(0.2, 0.55, 0.95))
-	stamina_title = _add_stat_title(column, "Energía")
-	stamina_bar = _add_stat_bar(column, Color(0.95, 0.8, 0.25))
-
-
-func _add_stat_title(parent: Control, text: String) -> Label:
-	var label := Label.new()
-	parent.add_child(label)
-	label.text = text
-	label.add_theme_font_size_override("font_size", 14)
-	label.add_theme_constant_override("outline_size", 4)
-	label.add_theme_color_override("font_outline_color", Color.BLACK)
-	return label
-
-
-func _add_stat_bar(parent: Control, color: Color) -> ProgressBar:
-	var bar := ProgressBar.new()
-	parent.add_child(bar)
-	bar.custom_minimum_size = Vector2(200, 14)
-	bar.show_percentage = false
-	bar.value = 100.0
-
-	var background := StyleBoxFlat.new()
-	background.bg_color = Color(0, 0, 0, 0.5)
-	background.set_corner_radius_all(4)
-	bar.add_theme_stylebox_override("background", background)
-
-	var fill := StyleBoxFlat.new()
-	fill.bg_color = color
-	fill.set_corner_radius_all(4)
-	bar.add_theme_stylebox_override("fill", fill)
-	return bar
+	# Panel digital abajo a la izquierda: silueta del cuerpo que se llena con
+	# la vida y medidores por segmentos (Etapa 46). Se dibuja en body_status.gd.
+	body_status = preload("res://Player/body_status.gd").new()
+	add_child(body_status)
