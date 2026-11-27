@@ -57,6 +57,8 @@ var sand_amount: float = 0.0
 var sand_check: float = 0.0
 var was_in_desert: bool = false
 var sand_fx: GPUParticles3D
+## Cantidad de partículas según la calidad (Etapa 52).
+var particle_factor: float = 1.0
 ## "seca" o "lluviosa".
 var season: String = ""
 ## Nivel del agua de ríos y lagos (-1 seca, 0 normal, 1 lluviosa); cambia despacio.
@@ -96,7 +98,7 @@ func _process(delta: float) -> void:
 	# La intensidad cambia despacio (unos 8 s para empezar o parar del todo).
 	rain_amount = move_toward(rain_amount, 1.0 if raining else 0.0, delta / 8.0)
 	rain_fx.emitting = rain_amount > 0.01
-	rain_fx.amount_ratio = rain_amount
+	rain_fx.amount_ratio = rain_amount * particle_factor
 
 	if raining:
 		fire_check -= delta
@@ -185,7 +187,7 @@ func _update_sandstorm(delta: float) -> void:
 	# Unos 6 s para empezar o parar del todo.
 	sand_amount = move_toward(sand_amount, 1.0 if sandstorm and desert else 0.0, delta / 6.0)
 	sand_fx.emitting = sand_amount > 0.01
-	sand_fx.amount_ratio = sand_amount
+	sand_fx.amount_ratio = sand_amount * particle_factor
 
 
 func start_sandstorm(hours: float = -1.0) -> void:

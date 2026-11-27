@@ -21,6 +21,8 @@ extends Node
 @onready var hud = $"../Player/HUD"
 
 ## Horas pasadas desde el inicio (25.5 = día 2 a las 01:30).
+## Dónde termina la bruma (lo cambia la calidad, Etapa 52).
+var fog_end: float = 230.0
 var total_hours: float = 0.0
 var update_time: float = 0.0
 
@@ -93,7 +95,7 @@ func _apply() -> void:
 	environment.background_color = sky.lerp(sunset_sky, sunset * 0.7)
 	# Con lluvia el cielo se vuelve gris y la bruma se acerca.
 	environment.background_color = environment.background_color.lerp(Color(0.42, 0.45, 0.5) * (0.3 + 0.7 * daylight), rain * 0.8)
-	environment.fog_depth_end = lerpf(230.0, 110.0, rain)
+	environment.fog_depth_end = lerpf(fog_end, fog_end * 0.48, rain)
 	# Tormenta de arena (Etapa 49): cielo y bruma color arena, muy cerca.
 	var sand: float = weather.sand_amount if weather != null else 0.0
 	if sand > 0.0:
