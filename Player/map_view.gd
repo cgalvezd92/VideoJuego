@@ -66,7 +66,7 @@ func _build() -> void:
 
 	var title := _add_label("Mapa de África", 26, Control.PRESET_CENTER_TOP)
 	title.offset_top = 12.0
-	var legend := _add_label("Flecha: tú   ·   Naranja: fogatas   ·   Marrón: refugios   ·   Círculo: zona de recursos   ·   [M] Cerrar", 15, Control.PRESET_CENTER_BOTTOM)
+	var legend := _add_label("Flecha: tú   ·   Naranja: fogatas   ·   Marrón: refugios   ·   Círculo: zona de recursos   ·   Rojo: león   ·   [M] Cerrar", 15, Control.PRESET_CENTER_BOTTOM)
 	legend.offset_bottom = -16.0
 
 
@@ -96,6 +96,13 @@ func _draw_markers() -> void:
 	# Zona de recursos (alrededor del punto de salida).
 	var zone: Vector2 = _to_map(player.spawn_position, origin, side)
 	markers.draw_arc(zone, ZONE_RADIUS / WORLD_SIZE * side, 0.0, TAU, 32, Color(1, 1, 1, 0.8), 1.5)
+
+	# Territorios de león (Etapa 32): círculo rojo alrededor de su guarida.
+	for lion in get_tree().get_nodes_in_group("lion"):
+		var den: Vector2 = _to_map(lion.den, origin, side)
+		var radius: float = lion.territory_radius / WORLD_SIZE * side
+		markers.draw_circle(den, radius, Color(0.85, 0.1, 0.1, 0.25))
+		markers.draw_arc(den, radius, 0.0, TAU, 24, Color(0.9, 0.15, 0.1, 0.9), 1.5)
 
 	for shelter in get_tree().get_nodes_in_group("shelter"):
 		var p: Vector2 = _to_map(shelter.global_position, origin, side)
