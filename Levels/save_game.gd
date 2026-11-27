@@ -93,6 +93,7 @@ func save_game(show_message: bool) -> void:
 	var data: Dictionary = {
 		"version": 2,  # 2 = mapa de África (Etapa 19).
 		"personaje": Personajes.actual()["id"],  # Etapa 25.
+		"dificultad": Personajes.DIFICULTADES[Personajes.dificultad]["id"],  # Etapa 36.
 		"player": {
 			"position": _vec_to_array(player.global_position),
 			"rotation_y": player.rotation.y,
@@ -142,6 +143,8 @@ func load_game() -> void:
 	# Los guardados del mapa anterior (versión 1) no sirven para posiciones:
 	# se conserva el inventario, la vida y la hora, pero empiezas en la salida.
 	var same_map: bool = int(data.get("version", 1)) >= 2
+	# Dificultad de la partida (Etapa 36); las partidas antiguas son Normal.
+	Personajes.dificultad = Personajes.indice_dificultad(data.get("dificultad", "normal"))
 
 	# Jugador
 	var p: Dictionary = data.get("player", {})

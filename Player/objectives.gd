@@ -15,10 +15,15 @@ extends Node
 
 const SETTINGS_PATH: String = "user://ajustes.cfg"
 
-## Días que hay que sobrevivir. La extracción llega al empezar el día siguiente.
-const DAYS_TO_SURVIVE: int = 14
-## Hora del juego a la que llega la extracción: día 15 a las 7:00.
-const RESCUE_HOURS: float = DAYS_TO_SURVIVE * 24.0 + 7.0
+## Días que hay que sobrevivir: dependen de la dificultad (Etapa 36):
+## Fácil 10, Normal 14, Difícil 20. La extracción llega el día siguiente a las 7:00.
+func days_to_survive() -> int:
+	return Personajes.dif("dias")
+
+
+## Hora del juego a la que llega la extracción (Normal: día 15 a las 7:00).
+func rescue_hours() -> float:
+	return days_to_survive() * 24.0 + 7.0
 
 ## Cima del Kilimanjaro (el monte nevado cerca de la salida).
 const KILIMANJARO_TOP := Vector3(352.0, 48.4, 56.0)
@@ -139,14 +144,14 @@ func complete(id: String) -> void:
 
 ## ¿Ya llegó el helicóptero de la extracción?
 func rescue_ready() -> bool:
-	return day_night != null and day_night.total_hours >= RESCUE_HOURS
+	return day_night != null and day_night.total_hours >= rescue_hours()
 
 
 ## Días que te quedan para la extracción (redondeado hacia arriba).
 func days_left() -> int:
 	if day_night == null:
-		return DAYS_TO_SURVIVE
-	return maxi(0, ceili((RESCUE_HOURS - day_night.total_hours) / 24.0))
+		return days_to_survive()
+	return maxi(0, ceili((rescue_hours() - day_night.total_hours) / 24.0))
 
 
 func _text_of(id: String) -> String:
@@ -184,7 +189,7 @@ func _rebuild() -> void:
 	if not expanded:
 		_add("[O] Misión y objetivos (%d/%d)" % [done.size(), LIST.size()], 13, Color(1, 1, 1, 0.85))
 	else:
-		_add("Misión: sobrevive %d días y llega a la extracción" % DAYS_TO_SURVIVE, 14, Color(1.0, 0.85, 0.3))
+		_add("Misión: sobrevive %d días y llega a la extracción" % days_to_survive(), 14, Color(1.0, 0.85, 0.3))
 		if rescued:
 			_add("  ¡Completada! Te rescataron", 12, Color(0.55, 0.9, 0.5))
 		elif rescue_ready():
@@ -192,7 +197,8 @@ func _rebuild() -> void:
 		else:
 			var day: int = 1 if day_night == null else int(day_night.total_hours / 24.0) + 1
 			_add("  Día %d de %d · llega el día %d a las 7:00 (faltan %d)" % [
-				mini(day, DAYS_TO_SURVIVE), DAYS_TO_SURVIVE, DAYS_TO_SURVIVE + 1, days_left()], 12, Color(1, 1, 1, 0.8))
+				mini(day, days_to_survive()), days_to_survive(), days_to_survive() + 1, days_left()], 12, Color(1, 1, 1, 0.8))
+			_add("  Dificultad: " + Personajes.dif("nombre"), 12, Color(1, 1, 1, 0.6))
 		_add("Objetivos %d/%d   [O] Ocultar" % [done.size(), LIST.size()], 13, Color(0.75, 0.9, 0.55))
 		var shown: int = 0
 		for objective in LIST:
