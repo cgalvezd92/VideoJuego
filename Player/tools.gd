@@ -76,6 +76,10 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Soltar objetos con Q, o todo el montón con Shift+Q (Etapa 42).
+	if event.is_action_pressed("drop_item"):
+		drop_selected(Input.is_key_pressed(KEY_SHIFT))
+		return
 	# Solo con el mouse capturado (el primer clic tras Esc lo recaptura).
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED or cooldown > 0.0:
 		return
@@ -306,3 +310,38 @@ func _fish(water: Object) -> void:
 		return
 	hud.show_message("¡Pescaste un pez! Cocínalo en una fogata (E)")
 	get_tree().call_group("objectives", "complete", "pescar")
+
+
+# --- Soltar objetos (Etapa 42) ---
+
+## Deja en el suelo, delante de ti, 1 del objeto elegido (o todo el montón).
+func drop_selected(all: bool) -> void:
+	var item = inventory.get_selected_item()
+	if item == null:
+		hud.show_message("No tienes nada en esta casilla")
+		return
+	var amount: int = item.amount if all else 1
+	var id: String = item.id
+	var item_name: String = item.name
+	inventory.remove_item(id, amount)
+	var pickable: Area3D = HeldItems.make_pickable(id, item_name, amount)
+	owner.get_parent().add_child(pickable)
+	pickable.global_position = _drop_spot()
+	if amount > 1:
+		hud.show_message("Soltaste %d × %s (E para recoger)" % [amount, item_name])
+	else:
+		hud.show_message("Soltaste: %s (E para recoger)" % item_name)
+
+
+## Un punto del suelo un poco delante del jugador.
+func _drop_spot() -> Vector3:
+	var forward: Vector3 = -owner.global_basis.z
+	forward.y = 0.0
+	# Un poco al azar, para que lo que sueltas no quede todo amontonado.
+	var ahead: Vector3 = owner.global_position + forward.normalized() * 1.2 \
+		+ Vector3(randf_range(-0.35, 0.35), 0.0, randf_range(-0.35, 0.35))
+	var query := PhysicsRayQueryParameters3D.create(ahead + Vector3.UP * 1.5, ahead + Vector3.DOWN * 3.0)
+	query.exclude = [owner.get_rid()]
+	query.collide_with_areas = false
+	var hit: Dictionary = owner.get_world_3d().direct_space_state.intersect_ray(query)
+	return hit.position if not hit.is_empty() else owner.global_position

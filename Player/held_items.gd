@@ -66,24 +66,44 @@ static func make(id: String) -> Node3D:
 
 
 ## Crea un objeto que se puede recoger con E (para la lanza o la flecha que
-## quedan en el suelo después de lanzarlas).
-static func make_pickable(id: String, display_name: String) -> Area3D:
-	var area := Area3D.new()
-	area.set_script(PickableScript)
+## quedan en el suelo después de lanzarlas, y lo que sueltas con Q, Etapa 42).
+## Las ramas y piedras usan su escena; lo que no tiene modelo 3D se ve con
+## su dibujo del inventario (un cartel que siempre mira a la cámara).
+static func make_pickable(id: String, display_name: String, amount: int = 1) -> Area3D:
+	var area: Area3D
+	if id == "rama" or id == "piedra":
+		area = load("res://objects/%s.tscn" % ("branch" if id == "rama" else "stone")).instantiate()
+	else:
+		area = Area3D.new()
+		area.set_script(PickableScript)
+		var model := make(id)
+		if model != null:
+			model.rotation_degrees = Vector3(0, randf() * 360.0, 0)
+			model.position.y = 0.05
+			area.add_child(model)
+		else:
+			var icon_path: String = "res://iconos/%s.png" % id
+			if ResourceLoader.exists(icon_path):
+				var sprite := Sprite3D.new()
+				sprite.texture = load(icon_path)
+				sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+				sprite.pixel_size = 0.5 / 128.0  # Unos 50 cm de ancho.
+				sprite.shaded = false
+				sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
+				sprite.position.y = 0.25
+				sprite.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				area.add_child(sprite)
+		var shape := CollisionShape3D.new()
+		var sphere := SphereShape3D.new()
+		sphere.radius = 0.45
+		shape.shape = sphere
+		shape.position.y = 0.2
+		area.add_child(shape)
 	area.item_id = id
 	area.display_name = display_name
-	area.amount = 1
-	var model := make(id)
-	if model != null:
-		model.rotation_degrees = Vector3(0, randf() * 360.0, 0)
-		model.position.y = 0.05
-		area.add_child(model)
-	var shape := CollisionShape3D.new()
-	var sphere := SphereShape3D.new()
-	sphere.radius = 0.45
-	shape.shape = sphere
-	shape.position.y = 0.2
-	area.add_child(shape)
+	area.amount = amount
+	# Lo que queda en el suelo se guarda en la partida (Etapa 42).
+	area.add_to_group("dropped")
 	return area
 
 

@@ -33,7 +33,8 @@ func _physics_process(_delta: float) -> void:
 
 	if target != null and target.has_method("collect"):
 		# Objetos que se guardan en el inventario (piedras, ramas).
-		hud.set_prompt("[E] Recoger " + target.display_name)
+		var many: String = " (x%d)" % target.amount if target.amount > 1 else ""
+		hud.set_prompt("[E] Recoger " + target.display_name + many)
 		if pressed:
 			_pick_up(target)
 	elif target != null and target.has_method("interact"):
