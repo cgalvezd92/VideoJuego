@@ -147,6 +147,7 @@ transform = Transform3D(0.712061, 0, -0.702118, 0, 1, 0, 0.702118, 0, 0.712061, 
 
 [node name="BerryBush3" parent="Nature" unique_id=2120730571 instance=ExtResource("5_bush")]
 transform = Transform3D(0.280321, 0, 0.959906, 0, 1, 0, -0.959906, 0, 0.280321, -7.55, 0, -7.40)
+poisonous = true
 
 [node name="BerryBush4" parent="Nature" unique_id=522794525 instance=ExtResource("5_bush")]
 transform = Transform3D(0.980548, 0, -0.196281, 0, 1, 0, 0.196281, 0, 0.980548, 12.54, 0, 9.68)
@@ -159,6 +160,7 @@ transform = Transform3D(-0.70389, 0, -0.71031, 0, 1.0000, 0, 0.71031, 0, -0.7038
 
 [node name="BerryBush6" parent="Nature" unique_id=694168884 instance=ExtResource("5_bush")]
 transform = Transform3D(-0.82589, 0, -0.56383, 0, 1.0000, 0, 0.56383, 0, -0.82589, -32.92, 0, -33.27)
+poisonous = true
 
 [node name="BerryBush7" parent="Nature" unique_id=833644080 instance=ExtResource("5_bush")]
 transform = Transform3D(-0.63918, 0, -0.76906, 0, 1.0000, 0, 0.76906, 0, -0.63918, -21.96, 0, 11.40)
@@ -168,6 +170,7 @@ transform = Transform3D(0.00816, 0, -0.99997, 0, 1.0000, 0, 0.99997, 0, 0.00816,
 
 [node name="BerryBush9" parent="Nature" unique_id=436102704 instance=ExtResource("5_bush")]
 transform = Transform3D(-0.99930, 0, -0.03738, 0, 1.0000, 0, 0.03738, 0, -0.99930, 16.00, 0, -25.47)
+poisonous = true
 
 [node name="BerryBush10" parent="Nature" unique_id=571327686 instance=ExtResource("5_bush")]
 transform = Transform3D(-0.56792, 0, 0.82308, 0, 1.0000, 0, -0.82308, 0, -0.56792, 24.34, 0, -16.89)
