@@ -7,7 +7,10 @@ signal changed
 ## Se emite cuando cambia la casilla seleccionada.
 signal selection_changed
 
-const SLOT_COUNT: int = 8
+## Número de casillas: 8, o 12 con la mochila (Etapa 31).
+var SLOT_COUNT: int = 8
+## Se emite cuando cambia el número de casillas (al hacer la mochila).
+signal resized
 
 ## Cada casilla es null (vacía) o un diccionario:
 ## { "id": "piedra", "name": "Piedra", "amount": 3 }
@@ -70,3 +73,19 @@ func _find_slot(id: String) -> int:
 		if slots[i] != null and slots[i].id == id:
 			return i
 	return -1
+
+
+## Amplía el inventario (la mochila lo deja en 12 casillas). Lo ya guardado
+## se queda en su sitio y las casillas nuevas están vacías.
+func expand(count: int) -> void:
+	if count <= SLOT_COUNT:
+		return
+	SLOT_COUNT = count
+	slots.resize(count)
+	resized.emit()
+	changed.emit()
+	selection_changed.emit()
+
+
+func has_backpack() -> bool:
+	return SLOT_COUNT > 8

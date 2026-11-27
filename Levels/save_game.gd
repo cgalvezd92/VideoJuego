@@ -113,6 +113,7 @@ func save_game(show_message: bool) -> void:
 		"objects": _names_left(objects),
 		# Acacias taladas y la hora del juego en que se talaron (para el rebrote).
 		"felled_trees": _felled_trees(),
+		"backpack": inventory.has_backpack(),  # Etapa 31.
 		# Lo recogido y talado fuera de la zona inicial (Etapa 22).
 		"world": world.get_save_data(),
 	}
@@ -161,6 +162,8 @@ func load_game() -> void:
 	# Inventario (JSON guarda los números como decimales: se pasan a enteros).
 	var inv: Dictionary = data.get("inventory", {})
 	var saved_slots: Array = inv.get("slots", [])
+	if data.get("backpack", false):
+		inventory.expand(12)
 	for i in inventory.SLOT_COUNT:
 		var slot = saved_slots[i] if i < saved_slots.size() else null
 		if slot == null:

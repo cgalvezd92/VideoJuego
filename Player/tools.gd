@@ -240,4 +240,6 @@ func _hunt(gazelle: Object) -> void:
 	elif inventory.add_item("carne_cruda", "Carne cruda", meat) == -1:
 		hud.show_message("Cazaste una gacela, pero el inventario está lleno")
 	else:
-		hud.show_message("Cazaste una gacela: +%d carne cruda. Cocínala en una fogata" % meat)
+		# Cada gacela da también 1 piel (para la mochila, Etapa 31).
+		inventory.add_item("piel", "Piel", 1)
+		hud.show_message("Cazaste una gacela: +%d carne cruda y 1 piel" % meat)
