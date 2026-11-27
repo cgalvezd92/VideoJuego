@@ -15,6 +15,10 @@ const Projectile = preload("res://objects/projectile.gd")
 ## Segundos entre golpe y golpe.
 @export var swing_cooldown: float = 0.5
 
+@export_group("Antorcha (Etapa 43)")
+## Segundos de fuego de cada antorcha mientras la llevas en la mano.
+@export var torch_seconds: float = 180.0
+
 @export_group("Pesca")
 ## Probabilidad de sacar un pez en cada intento (0.35 = 35 %).
 @export_range(0.0, 1.0) var fish_chance: float = 0.35
@@ -56,6 +60,9 @@ var held_models: Dictionary = {}
 var held: Node3D
 var rest_rotation: Vector3
 var cooldown: float = 0.0
+## Fuego que le queda a la antorcha que llevas (Etapa 43).
+var torch_fuel: float = 180.0
+var weather: Node
 
 
 func _ready() -> void:
@@ -73,6 +80,8 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	cooldown -= delta
+	if is_holding_torch():
+		_burn_torch(delta)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -140,6 +149,8 @@ func is_holding_food() -> bool:
 func ranged_prompt() -> String:
 	if is_holding("venda"):
 		return "[Clic] Usar venda (sangrando)" if survival.bleeding > 0.0 else "[Clic] Usar venda"
+	if is_holding_torch():
+		return "Antorcha: le quedan %d:%02d de fuego" % [int(torch_fuel) / 60, int(torch_fuel) % 60]
 	if is_holding("lanza"):
 		return "[Clic der.] Lanzar la lanza"
 	if is_holding("arco"):
@@ -345,3 +356,25 @@ func _drop_spot() -> Vector3:
 	query.collide_with_areas = false
 	var hit: Dictionary = owner.get_world_3d().direct_space_state.intersect_ray(query)
 	return hit.position if not hit.is_empty() else owner.global_position
+
+
+# --- Antorcha que se gasta (Etapa 43) ---
+
+func _burn_torch(delta: float) -> void:
+	if weather == null:
+		weather = get_tree().get_first_node_in_group("weather")
+	# Con lluvia fuerte se consume el doble de rápido.
+	var rate: float = 2.0 if weather != null and weather.rain_amount > 0.5 else 1.0
+	torch_fuel -= delta * rate
+	# La luz baja cuando queda poco fuego.
+	if held != null:
+		for light in held.find_children("*", "OmniLight3D", true, false):
+			light.light_energy = 1.3 * clampf(torch_fuel / (torch_seconds * 0.25), 0.35, 1.0)
+	if torch_fuel <= 0.0:
+		torch_fuel = torch_seconds
+		inventory.remove_item("antorcha", 1)
+		var left: int = inventory.get_amount("antorcha")
+		if left > 0:
+			hud.show_message("Tu antorcha se consumió: enciendes otra (te quedan %d)" % left)
+		else:
+			hud.show_message("Tu antorcha se consumió. Haz otra con T (1 rama + 1 piel)")

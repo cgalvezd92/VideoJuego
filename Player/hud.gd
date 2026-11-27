@@ -29,7 +29,8 @@ Ctrl  Agacharse (acercarse a las gacelas)
 Espacio  Saltar
 E  Recoger / Beber / Comer
 Q  Soltar objeto (Shift+Q: todo el montón)
-F  Hacer fogata
+F  Hacer fogata (con piedras en la mano, E la protege)
+T  Hacer antorcha
 C  Hacer hacha
 R  Hacer refugio
 J / N  Hacer cofre / cama de pieles

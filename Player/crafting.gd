@@ -43,6 +43,9 @@ const Bed = preload("res://objects/bed.gd")
 @export var bandage_hides: int = 1
 @export var bandage_branches: int = 1
 @export var bandages_made: int = 2
+## Antorcha (T, Etapa 43): 1 rama + 1 piel.
+@export var torch_branches: int = 1
+@export var torch_hides: int = 1
 ## Cofre (J, Etapa 41): 4 madera + 2 ramas.
 @export var chest_wood: int = 4
 @export var chest_branches: int = 2
@@ -75,6 +78,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		_try_craft_backpack()
 	elif event.is_action_pressed("craft_spear"):
 		_craft_item({"madera": spear_wood, "piedra": spear_stones}, "lanza", "Lanza", 1)
+	elif event.is_action_pressed("craft_torch"):
+		_craft_item({"rama": torch_branches, "piel": torch_hides}, "antorcha", "Antorcha", 1)
 	elif event.is_action_pressed("build_chest"):
 		_place_furniture(Chest, {"madera": chest_wood, "rama": chest_branches}, 1.6,
 			"Hiciste un cofre: míralo y pulsa E para guardar cosas")
@@ -254,7 +259,7 @@ func _update_book() -> void:
 			"key": "F", "name": "Fogata",
 			"needs": [["Ramas", branches, fire_branches], ["Piedras", stones, fire_stones]],
 			"available": branches >= fire_branches and stones >= fire_stones,
-			"note": "Luz, calor, cura; cocina carne y pescado (E)",
+			"note": "Cocina (E); con piedras en la mano, E la protege",
 		},
 		{
 			"key": "C", "name": "Hacha",
@@ -267,6 +272,12 @@ func _update_book() -> void:
 			"needs": [["Madera", wood, shelter_wood], ["Ramas", branches, shelter_branches]],
 			"available": wood >= shelter_wood and branches >= shelter_branches,
 			"note": "De noche, E para dormir",
+		},
+		{
+			"key": "T", "name": "Antorcha",
+			"needs": [["Ramas", branches, torch_branches], ["Pieles", inventory.get_amount("piel"), torch_hides]],
+			"available": branches >= torch_branches and inventory.get_amount("piel") >= torch_hides,
+			"note": "Luz y calor; dura 3 min en la mano",
 		},
 		{
 			"key": "J", "name": "Cofre",

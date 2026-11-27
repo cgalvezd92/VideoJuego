@@ -2,6 +2,8 @@ extends StaticBody3D
 ## Fogata: la luz y las llamas parpadean un poco (Etapa 4).
 ## Mírala y pulsa E para cocinar carne cruda (Etapa 12) o pescado (Etapa 33).
 ## La lluvia la apaga; con E y 1 rama se reaviva (Etapa 30).
+## Con piedras en la mano, E la rodea con un muro de 4 piedras: la lluvia
+## ya no la apaga (Etapa 43).
 ## Va en el nodo raíz "Campfire" de campfire.tscn.
 
 @export var base_energy: float = 1.5
@@ -12,6 +14,10 @@ extends StaticBody3D
 var time: float = 0.0
 ## Encendida o apagada (la lluvia la apaga).
 var lit: bool = true
+## Rodeada por un muro de piedras: la lluvia no la apaga (Etapa 43).
+var protected: bool = false
+## Piedras que hacen falta para el muro.
+const WALL_STONES: int = 4
 
 
 func _ready() -> void:
@@ -24,6 +30,8 @@ func _ready() -> void:
 
 
 func get_prompt() -> String:
+	if not protected and _holding_stones():
+		return "[E] Rodear con %d piedras (la lluvia no la apagará)" % WALL_STONES
 	if not lit:
 		return "[E] Reavivar la fogata (1 rama)"
 	var inventory = get_tree().get_first_node_in_group("player").get_node("Inventory")
@@ -39,6 +47,11 @@ func get_prompt() -> String:
 ## La llama el Interactor. Cocina un trozo de carne por pulsación.
 func interact(player: Node) -> String:
 	var inventory = player.get_node("Inventory")
+	if not protected and _holding_stones():
+		if not inventory.remove_item("piedra", WALL_STONES):
+			return "Necesitas %d piedras para el muro (tienes %d)" % [WALL_STONES, inventory.get_amount("piedra")]
+		protect()
+		return "Rodeaste la fogata con piedras: la lluvia ya no la apagará"
 	if not lit:
 		if not inventory.remove_item("rama", 1):
 			return "Necesitas 1 rama para reavivar la fogata"
@@ -83,3 +96,28 @@ func relight() -> void:
 	light.visible = true
 	flames.visible = true
 	set_process(true)
+
+
+func _holding_stones() -> bool:
+	var player = get_tree().get_first_node_in_group("player")
+	return player != null and player.get_node("Tools").is_holding("piedra")
+
+
+## Pone el muro de piedras alrededor (Etapa 43). También al cargar la partida.
+func protect() -> void:
+	if protected:
+		return
+	protected = true
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color("#7d786e")
+	var box := BoxMesh.new()
+	box.size = Vector3(0.3, 0.32, 0.22)
+	for i in 8:
+		var angle: float = i * TAU / 8.0
+		var stone := MeshInstance3D.new()
+		stone.mesh = box
+		stone.material_override = material
+		stone.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		stone.position = Vector3(cos(angle), 0.0, sin(angle)) * 0.78 + Vector3(0, 0.16, 0)
+		stone.rotation.y = -angle + PI / 2.0
+		add_child(stone)
