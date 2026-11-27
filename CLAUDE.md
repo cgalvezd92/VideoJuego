@@ -72,6 +72,7 @@ En cada etapa, explicar paso a paso:
 | 31 | Mochila: cazar gacelas da piel; **P** con 3 pieles + 2 ramas amplía el inventario de 8 a 12 casillas (teclas 9 y 0); se guarda | ✅ Lista |
 | 32 | León (`lion.tscn`, `lion.gd`): de día defiende su territorio (25 m, rojo en el mapa), ruge, acecha y ataca; teme fuego y antorcha; 4 golpes lo retiran; uno cerca de la salida y algunos al azar | ✅ Lista |
 | 33 | Pesca: arpón con **G** (1 madera + 2 piedras); con el arpón en la mano, clic mirando un río o lago (35 % de sacar un pez); el pescado crudo se cocina en la fogata (**E**). Además, arco con **K** (2 madera + 2 ramas) para usar las flechas | ✅ Lista |
-| 34 | Misión principal (sobrevivir 14 días y llegar a la extracción: helicóptero el día 15 a las 7:00, punto verde en mapa y brújula, nodo `Extraction`) y 13 objetivos (nodo `Objectives` del Player, recuadro con **O**); pantalla de rescate; se guarda | 🧪 En pruebas |
+| 34 | Misión principal (sobrevivir 14 días y llegar a la extracción: helicóptero el día 15 a las 7:00, punto verde en mapa y brújula, nodo `Extraction`) y 13 objetivos (nodo `Objectives` del Player, recuadro con **O**); pantalla de rescate; se guarda | ✅ Lista |
+| 35 | Cocodrilos (`objects/crocodile.gd`, sin escena, malla única): hundidos en ríos y lagos; a 12 m (7 agachado) nadan hacia ti, saltan a la orilla y muerden (25); 3 golpes los alejan; uno en el lago de la salida y al azar por celdas | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.
