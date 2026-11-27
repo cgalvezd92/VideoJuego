@@ -37,6 +37,9 @@ static func make(id: String) -> Node3D:
 			_part(root, _prism(0.045, 0.13, 0.02), STONE, Vector3(0, 0, -0.76), Vector3(-90, 0, 0))
 			_part(root, _box(0.012, 0.012, 0.09), STONE, Vector3(0.03, 0, -0.66), Vector3(0, 30, 0))
 			_part(root, _box(0.012, 0.012, 0.09), STONE, Vector3(-0.03, 0, -0.66), Vector3(0, -30, 0))
+		"venda":
+			# Etapa 37: rollo de tela clara.
+			_part(root, _cylinder(0.035, 0.07), Color("#ece4d2"), Vector3(0, 0, 0), Vector3(0, 0, 90))
 		"antorcha":
 			_part(root, _cylinder(0.025, 0.6), WOOD, Vector3(0, 0, 0))
 			var flame := _part(root, _sphere(0.07), Color("#f2a23a"), Vector3(0, 0.36, 0), Vector3.ZERO, true)

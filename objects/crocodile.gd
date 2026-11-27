@@ -193,7 +193,7 @@ func get_hit_message() -> String:
 func _bite() -> void:
 	bitten = true
 	calm_time = 6.0
-	player.get_node("Survival").damage(bite_damage)
+	player.get_node("Survival").damage(bite_damage, true)  # El mordisco sangra (Etapa 37).
 	var hud = player.get_node("HUD")
 	hud.flash_damage()
 	hud.show_message("¡Un cocodrilo te muerde! Aléjate del agua")

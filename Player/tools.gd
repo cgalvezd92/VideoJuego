@@ -63,6 +63,8 @@ func _ready() -> void:
 	# el inventario guardado lo sustituye.
 	for item in START_ITEMS.get(Personajes.actual()["objeto"], []):
 		inventory.add_item(item[0], item[1], item[2])
+	# Todos empiezan con un pequeño botiquín: 2 vendas (Etapa 37).
+	inventory.add_item("venda", "Venda", 2)
 
 	inventory.changed.connect(_update_held)
 	inventory.selection_changed.connect(_update_held)
@@ -85,6 +87,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			_swing()
 		elif is_holding_food():
 			_eat()
+		elif is_holding("venda"):
+			_use_bandage()
 	elif event.is_action_pressed("throw"):
 		if is_holding("lanza"):
 			_launch("lanza", "Lanza", 22.0)
@@ -128,7 +132,10 @@ func is_holding_food() -> bool:
 
 
 ## Aviso para la lanza y el arco cuando no miras nada en concreto.
+## También para la venda (Etapa 37).
 func ranged_prompt() -> String:
+	if is_holding("venda"):
+		return "[Clic] Usar venda (sangrando)" if survival.bleeding > 0.0 else "[Clic] Usar venda"
 	if is_holding("lanza"):
 		return "[Clic der.] Lanzar la lanza"
 	if is_holding("arco"):
@@ -178,6 +185,13 @@ func _eat() -> void:
 		survival.drink(food.thirst)
 	survival.health = clampf(survival.health + food.health, 0.0, survival.max_health)
 	hud.show_message(food.text)
+
+
+## Venda (Etapa 37): para la sangre y cura un poco.
+func _use_bandage() -> void:
+	cooldown = swing_cooldown
+	inventory.remove_item("venda", 1)
+	hud.show_message(survival.bandage())
 
 
 func _swing() -> void:
