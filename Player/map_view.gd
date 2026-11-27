@@ -12,17 +12,39 @@ const WORLD_SIZE: float = 1400.0
 ## Radio de la zona de recursos alrededor del punto de salida.
 const ZONE_RADIUS: float = 60.0
 
+## Mapa por descubrir (Etapa 48): el continente se divide en una cuadrícula
+## de 128 x 128 casillas (unos 11 m cada una). Al principio todas están en
+## negro y se van descubriendo alrededor de donde pasas.
+const FOG_CELLS: int = 128
+## Metros que descubres a tu alrededor (Tomás, que se orienta bien, más).
+const REVEAL_RADIUS: float = 45.0
+
 @onready var player: Node3D = owner
 
 var panel: Control
 var markers: Control
+## Niebla: 0 = sin descubrir, 255 = descubierto (una casilla por píxel).
+var fog: Image
+var fog_overlay: Image
+var fog_texture: ImageTexture
+var fog_rect: TextureRect
+var fog_dirty: bool = true
+var reveal_time: float = 0.0
+var revealed_count: int = 0
 
 
 func _ready() -> void:
 	layer = 5  # Encima del HUD, debajo del menú de pausa.
+	fog = Image.create(FOG_CELLS, FOG_CELLS, false, Image.FORMAT_L8)
+	fog_overlay = Image.create(FOG_CELLS, FOG_CELLS, false, Image.FORMAT_RGBA8)
 	_build()
 	panel.visible = false
-	set_process(false)
+	# Descubre los alrededores 1 vez por segundo, aunque el mapa esté cerrado.
+	var timer := Timer.new()
+	timer.wait_time = 1.0
+	timer.autostart = true
+	timer.timeout.connect(_reveal_around_player)
+	add_child(timer)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -32,12 +54,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		player.get_node("HUD").visible = not panel.visible
 		player.get_node("InventoryUI").visible = not panel.visible
 		# Solo se actualiza mientras está abierto.
-		set_process(panel.visible)
+		if panel.visible:
+			_reveal_around_player()
+			_update_fog_texture()
 		markers.queue_redraw()
 
 
 func _process(_delta: float) -> void:
-	markers.queue_redraw()  # La flecha sigue al jugador.
+	if panel.visible:
+		markers.queue_redraw()  # La flecha sigue al jugador.
 
 
 func _build() -> void:
@@ -54,8 +79,19 @@ func _build() -> void:
 	map_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	map_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	map_rect.offset_top = 50.0
-	map_rect.offset_bottom = -50.0
+	map_rect.offset_bottom = -58.0
 	map_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	# Niebla negra encima del mapa (con bordes suaves al ampliarse).
+	fog_texture = ImageTexture.create_from_image(fog_overlay)
+	fog_rect = TextureRect.new()
+	map_rect.add_child(fog_rect)
+	fog_rect.texture = fog_texture
+	fog_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	fog_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	fog_rect.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	fog_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	fog_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	# Capa transparente encima de la imagen para dibujar las marcas.
 	markers = Control.new()
@@ -66,8 +102,9 @@ func _build() -> void:
 
 	var title := _add_label("Mapa de África", 26, Control.PRESET_CENTER_TOP)
 	title.offset_top = 12.0
-	var legend := _add_label("Flecha: tú   ·   Naranja: fogatas   ·   Marrón: refugios   ·   Círculo: zona de recursos   ·   Rojo: león   ·   Verde: extracción   ·   Amarillo: lugares descubiertos   ·   [M] Cerrar", 15, Control.PRESET_CENTER_BOTTOM)
-	legend.offset_bottom = -16.0
+	var legend := _add_label("Negro: sin explorar   ·   Flecha: tú   ·   Naranja: fogatas   ·   Marrón: refugios   ·   Círculo: zona de recursos\nRojo: león   ·   Verde: extracción   ·   Amarillo: lugares descubiertos   ·   [M] Cerrar", 14, Control.PRESET_CENTER_BOTTOM)
+	legend.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	legend.offset_bottom = -8.0
 
 
 func _add_label(text: String, font_size: int, preset: int) -> Label:
@@ -99,6 +136,8 @@ func _draw_markers() -> void:
 
 	# Territorios de león (Etapa 32): círculo rojo alrededor de su guarida.
 	for lion in get_tree().get_nodes_in_group("lion"):
+		if not is_revealed(lion.den):
+			continue  # Los leones de zonas sin explorar no se ven.
 		var den: Vector2 = _to_map(lion.den, origin, side)
 		var radius: float = lion.territory_radius / WORLD_SIZE * side
 		markers.draw_circle(den, radius, Color(0.85, 0.1, 0.1, 0.25))
@@ -140,3 +179,67 @@ func _draw_markers() -> void:
 	])
 	markers.draw_colored_polygon(arrow, Color.WHITE)
 	markers.draw_polyline(arrow + PackedVector2Array([arrow[0]]), Color.BLACK, 1.5)
+
+
+
+# --- Mapa por descubrir (Etapa 48) ---
+
+## Casilla de la niebla para una posición del mundo.
+func _cell(world: Vector3) -> Vector2i:
+	return Vector2i(
+		clampi(int((world.x - WORLD_MIN) / WORLD_SIZE * FOG_CELLS), 0, FOG_CELLS - 1),
+		clampi(int((world.z - WORLD_MIN) / WORLD_SIZE * FOG_CELLS), 0, FOG_CELLS - 1))
+
+
+func is_revealed(world: Vector3) -> bool:
+	var c := _cell(world)
+	return fog.get_pixel(c.x, c.y).r > 0.5
+
+
+## Descubre un círculo alrededor del jugador (barato: unas 50 casillas).
+func _reveal_around_player() -> void:
+	if player == null:
+		return
+	var radius: float = REVEAL_RADIUS * (1.5 if Personajes.mod("vision_noche") else 1.0)
+	var cell_size: float = WORLD_SIZE / FOG_CELLS
+	var r: int = ceili(radius / cell_size)
+	var center := _cell(player.global_position)
+	for dx in range(-r, r + 1):
+		for dy in range(-r, r + 1):
+			if dx * dx + dy * dy > r * r:
+				continue
+			var x: int = center.x + dx
+			var y: int = center.y + dy
+			if x < 0 or y < 0 or x >= FOG_CELLS or y >= FOG_CELLS:
+				continue
+			if fog.get_pixel(x, y).r < 0.5:
+				fog.set_pixel(x, y, Color.WHITE)
+				revealed_count += 1
+				fog_dirty = true
+	if panel.visible and fog_dirty:
+		_update_fog_texture()
+
+
+## Pasa la niebla a la imagen que se ve (solo si cambió y el mapa está abierto).
+func _update_fog_texture() -> void:
+	if not fog_dirty:
+		return
+	fog_dirty = false
+	for y in FOG_CELLS:
+		for x in FOG_CELLS:
+			var seen: bool = fog.get_pixel(x, y).r > 0.5
+			fog_overlay.set_pixel(x, y, Color(0.03, 0.03, 0.04, 0.0 if seen else 0.96))
+	fog_texture.update(fog_overlay)
+
+
+## Para la partida guardada: la niebla comprimida en texto.
+func get_save_data() -> String:
+	return Marshalls.raw_to_base64(fog.get_data().compress(FileAccess.COMPRESSION_DEFLATE))
+
+
+func set_save_data(text: String) -> void:
+	var raw: PackedByteArray = Marshalls.base64_to_raw(text).decompress(FOG_CELLS * FOG_CELLS, FileAccess.COMPRESSION_DEFLATE)
+	if raw.size() != FOG_CELLS * FOG_CELLS:
+		return
+	fog = Image.create_from_data(FOG_CELLS, FOG_CELLS, false, Image.FORMAT_L8, raw)
+	fog_dirty = true
