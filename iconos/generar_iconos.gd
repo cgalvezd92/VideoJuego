@@ -50,6 +50,12 @@ func _initialize() -> void:
 		"pescado_crudo": _fish(Color("#8fa6b4"), Color("#c9d6dc")),
 		"pescado_cocido": _fish(Color("#a8682e"), Color("#d39a52")),
 		"agua": _water(),
+		# Para el libro de fabricación (lo que se construye).
+		"fogata": _from_scene("res://objects/campfire.tscn"),
+		"refugio": _from_scene("res://objects/shelter.tscn"),
+		"cofre": _built("res://objects/chest.gd"),
+		"cama": _built("res://objects/bed.gd"),
+		"mochila": _backpack(),
 	}
 	# Lanza, flecha, arpón y venda: modelos propios con la punta más grande.
 	items["lanza"] = _spear()
@@ -83,7 +89,7 @@ func _shoot(id: String, model: Node3D) -> void:
 	var longest: float = max(s.x, s.y, s.z)
 	var dims := [s.x, s.y, s.z]
 	dims.sort()
-	var elongated: bool = dims[2] > dims[1] * 1.8
+	var elongated: bool = dims[2] > dims[1] * 1.8 and id != "cama"
 	if elongated:
 		# Los objetos muy finos se engordan para que se vean en pequeño.
 		var thick: float = clampf(dims[2] / dims[1] / 5.0, 1.0, 3.0)
@@ -134,6 +140,8 @@ func _from_scene(path: String) -> Node3D:
 		var copy := MeshInstance3D.new()
 		copy.mesh = mi.mesh
 		copy.material_override = mi.material_override
+		for i in mi.get_surface_override_material_count():
+			copy.set_surface_override_material(i, mi.get_surface_override_material(i))
 		var t: Transform3D = mi.transform
 		var p: Node = mi.get_parent()
 		while p != scene and p is Node3D:
@@ -280,4 +288,32 @@ func _bandage() -> Node3D:
 	_part(root, _cyl(0.2, 0.16, 16), Color("#ece4d2"), Vector3.ZERO, Vector3(90, 0, 0))
 	_part(root, _cyl(0.06, 0.162, 12), Color("#b9ad94"), Vector3.ZERO, Vector3(90, 0, 0))
 	_part(root, _box(0.22, 0.01, 0.16), Color("#ece4d2"), Vector3(0.2, -0.19, 0), Vector3(0, 0, -10))
+	return root
+
+
+## Muebles que se crean por código (cofre y cama): se copian sus mallas.
+func _built(path: String) -> Node3D:
+	var thing: Node3D = load(path).new()
+	thing._build_model()
+	var root := Node3D.new()
+	for mi in thing.find_children("*", "MeshInstance3D", true, false):
+		var copy := MeshInstance3D.new()
+		copy.mesh = mi.mesh
+		copy.material_override = mi.material_override
+		copy.transform = mi.transform
+		root.add_child(copy)
+	thing.free()
+	return root
+
+
+func _backpack() -> Node3D:
+	var root := Node3D.new()
+	var hide := Color("#a87444")
+	var dark := Color("#7a5230")
+	_part(root, _box(0.5, 0.6, 0.28), hide, Vector3(0, 0.3, 0))
+	_part(root, _box(0.52, 0.22, 0.3), dark, Vector3(0, 0.55, 0.01))
+	_part(root, _box(0.36, 0.2, 0.1), dark, Vector3(0, 0.2, 0.18))
+	_part(root, _box(0.06, 0.5, 0.04), Color("#5a3c22"), Vector3(-0.14, 0.32, -0.16))
+	_part(root, _box(0.06, 0.5, 0.04), Color("#5a3c22"), Vector3(0.14, 0.32, -0.16))
+	_part(root, _box(0.08, 0.06, 0.04), Color("#d8c9a0"), Vector3(0, 0.46, 0.16))
 	return root
