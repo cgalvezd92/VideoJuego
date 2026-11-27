@@ -34,6 +34,9 @@ const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 ## Arpón (G, Etapa 33): 1 madera + 2 piedras. Sirve para pescar.
 @export var harpoon_wood: int = 1
 @export var harpoon_stones: int = 2
+## Arco (K): 2 madera + 2 ramas. Dispara flechas con clic derecho.
+@export var bow_wood: int = 2
+@export var bow_branches: int = 2
 
 @onready var player: CharacterBody3D = owner
 @onready var inventory = owner.get_node("Inventory")
@@ -60,6 +63,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		_try_craft_backpack()
 	elif event.is_action_pressed("craft_spear"):
 		_craft_item({"madera": spear_wood, "piedra": spear_stones}, "lanza", "Lanza", 1)
+	elif event.is_action_pressed("craft_bow"):
+		if inventory.get_amount("arco") > 0:
+			hud.show_message("Ya tienes un arco")
+		else:
+			_craft_item({"madera": bow_wood, "rama": bow_branches}, "arco", "Arco", 1)
 	elif event.is_action_pressed("craft_harpoon"):
 		if inventory.get_amount("arpon") > 0:
 			hud.show_message("Ya tienes un arpón")
@@ -114,7 +122,7 @@ func _craft_item(cost: Dictionary, id: String, display_name: String, amount: int
 	if amount > 1:
 		hud.show_message("Hiciste %d %ss" % [amount, display_name.to_lower()])
 	else:
-		var article: String = "un" if display_name in ["Arpón"] else "una"
+		var article: String = "un" if display_name in ["Arpón", "Arco"] else "una"
 		hud.show_message("Hiciste %s %s" % [article, display_name.to_lower()])
 
 
@@ -228,6 +236,12 @@ func _update_book() -> void:
 			"needs": [["Ramas", branches, arrow_branches], ["Piedras", stones, arrow_stones]],
 			"available": branches >= arrow_branches and stones >= arrow_stones,
 			"note": "Para el arco (clic derecho)",
+		},
+		{
+			"key": "K", "name": "Arco",
+			"needs": [["Madera", wood, bow_wood], ["Ramas", branches, bow_branches]],
+			"available": inventory.get_amount("arco") == 0 and wood >= bow_wood and branches >= bow_branches,
+			"note": "Ya tienes uno" if inventory.get_amount("arco") > 0 else "Dispara flechas (clic derecho)",
 		},
 		{
 			"key": "L", "name": "Lanza",

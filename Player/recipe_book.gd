@@ -71,10 +71,15 @@ func _rebuild() -> void:
 			_add("", 2, Color.WHITE)  # Pequeño espacio entre recetas.
 			var title_color: Color = Color(1.0, 0.85, 0.3) if recipe.available else Color(1, 1, 1, 0.8)
 			_add("[%s] %s" % [recipe.key, recipe.name], 14, title_color)
+			# Todos los materiales en una sola línea (verde si tienes, rojo si falta).
+			var row := HBoxContainer.new()
+			row.add_theme_constant_override("separation", 12)
+			content.add_child(row)
+			_add("  ", 12, Color.WHITE, row)
 			for need in recipe.needs:
 				var enough: bool = need[1] >= need[2]
 				var color: Color = Color(0.55, 0.9, 0.5) if enough else Color(1.0, 0.55, 0.5)
-				_add("    %s  %d/%d" % [need[0], need[1], need[2]], 12, color)
+				_add("%s %d/%d" % [need[0], need[1], need[2]], 12, color, row)
 			if recipe.note != "":
 				_add("    " + recipe.note, 11, Color(1, 1, 1, 0.6))
 
@@ -91,9 +96,9 @@ func _fit() -> void:
 	offset_bottom = 48.0 + needed.y
 
 
-func _add(text: String, font_size: int, color: Color) -> void:
+func _add(text: String, font_size: int, color: Color, parent: Control = null) -> void:
 	var label := Label.new()
-	content.add_child(label)
+	(content if parent == null else parent).add_child(label)
 	label.text = text
 	label.add_theme_font_size_override("font_size", font_size)
 	label.add_theme_color_override("font_color", color)
