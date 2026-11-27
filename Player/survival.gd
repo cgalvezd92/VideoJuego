@@ -151,10 +151,11 @@ func bandage() -> String:
 
 ## Dormir: el hambre y la sed bajan la mitad de lo normal y recuperas vida.
 ## "seconds" son los segundos reales que habrían pasado.
-func rest(seconds: float) -> void:
+## "heal" es la vida que recuperas (la cama de pieles da más, Etapa 41).
+func rest(seconds: float, heal: float = 30.0) -> void:
 	hunger = maxf(hunger - hunger_per_second * seconds * 0.5, 0.0)
 	thirst = maxf(thirst - thirst_per_second * seconds * 0.5, 0.0)
-	health = minf(health + 30.0, max_health)
+	health = minf(health + heal, max_health)
 	player.restore_stamina()
 	check_time = 0.0
 

@@ -4,6 +4,8 @@ extends Node
 
 const CAMPFIRE_SCENE: PackedScene = preload("res://objects/campfire.tscn")
 const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
+const Chest = preload("res://objects/chest.gd")
+const Bed = preload("res://objects/bed.gd")
 
 @export var fire_branches: int = 3
 @export var fire_stones: int = 2
@@ -41,6 +43,12 @@ const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 @export var bandage_hides: int = 1
 @export var bandage_branches: int = 1
 @export var bandages_made: int = 2
+## Cofre (J, Etapa 41): 4 madera + 2 ramas.
+@export var chest_wood: int = 4
+@export var chest_branches: int = 2
+## Cama de pieles (N, Etapa 41): 3 pieles + 2 madera.
+@export var bed_hides: int = 3
+@export var bed_wood: int = 2
 
 @onready var player: CharacterBody3D = owner
 @onready var inventory = owner.get_node("Inventory")
@@ -67,6 +75,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		_try_craft_backpack()
 	elif event.is_action_pressed("craft_spear"):
 		_craft_item({"madera": spear_wood, "piedra": spear_stones}, "lanza", "Lanza", 1)
+	elif event.is_action_pressed("build_chest"):
+		_place_furniture(Chest, {"madera": chest_wood, "rama": chest_branches}, 1.6,
+			"Hiciste un cofre: míralo y pulsa E para guardar cosas")
+	elif event.is_action_pressed("build_bed"):
+		_place_furniture(Bed, {"piel": bed_hides, "madera": bed_wood}, 2.0,
+			"Hiciste una cama de pieles: de noche, E para dormir y curarte más")
 	elif event.is_action_pressed("craft_bandage"):
 		_craft_item({"piel": bandage_hides, "rama": bandage_branches}, "venda", "Venda", bandages_made)
 	elif event.is_action_pressed("craft_bow"):
@@ -130,6 +144,23 @@ func _craft_item(cost: Dictionary, id: String, display_name: String, amount: int
 	else:
 		var article: String = "un" if display_name in ["Arpón", "Arco"] else "una"
 		hud.show_message("Hiciste %s %s" % [article, display_name.to_lower()])
+
+
+## Pone un mueble (cofre o cama) delante del jugador (Etapa 41).
+func _place_furniture(script: Script, cost: Dictionary, distance: float, message: String) -> void:
+	if not _has_materials(cost):
+		return
+	var spot = _find_spot(distance)
+	if spot == null:
+		hud.show_message("No hay espacio aquí")
+		return
+	for material in cost:
+		inventory.remove_item(material, cost[material])
+	var furniture: Node3D = script.new()
+	player.get_parent().add_child(furniture)
+	furniture.global_position = spot
+	furniture.rotation.y = player.rotation.y
+	hud.show_message(message)
 
 
 func _try_build_shelter() -> void:
@@ -236,6 +267,18 @@ func _update_book() -> void:
 			"needs": [["Madera", wood, shelter_wood], ["Ramas", branches, shelter_branches]],
 			"available": wood >= shelter_wood and branches >= shelter_branches,
 			"note": "De noche, E para dormir",
+		},
+		{
+			"key": "J", "name": "Cofre",
+			"needs": [["Madera", wood, chest_wood], ["Ramas", branches, chest_branches]],
+			"available": wood >= chest_wood and branches >= chest_branches,
+			"note": "Guarda 12 montones de objetos (E)",
+		},
+		{
+			"key": "N", "name": "Cama de pieles",
+			"needs": [["Pieles", inventory.get_amount("piel"), bed_hides], ["Madera", wood, bed_wood]],
+			"available": inventory.get_amount("piel") >= bed_hides and wood >= bed_wood,
+			"note": "Dormir cura 60 y para la sangre",
 		},
 		{
 			"key": "X", "name": "Flechas (x%d)" % arrows_made,

@@ -31,6 +31,7 @@ E  Recoger / Beber / Comer
 F  Hacer fogata
 C  Hacer hacha
 R  Hacer refugio
+J / N  Hacer cofre / cama de pieles
 X / K  Hacer flechas / arco
 L / G  Hacer lanza / arpón
 P  Hacer mochila

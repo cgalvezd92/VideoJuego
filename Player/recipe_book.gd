@@ -67,21 +67,29 @@ func _rebuild() -> void:
 	else:
 		_add("Libro de fabricación", 16, Color(1.0, 0.88, 0.65))
 		_add("[B] Cerrar", 12, Color(1, 1, 1, 0.55))
+		# Las recetas van en dos columnas para que quepan todas (Etapa 41).
+		var grid := GridContainer.new()
+		grid.columns = 2
+		grid.add_theme_constant_override("h_separation", 18)
+		grid.add_theme_constant_override("v_separation", 4)
+		content.add_child(grid)
 		for recipe in recipes:
-			_add("", 2, Color.WHITE)  # Pequeño espacio entre recetas.
+			var box := VBoxContainer.new()
+			box.add_theme_constant_override("separation", 0)
+			grid.add_child(box)
 			var title_color: Color = Color(1.0, 0.85, 0.3) if recipe.available else Color(1, 1, 1, 0.8)
-			_add("[%s] %s" % [recipe.key, recipe.name], 14, title_color)
+			_add("[%s] %s" % [recipe.key, recipe.name], 14, title_color, box)
 			# Todos los materiales en una sola línea (verde si tienes, rojo si falta).
 			var row := HBoxContainer.new()
-			row.add_theme_constant_override("separation", 12)
-			content.add_child(row)
-			_add("  ", 12, Color.WHITE, row)
+			row.add_theme_constant_override("separation", 10)
+			box.add_child(row)
+			_add(" ", 12, Color.WHITE, row)
 			for need in recipe.needs:
 				var enough: bool = need[1] >= need[2]
 				var color: Color = Color(0.55, 0.9, 0.5) if enough else Color(1.0, 0.55, 0.5)
 				_add("%s %d/%d" % [need[0], need[1], need[2]], 12, color, row)
 			if recipe.note != "":
-				_add("    " + recipe.note, 11, Color(1, 1, 1, 0.6))
+				_add("   " + recipe.note, 11, Color(1, 1, 1, 0.6), box)
 
 	# Ajusta el recuadro al contenido (al cerrarlo se hace pequeño).
 	_fit.call_deferred()
