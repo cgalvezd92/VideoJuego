@@ -17,6 +17,7 @@ const GAZELLE: PackedScene = preload("res://objects/gazelle.tscn")
 const ZEBRA: PackedScene = preload("res://objects/zebra.tscn")
 const GIRAFFE: PackedScene = preload("res://objects/giraffe.tscn")
 const LION: PackedScene = preload("res://objects/lion.tscn")
+const Crocodile = preload("res://objects/crocodile.gd")
 
 @export var cell_size: float = 64.0
 ## Celdas activas alrededor del jugador (2 = una cuadrícula de 5 x 5).
@@ -43,6 +44,10 @@ const VIEW_DISTANCE: Dictionary = {
 @export_range(0.0, 1.0) var giraffe_chance: float = 0.04
 ## Probabilidad de que una celda tenga un león con su territorio (Etapa 32).
 @export_range(0.0, 1.0) var lion_chance: float = 0.02
+## Probabilidad de un cocodrilo si la celda tiene río o lago (Etapa 35).
+@export_range(0.0, 1.0) var crocodile_chance: float = 0.5
+## Cocodrilo del lago de al lado de la salida (X y Z del mundo).
+@export var start_crocodile := Vector2(290.0, 50.0)
 
 var cells: Dictionary = {}  # Vector2i -> Node3D de la celda
 var pending: Array[Vector2i] = []  # Celdas que faltan por crear
@@ -63,6 +68,10 @@ func _ready() -> void:
 func start() -> void:
 	started = true
 	check_time = 0.0
+	# El lago junto a la salida también tiene su cocodrilo (Etapa 35).
+	var water = _fresh_water_height(start_crocodile.x, start_crocodile.y)
+	if water != null:
+		add_child(Crocodile.create(Vector3(start_crocodile.x, water, start_crocodile.y)))
 
 
 func _process(delta: float) -> void:
@@ -138,6 +147,30 @@ func _load_cell(key: Vector2i) -> void:
 		var lion: Node3D = _place(cell, LION, "Lion", rng, origin, 1.0)
 		if lion != null:
 			lion.position.y += 0.05
+	# Cocodrilo (Etapa 35): se prueban 6 puntos al azar buscando río o lago.
+	# Las tiradas se hacen siempre, para que la celda salga igual cada vez.
+	var croc_roll: float = rng.randf()
+	var croc_points: Array[Vector2] = []
+	for i in 6:
+		croc_points.append(origin + Vector2(rng.randf(), rng.randf()) * cell_size)
+	if croc_roll < crocodile_chance:
+		for point in croc_points:
+			if point.distance_to(Vector2(zone_center.x, zone_center.z)) < start_zone_radius:
+				continue
+			var water = _fresh_water_height(point.x, point.y)
+			if water != null:
+				cell.add_child(Crocodile.create(Vector3(point.x, water, point.y)))
+				break
+
+
+## Altura del agua de un río o lago en (x, z), o null si no hay (Etapa 35).
+func _fresh_water_height(x: float, z: float):
+	var query := PhysicsRayQueryParameters3D.create(Vector3(x, 200.0, z), Vector3(x, -60.0, z))
+	query.collision_mask = 1 << (MapSetup.WATER_LAYER - 1)
+	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
+	if hit.is_empty() or hit.collider.get("kind") == "mar":
+		return null
+	return hit.position.y
 
 
 ## Coloca un objeto en un punto al azar de la celda, sobre el suelo.
