@@ -66,7 +66,7 @@ func _build() -> void:
 
 	var title := _add_label("Mapa de África", 26, Control.PRESET_CENTER_TOP)
 	title.offset_top = 12.0
-	var legend := _add_label("Flecha: tú   ·   Naranja: fogatas   ·   Marrón: refugios   ·   Círculo: zona de recursos   ·   Rojo: león   ·   [M] Cerrar", 15, Control.PRESET_CENTER_BOTTOM)
+	var legend := _add_label("Flecha: tú   ·   Naranja: fogatas   ·   Marrón: refugios   ·   Círculo: zona de recursos   ·   Rojo: león   ·   Verde: extracción   ·   [M] Cerrar", 15, Control.PRESET_CENTER_BOTTOM)
 	legend.offset_bottom = -16.0
 
 
@@ -103,6 +103,12 @@ func _draw_markers() -> void:
 		var radius: float = lion.territory_radius / WORLD_SIZE * side
 		markers.draw_circle(den, radius, Color(0.85, 0.1, 0.1, 0.25))
 		markers.draw_arc(den, radius, 0.0, TAU, 24, Color(0.9, 0.15, 0.1, 0.9), 1.5)
+
+	# Punto de extracción (Etapa 34): cuadrado verde.
+	for extraction in get_tree().get_nodes_in_group("extraction"):
+		var e: Vector2 = _to_map(extraction.global_position, origin, side)
+		markers.draw_rect(Rect2(e - Vector2(7, 7), Vector2(14, 14)), Color(0.2, 0.85, 0.3))
+		markers.draw_rect(Rect2(e - Vector2(7, 7), Vector2(14, 14)), Color.BLACK, false, 1.5)
 
 	for shelter in get_tree().get_nodes_in_group("shelter"):
 		var p: Vector2 = _to_map(shelter.global_position, origin, side)

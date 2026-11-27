@@ -48,12 +48,14 @@ func interact(player: Node) -> String:
 		if inventory.add_item("carne_cocida", "Carne cocida", 1) == -1:
 			return "Inventario lleno"
 		inventory.remove_item("carne_cruda", 1)
+		get_tree().call_group("objectives", "complete", "cocinar")
 		return "Cocinaste un trozo de carne"
 	# Etapa 33: también se cocina el pescado.
 	if inventory.get_amount("pescado_crudo") > 0:
 		if inventory.add_item("pescado_cocido", "Pescado cocido", 1) == -1:
 			return "Inventario lleno"
 		inventory.remove_item("pescado_crudo", 1)
+		get_tree().call_group("objectives", "complete", "cocinar")
 		return "Cocinaste un pescado"
 	return "No tienes carne ni pescado crudo para cocinar"
 

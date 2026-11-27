@@ -9,6 +9,9 @@ const PIXELS_PER_DEGREE: float = 2.4
 
 var player: Node3D
 var heading: float = 0.0  # Grados: 0 = norte, 90 = este...
+## Rumbo hacia el punto de extracción (Etapa 34), en grados.
+var extraction_heading: float = -1.0
+var extraction: Node3D
 
 
 func _ready() -> void:
@@ -26,8 +29,16 @@ func _process(_delta: float) -> void:
 		return
 	# En el mapa, el norte es -Z. Girar a la derecha aumenta el rumbo.
 	var new_heading: float = fposmod(-rad_to_deg(player.rotation.y), 360.0)
-	if absf(new_heading - heading) > 0.2:
+	# Rumbo hacia la extracción: atan2(este, norte), con el norte = -Z.
+	if extraction == null:
+		extraction = get_tree().get_first_node_in_group("extraction")
+	var new_target: float = -1.0
+	if extraction != null:
+		var to: Vector3 = extraction.global_position - player.global_position
+		new_target = fposmod(rad_to_deg(atan2(to.x, -to.z)), 360.0)
+	if absf(new_heading - heading) > 0.2 or absf(new_target - extraction_heading) > 0.5:
 		heading = new_heading
+		extraction_heading = new_target
 		queue_redraw()
 
 
@@ -47,6 +58,12 @@ func _draw() -> void:
 			draw_string(font, Vector2(x - 20.0, 21.0), text, HORIZONTAL_ALIGNMENT_CENTER, 40.0, 16, color)
 		else:
 			draw_line(Vector2(x, 8.0), Vector2(x, 18.0), Color(1, 1, 1, 0.6), 1.0)
+
+	# Marca verde: dirección del punto de extracción.
+	if extraction_heading >= 0.0:
+		var ex: float = center + wrapf(extraction_heading - heading, -180.0, 180.0) * PIXELS_PER_DEGREE
+		ex = clampf(ex, 6.0, size.x - 6.0)  # Si queda detrás, se ve en el borde.
+		draw_rect(Rect2(ex - 5.0, 1.0, 10.0, 6.0), Color(0.2, 0.85, 0.3))
 
 	# Marca central: hacia dónde miras.
 	draw_colored_polygon(PackedVector2Array([
