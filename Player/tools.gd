@@ -213,6 +213,7 @@ func _swing() -> void:
 			hud.show_message("Talaste el árbol, pero el inventario está lleno")
 		else:
 			hud.show_message("Talaste el árbol: +%d madera" % wood)
+		get_tree().call_group("objectives", "complete", "talar")
 
 
 ## Lanza la lanza o dispara una flecha hacia donde mira la cámara.
@@ -252,6 +253,7 @@ func _hunt(gazelle: Object) -> void:
 	elif inventory.add_item("carne_cruda", "Carne cruda", meat) == -1:
 		hud.show_message("Cazaste una gacela, pero el inventario está lleno")
 	else:
+		get_tree().call_group("objectives", "complete", "cazar")
 		# Cada gacela da también 1 piel (para la mochila, Etapa 31).
 		inventory.add_item("piel", "Piel", 1)
 		hud.show_message("Cazaste una gacela: +%d carne cruda y 1 piel" % meat)
@@ -267,7 +269,8 @@ func _water_in_front():
 	if target != null and (target.has_method("hit") or target.has_method("chop") \
 			or target.has_method("collect") or target.has_method("interact")):
 		return null  # Miras otra cosa (un animal, un árbol, la charca...).
-	return interactor._find_water()
+	var water = interactor._find_water()
+	return water if water != null and "kind" in water else null
 
 
 func _fish(water: Object) -> void:
@@ -288,3 +291,4 @@ func _fish(water: Object) -> void:
 		hud.show_message("¡Pescaste un pez, pero el inventario está lleno!")
 		return
 	hud.show_message("¡Pescaste un pez! Cocínalo en una fogata (E)")
+	get_tree().call_group("objectives", "complete", "pescar")

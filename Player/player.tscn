@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://Player/survival.gd" id="7_surv"]
 [ext_resource type="Script" path="res://Player/tools.gd" id="8_tools"]
 [ext_resource type="Script" path="res://Player/map_view.gd" id="9_mapview"]
+[ext_resource type="Script" path="res://Player/objectives.gd" id="10_objectives"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_y2pph"]
 radius = 0.35
@@ -52,3 +53,6 @@ script = ExtResource("8_tools")
 
 [node name="MapView" type="CanvasLayer" parent="." unique_id=1268403957]
 script = ExtResource("9_mapview")
+
+[node name="Objectives" type="Node" parent="." unique_id=1735092418]
+script = ExtResource("10_objectives")

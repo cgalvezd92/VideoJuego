@@ -24,6 +24,7 @@ const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 @onready var objects: Node = $"../Objects"
 @onready var trees: Node = $"../Nature/Trees"
 @onready var world = $"../World"
+@onready var objectives = $"../Player/Objectives"
 
 var autosave_time: float = 0.0
 
@@ -114,6 +115,8 @@ func save_game(show_message: bool) -> void:
 		# Acacias taladas y la hora del juego en que se talaron (para el rebrote).
 		"felled_trees": _felled_trees(),
 		"backpack": inventory.has_backpack(),  # Etapa 31.
+		# Objetivos cumplidos y si ya te rescataron (Etapa 34).
+		"objectives": objectives.get_save_data(),
 		# Lo recogido y talado fuera de la zona inicial (Etapa 22).
 		"world": world.get_save_data(),
 	}
@@ -172,6 +175,8 @@ func load_game() -> void:
 			inventory.slots[i] = { "id": slot.id, "name": slot.name, "amount": int(slot.amount) }
 	inventory.changed.emit()
 	inventory.select(int(inv.get("selected", 0)))
+
+	objectives.set_save_data(data.get("objectives", {}))
 
 	# Quitar lo que ya se recogió o se taló.
 	_remove_missing(objects, data.get("objects", null))

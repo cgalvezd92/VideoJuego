@@ -31,6 +31,7 @@ X / K  Hacer flechas / arco
 L / G  Hacer lanza / arpón
 P  Hacer mochila
 M  Mapa
+O  Misión y objetivos
 B  Libro de fabricación
 Clic izq.  Golpear / Comer / Beber / Pescar
 Clic der.  Lanzar lanza / Disparar arco
@@ -141,6 +142,9 @@ func toggle_controls() -> void:
 	config.load(SETTINGS_PATH)
 	config.set_value("hud", "controls_expanded", controls_expanded)
 	config.save(SETTINGS_PATH)
+	# Los controles y los objetivos (Etapa 34) no caben abiertos a la vez.
+	if controls_expanded:
+		get_tree().call_group("objectives", "set_expanded", false)
 
 
 func _update_controls() -> void:

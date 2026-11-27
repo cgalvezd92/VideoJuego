@@ -77,6 +77,7 @@ func eat(amount: float) -> void:
 
 func drink(amount: float) -> void:
 	thirst = minf(thirst + amount, max_value)
+	get_tree().call_group("objectives", "complete", "beber")  # Etapa 34.
 	check_time = 0.0
 
 

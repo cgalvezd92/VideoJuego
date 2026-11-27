@@ -29,4 +29,5 @@ func interact(player: Node) -> String:
 	var seconds: float = hours / 24.0 * day_night.day_length_minutes * 60.0
 	player.get_node("Survival").rest(seconds)
 	player.get_node("HUD").fade()
+	get_tree().call_group("objectives", "complete", "dormir")  # Etapa 34.
 	return "Dormiste %d horas. ¡Buenos días!" % roundi(hours)
