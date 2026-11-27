@@ -32,6 +32,7 @@ P  Hacer mochila
 V  Hacer vendas
 M  Mapa
 O  Misión y objetivos
+Y  Diario (notas de Joseph)
 B  Libro de fabricación
 Clic izq.  Golpear / Comer / Pescar / Vendarse
 Clic der.  Lanzar lanza / Disparar arco
