@@ -16,6 +16,7 @@ const ROCK: PackedScene = preload("res://objects/rock.tscn")
 const GAZELLE: PackedScene = preload("res://objects/gazelle.tscn")
 const ZEBRA: PackedScene = preload("res://objects/zebra.tscn")
 const GIRAFFE: PackedScene = preload("res://objects/giraffe.tscn")
+const LION: PackedScene = preload("res://objects/lion.tscn")
 
 @export var cell_size: float = 64.0
 ## Celdas activas alrededor del jugador (2 = una cuadrícula de 5 x 5).
@@ -27,7 +28,7 @@ const GIRAFFE: PackedScene = preload("res://objects/giraffe.tscn")
 ## Las piedras y las ramas son pequeñas: no hace falta verlas de lejos.
 const VIEW_DISTANCE: Dictionary = {
 	"stone": 70.0, "branch": 70.0, "berry_bush": 90.0, "gazelle": 80.0,
-	"acacia": 120.0, "rock": 120.0, "zebra": 90.0, "giraffe": 150.0,
+	"acacia": 120.0, "rock": 120.0, "zebra": 90.0, "giraffe": 150.0, "lion": 100.0,
 }
 
 @export_group("Cantidad por celda")
@@ -40,6 +41,8 @@ const VIEW_DISTANCE: Dictionary = {
 ## Probabilidad de una manada de 4 cebras o de 2-3 jirafas (Etapa 29).
 @export_range(0.0, 1.0) var zebra_chance: float = 0.06
 @export_range(0.0, 1.0) var giraffe_chance: float = 0.04
+## Probabilidad de que una celda tenga un león con su territorio (Etapa 32).
+@export_range(0.0, 1.0) var lion_chance: float = 0.02
 
 var cells: Dictionary = {}  # Vector2i -> Node3D de la celda
 var pending: Array[Vector2i] = []  # Celdas que faltan por crear
@@ -120,6 +123,7 @@ func _load_cell(key: Vector2i) -> void:
 	var herd_roll: float = rng.randf()
 	var zebra_roll: float = rng.randf()
 	var giraffe_roll: float = rng.randf()
+	var lion_roll: float = rng.randf()
 	if bush_roll < bush_chance:
 		_place(cell, BUSH, "Bush", rng, origin, 1.0)
 	if rock_roll < rock_chance:
@@ -130,6 +134,10 @@ func _load_cell(key: Vector2i) -> void:
 		_place_herd(cell, rng, origin, ZEBRA, "Z", 4)
 	if giraffe_roll < giraffe_chance:
 		_place_herd(cell, rng, origin, GIRAFFE, "J", 2 + int(rng.randf() < 0.5))
+	if lion_roll < lion_chance:
+		var lion: Node3D = _place(cell, LION, "Lion", rng, origin, 1.0)
+		if lion != null:
+			lion.position.y += 0.05
 
 
 ## Coloca un objeto en un punto al azar de la celda, sobre el suelo.

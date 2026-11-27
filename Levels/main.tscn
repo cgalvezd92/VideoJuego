@@ -19,6 +19,7 @@
 [ext_resource type="PackedScene" path="res://objects/zebra.tscn" id="17_zebra"]
 [ext_resource type="PackedScene" path="res://objects/giraffe.tscn" id="18_giraffe"]
 [ext_resource type="Script" path="res://Levels/weather.gd" id="19_weather"]
+[ext_resource type="PackedScene" path="res://objects/lion.tscn" id="20_lion"]
 
 [sub_resource type="Environment" id="Environment_y2pph"]
 background_mode = 1
@@ -500,6 +501,9 @@ transform = Transform3D(0.21282, 0, -0.97709, 0, 1, 0, 0.97709, 0, 0.21282, -34.
 
 [node name="Giraffe3" parent="Animals" unique_id=1547071575 instance=ExtResource("18_giraffe")]
 transform = Transform3D(0.33044, 0, 0.94383, 0, 1, 0, -0.94383, 0, 0.33044, -35.66, 0.05, 32.50)
+
+[node name="Lion" parent="Animals" unique_id=266262001 instance=ExtResource("20_lion")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48, 0.05, 38)
 
 [node name="Hyena" parent="Animals" unique_id=1376541290 instance=ExtResource("13_hyena")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 50)
