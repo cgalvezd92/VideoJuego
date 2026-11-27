@@ -1,10 +1,11 @@
 extends Node
-## Herramientas y objetos de mano (Etapas 9, 12 y 26).
+## Herramientas y objetos de mano (Etapas 9, 12, 26 y 33).
 ## Va en el nodo "Tools", hijo de Player.
 ##
 ## - Clic izquierdo: golpear con hacha, machete, lanza o bastón (talar o
 ##   cazar) o comer/beber lo que tengas seleccionado.
 ## - Clic derecho: lanzar la lanza o disparar el arco.
+## - Con el arpón, clic izquierdo mirando un río o un lago: pescar (Etapa 33).
 ## - Al empezar una partida nueva, cada personaje recibe su objeto inicial.
 
 const AXE_SCENE: PackedScene = preload("res://objects/stone_axe.tscn")
@@ -14,15 +15,23 @@ const Projectile = preload("res://objects/projectile.gd")
 ## Segundos entre golpe y golpe.
 @export var swing_cooldown: float = 0.5
 
+@export_group("Pesca")
+## Probabilidad de sacar un pez en cada intento (0.35 = 35 %).
+@export_range(0.0, 1.0) var fish_chance: float = 0.35
+## Segundos entre intento e intento de pesca.
+@export var fish_cooldown: float = 1.2
+
 ## Comida y bebida: cuánta hambre/sed quita y cuánta vida suma (negativo = daño).
 const FOODS: Dictionary = {
 	"carne_cocida": { "hunger": 45.0, "thirst": 0.0, "health": 5.0, "text": "Comiste carne cocida. ¡Qué rica!" },
 	"carne_cruda": { "hunger": 5.0, "thirst": 0.0, "health": -10.0, "text": "Comiste carne cruda... te sienta mal" },
+	"pescado_cocido": { "hunger": 35.0, "thirst": 0.0, "health": 5.0, "text": "Comiste pescado cocido. ¡Muy bueno!" },
+	"pescado_crudo": { "hunger": 8.0, "thirst": 0.0, "health": -6.0, "text": "Comiste pescado crudo... no te sienta bien" },
 	"agua": { "hunger": 0.0, "thirst": 40.0, "health": 0.0, "text": "Bebiste agua de la olla" },
 }
 
 ## Objetos que sirven para golpear (talar o cazar).
-const MELEE: Array[String] = ["hacha", "machete", "lanza", "baston"]
+const MELEE: Array[String] = ["hacha", "machete", "lanza", "baston", "arpon"]
 ## Objetos que talan y cuántos golpes de árbol cuenta cada hachazo.
 const CHOP_POWER: Dictionary = { "hacha": 1, "machete": 2 }
 
@@ -69,7 +78,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED or cooldown > 0.0:
 		return
 	if event.is_action_pressed("attack"):
-		if can_melee():
+		var water = _water_in_front() if is_holding("arpon") else null
+		if water != null:
+			_fish(water)
+		elif can_melee():
 			_swing()
 		elif is_holding_food():
 			_eat()
@@ -137,7 +149,7 @@ func _update_held() -> void:
 		# Delante de la cámara, abajo a la derecha.
 		model.position = Vector3(0.32, -0.32, -0.55)
 		model.rotation_degrees = Vector3(10, -15, 0)
-		if id == "lanza":
+		if id == "lanza" or id == "arpon":
 			model.position = Vector3(0.3, -0.3, -0.4)
 			model.rotation_degrees = Vector3(0, -4, 0)
 		elif id == "antorcha":
@@ -158,7 +170,7 @@ func _eat() -> void:
 	var food: Dictionary = FOODS[item.id]
 	inventory.remove_item(item.id, 1)
 	var hunger_gain: float = food.hunger
-	if item.id == "carne_cocida":
+	if item.id == "carne_cocida" or item.id == "pescado_cocido":
 		hunger_gain *= Personajes.mod("comida_mult")  # Etapa 25: el cocinero rinde más.
 	if hunger_gain > 0.0:
 		survival.eat(hunger_gain)
@@ -243,3 +255,36 @@ func _hunt(gazelle: Object) -> void:
 		# Cada gacela da también 1 piel (para la mochila, Etapa 31).
 		inventory.add_item("piel", "Piel", 1)
 		hud.show_message("Cazaste una gacela: +%d carne cruda y 1 piel" % meat)
+
+
+# --- Pesca (Etapa 33) ---
+
+## Agua (río, lago o mar) que tienes delante, o null.
+func _water_in_front():
+	var target: Object = interactor.get_collider()
+	if target != null and "kind" in target:
+		return target
+	if target != null and (target.has_method("hit") or target.has_method("chop") \
+			or target.has_method("collect") or target.has_method("interact")):
+		return null  # Miras otra cosa (un animal, un árbol, la charca...).
+	return interactor._find_water()
+
+
+func _fish(water: Object) -> void:
+	cooldown = fish_cooldown
+	# Animación: el arpón se clava hacia delante y vuelve.
+	if held != null:
+		var rest: Vector3 = held.position
+		var tween := create_tween()
+		tween.tween_property(held, "position", rest + Vector3(0, -0.1, -0.35), 0.12)
+		tween.tween_property(held, "position", rest, 0.3)
+	if water.kind == "mar":
+		hud.show_message("Las olas del mar son muy fuertes: pesca en ríos y lagos")
+		return
+	if randf() >= fish_chance:
+		hud.show_message("Fallaste... el pez se escapó. Vuelve a intentarlo")
+		return
+	if inventory.add_item("pescado_crudo", "Pescado crudo", 1) == -1:
+		hud.show_message("¡Pescaste un pez, pero el inventario está lleno!")
+		return
+	hud.show_message("¡Pescaste un pez! Cocínalo en una fogata (E)")

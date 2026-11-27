@@ -70,6 +70,7 @@ En cada etapa, explicar paso a paso:
 | 29 | Cebras y jirafas (`zebra.tscn`, `giraffe.tscn`, script `big_animal.gd`): pastan y huyen, no se cazan; manada de cada una cerca de la salida y al azar por el continente; 6 llamadas de dibujo por animal | ✅ Lista |
 | 30 | Lluvia (nodo `Weather`): a ratos llueve (partículas GPU), cielo gris; apaga fogatas lejos de un refugio (E + 1 rama las reaviva); llena la olla | ✅ Lista |
 | 31 | Mochila: cazar gacelas da piel; **P** con 3 pieles + 2 ramas amplía el inventario de 8 a 12 casillas (teclas 9 y 0); se guarda | ✅ Lista |
-| 32 | León (`lion.tscn`, `lion.gd`): de día defiende su territorio (25 m, rojo en el mapa), ruge, acecha y ataca; teme fuego y antorcha; 4 golpes lo retiran; uno cerca de la salida y algunos al azar | 🧪 En pruebas |
+| 32 | León (`lion.tscn`, `lion.gd`): de día defiende su territorio (25 m, rojo en el mapa), ruge, acecha y ataca; teme fuego y antorcha; 4 golpes lo retiran; uno cerca de la salida y algunos al azar | ✅ Lista |
+| 33 | Pesca: arpón con **G** (1 madera + 2 piedras); con el arpón en la mano, clic mirando un río o lago (35 % de sacar un pez); el pescado crudo se cocina en la fogata (**E**) | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.

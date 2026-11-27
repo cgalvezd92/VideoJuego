@@ -27,11 +27,11 @@ E  Recoger / Beber / Comer
 F  Hacer fogata
 C  Hacer hacha
 R  Hacer refugio
-X / L  Hacer flechas / lanza
+X / L / G  Hacer flechas / lanza / arpón
 P  Hacer mochila
 M  Mapa
 B  Libro de fabricación
-Clic izq.  Golpear / Comer / Beber
+Clic izq.  Golpear / Comer / Beber / Pescar
 Clic der.  Lanzar lanza / Disparar arco
 1-8 / Rueda  Elegir casilla (9 y 0 con mochila)
 Esc  Pausa (menú)

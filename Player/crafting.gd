@@ -31,6 +31,9 @@ const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 ## Lanza (L): 2 madera + 1 piedra.
 @export var spear_wood: int = 2
 @export var spear_stones: int = 1
+## Arpón (G, Etapa 33): 1 madera + 2 piedras. Sirve para pescar.
+@export var harpoon_wood: int = 1
+@export var harpoon_stones: int = 2
 
 @onready var player: CharacterBody3D = owner
 @onready var inventory = owner.get_node("Inventory")
@@ -57,6 +60,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		_try_craft_backpack()
 	elif event.is_action_pressed("craft_spear"):
 		_craft_item({"madera": spear_wood, "piedra": spear_stones}, "lanza", "Lanza", 1)
+	elif event.is_action_pressed("craft_harpoon"):
+		if inventory.get_amount("arpon") > 0:
+			hud.show_message("Ya tienes un arpón")
+		else:
+			_craft_item({"madera": harpoon_wood, "piedra": harpoon_stones}, "arpon", "Arpón", 1)
 
 
 ## Fabrica un objeto si tienes los materiales (Etapa 28).
@@ -106,7 +114,8 @@ func _craft_item(cost: Dictionary, id: String, display_name: String, amount: int
 	if amount > 1:
 		hud.show_message("Hiciste %d %ss" % [amount, display_name.to_lower()])
 	else:
-		hud.show_message("Hiciste una %s" % display_name.to_lower())
+		var article: String = "un" if display_name in ["Arpón"] else "una"
+		hud.show_message("Hiciste %s %s" % [article, display_name.to_lower()])
 
 
 func _try_build_shelter() -> void:
@@ -200,7 +209,7 @@ func _update_book() -> void:
 			"key": "F", "name": "Fogata",
 			"needs": [["Ramas", branches, fire_branches], ["Piedras", stones, fire_stones]],
 			"available": branches >= fire_branches and stones >= fire_stones,
-			"note": "Luz, calor, cura y cocina carne (E)",
+			"note": "Luz, calor, cura; cocina carne y pescado (E)",
 		},
 		{
 			"key": "C", "name": "Hacha",
@@ -225,6 +234,12 @@ func _update_book() -> void:
 			"needs": [["Madera", wood, spear_wood], ["Piedras", stones, spear_stones]],
 			"available": wood >= spear_wood and stones >= spear_stones,
 			"note": "Caza de cerca o lánzala (clic derecho)",
+		},
+		{
+			"key": "G", "name": "Arpón",
+			"needs": [["Madera", wood, harpoon_wood], ["Piedras", stones, harpoon_stones]],
+			"available": inventory.get_amount("arpon") == 0 and wood >= harpoon_wood and stones >= harpoon_stones,
+			"note": "Ya tienes uno" if inventory.get_amount("arpon") > 0 else "Pesca en ríos y lagos (clic)",
 		},
 		{
 			"key": "P", "name": "Mochila",
