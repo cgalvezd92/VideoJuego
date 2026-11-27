@@ -46,6 +46,8 @@ const VIEW_DISTANCE: Dictionary = {
 @export_range(0.0, 1.0) var lion_chance: float = 0.02
 ## Probabilidad de un cocodrilo si la celda tiene río o lago (Etapa 35).
 @export_range(0.0, 1.0) var crocodile_chance: float = 0.5
+## Probabilidad de que un arbusto de bayas sea venenoso (Etapa 38).
+@export_range(0.0, 1.0) var poison_bush_chance: float = 0.35
 ## Cocodrilo del lago de al lado de la salida (X y Z del mundo).
 @export var start_crocodile := Vector2(290.0, 50.0)
 
@@ -133,8 +135,9 @@ func _load_cell(key: Vector2i) -> void:
 	var zebra_roll: float = rng.randf()
 	var giraffe_roll: float = rng.randf()
 	var lion_roll: float = rng.randf()
+	var bush: Node3D = null
 	if bush_roll < bush_chance:
-		_place(cell, BUSH, "Bush", rng, origin, 1.0)
+		bush = _place(cell, BUSH, "Bush", rng, origin, 1.0)
 	if rock_roll < rock_chance:
 		_place(cell, ROCK, "Rock", rng, origin, rng.randf_range(0.7, 1.8))
 	if herd_roll < herd_chance:
@@ -147,6 +150,11 @@ func _load_cell(key: Vector2i) -> void:
 		var lion: Node3D = _place(cell, LION, "Lion", rng, origin, 1.0)
 		if lion != null:
 			lion.position.y += 0.05
+	# Arbusto venenoso (Etapa 38). La tirada va al final para no cambiar lo
+	# que ya salía en cada celda.
+	var poison_roll: float = rng.randf()
+	if bush != null and poison_roll < poison_bush_chance:
+		bush.set_poisonous(true)
 	# Cocodrilo (Etapa 35): se prueban 6 puntos al azar buscando río o lago.
 	# Las tiradas se hacen siempre, para que la celda salga igual cada vez.
 	var croc_roll: float = rng.randf()
