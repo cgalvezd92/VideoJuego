@@ -149,8 +149,8 @@ func count(key: String) -> void:
 ## Resumen de la partida en texto (pantalla de muerte y de rescate).
 func summary() -> String:
 	var day: int = 1 if day_night == null else int(day_night.total_hours / 24.0) + 1
-	return "Día %d · %d gacelas cazadas · %d peces · %d árboles talados · %d fogatas · %.1f km recorridos" % [
-		day, stats.get("cazas", 0), stats.get("peces", 0), stats.get("arboles", 0),
+	return "Día %d · %d gacelas cazadas · %d conejos · %d peces · %d árboles talados · %d fogatas · %.1f km recorridos" % [
+		day, stats.get("cazas", 0), stats.get("conejos", 0), stats.get("peces", 0), stats.get("arboles", 0),
 		stats.get("fogatas", 0), stats.get("metros", 0.0) / 1000.0]
 
 

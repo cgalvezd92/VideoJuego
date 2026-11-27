@@ -6,6 +6,7 @@ const CAMPFIRE_SCENE: PackedScene = preload("res://objects/campfire.tscn")
 const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 const Chest = preload("res://objects/chest.gd")
 const Bed = preload("res://objects/bed.gd")
+const Trap = preload("res://objects/trap.gd")
 
 @export var fire_branches: int = 3
 @export var fire_stones: int = 2
@@ -46,6 +47,9 @@ const Bed = preload("res://objects/bed.gd")
 ## Antorcha (T, Etapa 43): 1 rama + 1 piel.
 @export var torch_branches: int = 1
 @export var torch_hides: int = 1
+## Trampa de lazo (U, Etapa 54): 3 ramas + 1 piel.
+@export var trap_branches: int = 3
+@export var trap_hides: int = 1
 ## Cofre (J, Etapa 41): 4 madera + 2 ramas.
 @export var chest_wood: int = 4
 @export var chest_branches: int = 2
@@ -80,6 +84,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		_craft_item({"madera": spear_wood, "piedra": spear_stones}, "lanza", "Lanza", 1)
 	elif event.is_action_pressed("craft_torch"):
 		_craft_item({"rama": torch_branches, "piel": torch_hides}, "antorcha", "Antorcha", 1)
+	elif event.is_action_pressed("build_trap"):
+		var trap = _place_furniture(Trap, {"rama": trap_branches, "piel": trap_hides}, 1.6,
+			"Pusiste una trampa: vuelve dentro de unas horas a ver si cayó algo")
+		if trap != null:
+			trap.arm()
 	elif event.is_action_pressed("build_chest"):
 		_place_furniture(Chest, {"madera": chest_wood, "rama": chest_branches}, 1.6,
 			"Hiciste un cofre: míralo y pulsa E para guardar cosas")
@@ -152,13 +161,13 @@ func _craft_item(cost: Dictionary, id: String, display_name: String, amount: int
 
 
 ## Pone un mueble (cofre o cama) delante del jugador (Etapa 41).
-func _place_furniture(script: Script, cost: Dictionary, distance: float, message: String) -> void:
+func _place_furniture(script: Script, cost: Dictionary, distance: float, message: String) -> Node3D:
 	if not _has_materials(cost):
-		return
+		return null
 	var spot = _find_spot(distance)
 	if spot == null:
 		hud.show_message("No hay espacio aquí")
-		return
+		return null
 	for material in cost:
 		inventory.remove_item(material, cost[material])
 	var furniture: Node3D = script.new()
@@ -166,6 +175,7 @@ func _place_furniture(script: Script, cost: Dictionary, distance: float, message
 	furniture.global_position = spot
 	furniture.rotation.y = player.rotation.y
 	hud.show_message(message)
+	return furniture
 
 
 func _try_build_shelter() -> void:
@@ -279,6 +289,12 @@ func _update_book() -> void:
 			"needs": [["Ramas", branches, torch_branches], ["Pieles", inventory.get_amount("piel"), torch_hides]],
 			"available": branches >= torch_branches and inventory.get_amount("piel") >= torch_hides,
 			"note": "Luz y calor; dura 3 min en la mano",
+		},
+		{
+			"key": "U", "icon": "trampa", "name": "Trampa de lazo",
+			"needs": [["Ramas", branches, trap_branches], ["Pieles", inventory.get_amount("piel"), trap_hides]],
+			"available": branches >= trap_branches and inventory.get_amount("piel") >= trap_hides,
+			"note": "Atrapa conejos con el tiempo (E)",
 		},
 		{
 			"key": "J", "icon": "cofre", "name": "Cofre",

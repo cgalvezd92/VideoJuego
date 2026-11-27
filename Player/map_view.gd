@@ -102,7 +102,7 @@ func _build() -> void:
 
 	var title := _add_label("Mapa de África", 26, Control.PRESET_CENTER_TOP)
 	title.offset_top = 12.0
-	var legend := _add_label("Negro: sin explorar   ·   Flecha: tú   ·   Naranja: fogatas   ·   Marrón: refugios   ·   Círculo: zona de recursos\nRojo: león   ·   Verde: extracción   ·   Amarillo: lugares descubiertos   ·   [M] Cerrar", 14, Control.PRESET_CENTER_BOTTOM)
+	var legend := _add_label("Negro: sin explorar   ·   Flecha: tú   ·   Naranja: fogatas   ·   Marrón: refugios   ·   Morado: trampas   ·   Círculo: zona de recursos\nRojo: león   ·   Verde: extracción   ·   Amarillo: lugares descubiertos   ·   [M] Cerrar", 14, Control.PRESET_CENTER_BOTTOM)
 	legend.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	legend.offset_bottom = -8.0
 
@@ -161,6 +161,10 @@ func _draw_markers() -> void:
 			markers.draw_polyline(diamond + PackedVector2Array([diamond[0]]), Color.BLACK, 1.5)
 			markers.draw_string_outline(font, q + Vector2(10, 5), info[0], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, 3, Color.BLACK)
 			markers.draw_string(font, q + Vector2(10, 5), info[0], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(1.0, 0.9, 0.5))
+
+	# Trampas (Etapa 54): punto morado.
+	for trap in get_tree().get_nodes_in_group("trap"):
+		markers.draw_circle(_to_map(trap.global_position, origin, side), 3.0, Color(0.75, 0.4, 1.0))
 
 	for shelter in get_tree().get_nodes_in_group("shelter"):
 		var p: Vector2 = _to_map(shelter.global_position, origin, side)

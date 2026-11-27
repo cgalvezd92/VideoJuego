@@ -13,6 +13,7 @@ const SHELTER_SCENE: PackedScene = preload("res://objects/shelter.tscn")
 const Chest = preload("res://objects/chest.gd")
 const Bed = preload("res://objects/bed.gd")
 const HeldItems = preload("res://Player/held_items.gd")
+const Trap = preload("res://objects/trap.gd")
 
 ## Cada cuántos segundos se guarda automáticamente.
 @export var autosave_seconds: float = 60.0
@@ -108,6 +109,11 @@ func save_game(show_message: bool) -> void:
 		if not item.is_queued_for_deletion():
 			dropped.append(_vec_to_array(item.global_position) + [item.item_id, item.display_name, item.amount, item.get_meta("durability", -1)])
 
+	# Trampas (Etapa 54): [x, y, z, giro, estado, hora de revisión].
+	var traps: Array = []
+	for trap in get_tree().get_nodes_in_group("trap"):
+		traps.append(_vec_to_array(trap.global_position) + [trap.rotation.y, trap.state, trap.check_at])
+
 	var data: Dictionary = {
 		"version": 2,  # 2 = mapa de África (Etapa 19).
 		"personaje": Personajes.actual()["id"],  # Etapa 25.
@@ -138,6 +144,7 @@ func save_game(show_message: bool) -> void:
 		"chests": chests,
 		"beds": beds,
 		"dropped": dropped,
+		"traps": traps,
 		"places": places.get_save_data(),  # Etapa 47.
 		"notes": $"../Story".get_save_data(),  # Etapa 51.
 		"map_fog": player.get_node("MapView").get_save_data(),  # Etapa 48.
@@ -248,6 +255,14 @@ func load_game() -> void:
 		bed.global_position = _array_to_vec(b)
 		bed.rotation.y = b[3]
 
+	for t in (data.get("traps", []) if same_map else []):
+		var trap: Node3D = Trap.new()
+		main.add_child(trap)
+		trap.global_position = _array_to_vec(t)
+		trap.rotation.y = t[3]
+		trap.state = t[4]
+		trap.check_at = t[5]
+		trap._update_model()
 	for d in (data.get("dropped", []) if same_map else []):
 		var item: Area3D = HeldItems.make_pickable(d[3], d[4], int(d[5]))
 		if d.size() > 6:
