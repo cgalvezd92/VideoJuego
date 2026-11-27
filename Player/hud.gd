@@ -27,7 +27,8 @@ E  Recoger / Beber / Comer
 F  Hacer fogata
 C  Hacer hacha
 R  Hacer refugio
-X / L / G  Hacer flechas / lanza / arpón
+X / K  Hacer flechas / arco
+L / G  Hacer lanza / arpón
 P  Hacer mochila
 M  Mapa
 B  Libro de fabricación
