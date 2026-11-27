@@ -84,5 +84,6 @@ En cada etapa, explicar paso a paso:
 | 43 | Antorchas y fogatas mejores: **T** fabrica una antorcha (1 rama + 1 piel); en la mano dura 3 min (el doble de rápido con lluvia) y su luz baja al final; con piedras en la mano, **E** rodea una fogata con un muro (4 piedras) y la lluvia ya no la apaga; se guarda | ✅ Lista |
 | 44 | Herramientas que se gastan: hacha 40 usos, machete 60, lanza 30, arpón 40 y arco 50 (`MAX_DURABILITY` en `inventory.gd`); barrita de color en su casilla; aviso cuando queda poco y al romperse; el desgaste se conserva en el cofre, al soltarla y al guardar | 🧪 En pruebas |
 | 45 | Iconos en el libro de fabricación: cada receta muestra el dibujo de lo que se fabrica (nuevos: fogata, refugio, cofre, cama y mochila) y los materiales llevan su dibujito (rama, piedra, madera, piel) | 🧪 En pruebas |
+| 46 | Panel de estado digital (`Player/body_status.gd`, lo crea el HUD): silueta de un cuerpo que se llena desde los pies según la vida (verde, amarilla, roja; parpadea si sangras) y medidores por segmentos con porcentaje para vida, hambre, sed y energía, con avisos (sangrando, fogata, calor, frío, agotado) | 🧪 En pruebas |
 
 Las siguientes etapas se definirán con el usuario antes de empezarlas.
